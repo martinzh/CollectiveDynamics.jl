@@ -95,11 +95,16 @@ f  = 0.1
 v0 = 1
 ht = 0.3
 hg = 0.3
-p = 1
-l = 0.4
+p = 0.01
+l = 0.2
 L = 30 # Tamaño caja inicial
 
-N = 4
+N = convert(Int64,L^2 * p) # Numero de particulas (entero)
+
+r0 = v0 * dt / L
+
+println("Particulas = $N")
+println("Radio = $r0")
 
 pos = Array[] #Vector de posiciones
 vel = Array[] #Vector de velocidades
@@ -109,14 +114,11 @@ Dist = zeros(N,N) #Matriz de distancias
 SR_I = zeros(N,N) #Interacciones de corto alcanze
 LR_I = zeros(N,N) #Interacciones de lanrgo alcanze -> NO CAMBIA en tiempo
 
-r0 = 3.
-L = 2.
-
-
 StartPos()
 StartVels(v0)
-SetMatrix(r0)
-println("posiciones:")
-println(pos)
-println("velocidades:")
-println(vel)
+
+println("posiciones:\n $pos")
+println("velocidades:\n $vel")
+
+
+# SetMatrix(r0)
