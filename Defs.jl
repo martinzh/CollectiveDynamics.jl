@@ -4,8 +4,11 @@
 function StartPos()
     for i = 1:N
         #push!(pos,rand(-L:L,dim)) #inicia en una caja de tamanio L
-        push!(pos,rand(dim)*L) #inicia en una caja de tamanio L
-        push!(vel,rand(dim))
+        LL = convert(Float64,L)
+        # push!(pos,rand(-LL:LL,dim)) #inicia en una caja de tamanio L
+        # push!(vel,rand(dim))
+        push!(pos,[rand(-LL:LL) rand(-LL:LL)]) #inicia en una caja de tamanio L
+        push!(vel,[rand() rand()]) #inicia en una caja de tamanio L
     end
 end
 
@@ -18,10 +21,10 @@ function StartVels(v0)
 end
 
 #calcula distancias y adjacencia local
-function SetMatrix(r0) 
+function SetMatrix(r0,SR,Dist) 
 
-    Adj = zeros(N,N) #Limpia matriz 
-    Dist = zeros(N,N) #Limpia matriz 
+    # SR = zeros(N,N) #Limpia matriz 
+    # Dist = zeros(N,N) #Limpia matriz 
 
     for i = 1:N
         for j = N:-1:i
@@ -30,8 +33,8 @@ function SetMatrix(r0)
 
             Dist[i;j] = Dist[j;i] = d
             
-            #d < r0 && d > 0 ? Adj[i;j] = Adj[j;i] = 1 : Adj[i;j] = 0
-            d < r0 ? Adj[i;j] = Adj[j;i] = 1 : Adj[i;j] = 0
+            #d < r0 && d > 0 ? SR[i;j] = SR[j;i] = 1 : SR[i;j] = 0
+            d < r0 ? SR[i;j] = SR[j;i] = 1 : SR[i;j] = 0
         end
     end
 end
@@ -40,13 +43,14 @@ end
 function UpdatePos()
 
     for i = 1:N
-        pos[i] = pos[i] + vel[i] 
+        pos[i] = pos[i] + vel[i]*dt
     end
 
 end
 
 #Calcula las direcciones de la velocidad promedio de cada vecindad
-function GetAngs(A,vel)
+# function GetAngs(A,vel)
+function GetAngs(A)
 
     angs = Float64[] #Arreglo para guardar angulos
 
@@ -66,11 +70,86 @@ function GetAngs(A,vel)
         # # println("part $i -> ang prom $a")
 
         push!(angs,atan2(v_prom[2],v_prom[1])) #agrega el angulo al arreglo
-
     end
+    # println("Angulos:\n $angs")
+    return angs
 end
 
 #Construye red aleatoria de conectividad k
+function SetLR(k,X)
+    #Matriz aleatoria
+    for i = 1:size(X)[1]
+        for j = 1:k        
+            switch = true
+            while switch 
+                s = rand(1:N)
+                if s != i
+                    X[i,s] = 1
+                    #X[i,s] = X[s,i] = 1 
+                    switch = false
+                end
+            end
+        end
+    end
+end
+
+#Actualiza velocidades
+function UpdateVel()
+
+    AS = GetAngs(SR) #Angulos inter corto
+    AL = GetAngs(LR) #Angulos inter largo
+
+    # println("Corto Alcance:")
+    # println(AS)
+    # println("Largo Alcance:")
+    # println(AL)
+
+    # for i = 1:
+
+    for i = 1:N
+
+        eta = rand(-pi:pi,2) # Vector de angs aleatorios
+
+        # println(ruido)
+        # println(eta)
+
+        ang = ruido'.*eta # aleaorios * eta
+        # println(ang)
+
+        ang_tot = abs(1-w)*(AL[i]+ang[1]) + w*(AS[i]+ang[2])
+
+        vel_n = RotVec(vel[i],ang_tot)
+        
+        # println("original")
+        # println(vel[i])
+
+        # println("nuevo")
+        # println(vel_n)
+
+        vel[i] = vel_n
+
+        # println("rotado")
+        # println(vel[i])
+
+    end
+
+end
+
+#Rota vector 2D
+function RotVec(vec,alpha)
+
+    # println(vec)
+
+    M = [cos(alpha) sin(alpha) ; -sin(alpha) cos(alpha)]
+
+    res = M*vec'
+
+    # println(typeof(res))
+
+    # println(res)
+
+    return res'
+end
 
 # ==================================== Parametros ==============================================
 
@@ -93,32 +172,71 @@ dim= 2
 dt = 1
 f  = 0.1
 v0 = 1
-ht = 0.3
-hg = 0.3
-p = 0.01
-l = 0.2
+ht = 0.25
+hg = 0.25
+p = 2.25
+l = 0.25
 L = 30 # Tamaño caja inicial
+w = 0.3 # Peso relativo de vecindades
 
-N = convert(Int64,L^2 * p) # Numero de particulas (entero)
+T = 10 #iteraciones
 
-r0 = v0 * dt / L
+N = convert(Int64, L^2 * p) # Numero de particulas (entero)
+
+r0 = v0 * dt / l
+
+ruido = [ht hg] # [largo corto]
+
+# println(ruido)
+
+f = convert(Int64,floor(f*N)) # Conectividad en funcion de la fraccion de particulas
 
 println("Particulas = $N")
 println("Radio = $r0")
+println("Conectividad = $f")
 
 pos = Array[] #Vector de posiciones
 vel = Array[] #Vector de velocidades
 
 Dist = zeros(N,N) #Matriz de distancias
 
-SR_I = zeros(N,N) #Interacciones de corto alcanze
-LR_I = zeros(N,N) #Interacciones de lanrgo alcanze -> NO CAMBIA en tiempo
+SR = zeros(N,N) #Interacciones de corto alcanze
+LR = zeros(N,N) #Interacciones de lanrgo alcanze -> NO CAMBIA en tiempo
 
 StartPos()
 StartVels(v0)
+SetLR(f,LR)
 
-println("posiciones:\n $pos")
-println("velocidades:\n $vel")
+# println("$vel\n")
 
+# for i = 1:N
 
-# SetMatrix(r0)
+#     println("original")
+#     println(vel[i])
+
+#     otro = Array(2*vel[i])
+    
+#     println("otro")
+#     println(otro)
+
+#     vel[i] = otro
+
+#     # vel[i] = 2*vel[i]
+
+#     println("asignado")
+#     println(vel[i])
+# end
+
+for i = 1:T
+
+#     # println("posiciones:\n $pos")
+#     # println("velocidades:\n $vel")
+    println(i)
+    SetMatrix(r0,SR,Dist)
+    UpdatePos()
+    UpdateVel()
+#     # println("Long Range:\n $LR")
+#     # println("Short Range:\n $SR")
+#     # println("Distancias:\n $Dist")
+
+end
