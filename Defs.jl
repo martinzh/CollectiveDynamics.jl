@@ -168,6 +168,23 @@ function PrintDist(i)
     close(d)
 end
 
+#Escribe Archivo de Parametros
+function PrintParams()
+    d = open("../$path/params.txt","w")
+
+    write(d,"Particulas = $N\n")
+    write(d,"densidad = $p\n")
+    write(d,"radio = r0\n");
+    write(d,"f = $f\n");
+    write(d,"ruido geometrico = $hg\n");
+    write(d,"ruido topologico = $ht\n");
+    write(d,"peso geometrico = $w\n");
+    write(d,"regimen de velocidad = $l\n");
+    write(d,"iteraciones = $T\n");
+
+    close(d)
+end
+
 
 # ==================================== Parametros ==============================================
 
@@ -211,6 +228,11 @@ ruido = [ht hg] # [largo corto]
 
 path = "data_f$(f)_ro$p"
 
+# run(`if [ ! -d ""../$path""  ]; then
+#   mkdir ../$path
+#   mkdir ../$path/dists
+#     fi`)
+
 run(`mkdir ../$path`)
 run(`mkdir ../$path/dists`)
 
@@ -221,6 +243,8 @@ trays = open("../$path/trays.txt","w")
 println("Particulas = $N")
 println("Radio = $r0")
 println("Conectividad = $f")
+
+PrintParams()
 
 pos = Array[] #Vector de posiciones
 vel = Array[] #Vector de velocidades
