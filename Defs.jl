@@ -3,12 +3,11 @@
 #Genera N vectores aleatorios de dimension dim
 function StartPos()
     for i = 1:N
-        #push!(pos,rand(-L:L,dim)) #inicia en una caja de tamanio L
         LL = convert(Float64,L)
         # push!(pos,rand(-LL:LL,dim)) #inicia en una caja de tamanio L
         # push!(vel,rand(dim))
         push!(pos,[rand(-LL:LL) rand(-LL:LL)]) #inicia en una caja de tamanio L
-        push!(vel,[rand() rand()]) #inicia en una caja de tamanio L
+        push!(vel,[rand() rand()])
     end
 end
 
@@ -104,8 +103,6 @@ function UpdateVel()
     # println("Largo Alcance:")
     # println(AL)
 
-    # for i = 1:
-
     for i = 1:N
 
         eta = rand(-pi:pi,2) # Vector de angs aleatorios
@@ -151,6 +148,27 @@ function RotVec(vec,alpha)
     return res'
 end
 
+#Escribe trayectorias
+function PrintTrays()
+    for i = 1:N
+        rr = repr(pos[i])
+        write(trays,rr[2:end-1])
+        write(trays,"\t")
+    end
+        write(trays,"\n")
+end
+
+#Escribe Matriz Distancias
+function PrintDist(i)
+    d = open("../$path/dists/$i.txt","w")
+    for j = 1:size(Dist)[1]
+        write(d,repr(Dist[j;:])[2:end-1])
+        write(d,"\n")
+    end
+    close(d)
+end
+
+
 # ==================================== Parametros ==============================================
 
     # dt -> delta t
@@ -167,19 +185,19 @@ end
 
 #Valores default de parametros
 
-dim= 2 
+dim = 2 
 
-dt = 1
-f  = 0.1
-v0 = 1
-ht = 0.25
-hg = 0.25
-p = 2.25
-l = 0.25
-L = 30 # Tamaño caja inicial
-w = 0.3 # Peso relativo de vecindades
+dt  = 1
+f   = 0.05
+v0  = 1
+ht  = 0.25
+hg  = 0.25
+p   = 0.1
+l   = 0.25
+L   = 30 # Tamaño caja inicial
+w   = 0.3 # Peso relativo de vecindades
 
-T = 10 #iteraciones
+T   = 10 #iteraciones
 
 N = convert(Int64, L^2 * p) # Numero de particulas (entero)
 
@@ -189,7 +207,16 @@ ruido = [ht hg] # [largo corto]
 
 # println(ruido)
 
+#Crea estructura de folders
+
+path = "data_f$(f)_ro$p"
+
+run(`mkdir ../$path`)
+run(`mkdir ../$path/dists`)
+
 f = convert(Int64,floor(f*N)) # Conectividad en funcion de la fraccion de particulas
+
+trays = open("../$path/trays.txt","w")
 
 println("Particulas = $N")
 println("Radio = $r0")
@@ -235,8 +262,16 @@ for i = 1:T
     SetMatrix(r0,SR,Dist)
     UpdatePos()
     UpdateVel()
+    
+    if  i%2 == 0
+
+        PrintTrays()
+        PrintDist(i)
+    end
 #     # println("Long Range:\n $LR")
 #     # println("Short Range:\n $SR")
 #     # println("Distancias:\n $Dist")
 
 end
+
+close(trays)
