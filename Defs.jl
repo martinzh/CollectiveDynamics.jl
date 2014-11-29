@@ -12,7 +12,7 @@ function StartPos()
 end
 
 #Normaliza los vectores, magnitud v0 direccion aleatoria
-function StartVels(v0)
+function StartVels(v0::Int64)
     for i in 1:N
         vel[i] = vel[i] * (v0/norm(vel[i]))
         #println(norm(vel[i]))
@@ -20,7 +20,7 @@ function StartVels(v0)
 end
 
 #calcula distancias y adjacencia local
-function SetMatrix(r0,SR,Dist) 
+function SetMatrix(r0::Float64,SR::Array{Float64,2},Dist::Array{Float64,2}) 
 
     # SR = zeros(N,N) #Limpia matriz 
     # Dist = zeros(N,N) #Limpia matriz 
@@ -49,7 +49,7 @@ end
 
 #Calcula las direcciones de la velocidad promedio de cada vecindad
 # function GetAngs(A,vel)
-function GetAngs(A)
+function GetAngs(A::Array{Float64,2})
 
     angs = Float64[] #Arreglo para guardar angulos
 
@@ -75,7 +75,7 @@ function GetAngs(A)
 end
 
 #Construye red aleatoria de conectividad k
-function SetLR(k,X)
+function SetLR(k::Int64,X::Array{Float64,2})
     #Matriz aleatoria
     for i = 1:size(X)[1]
         for j = 1:k        
@@ -202,21 +202,21 @@ end
 
 #Valores default de parametros
 
-const dim = 2 
-const dt  = 1
+const dim  = 2 
+const dt   = 1
 
-const v0  = 1
-const w   = 0.15 # Peso relativo de vecindades
+const v0   = 1
+const w    = 0.15 # Peso relativo de vecindades
 
-const ht  = 0.25
-const hg  = 0.25
-const p   = 0.8
-const L   = 30 # Tamaño caja inicial
-const l   = 0.35
-const T    = 10000 #iteraciones
+const ht   = 0.25
+const hg   = 0.25
+const p    = 0.8
+const L    = 30 # Tamaño caja inicial
+const l    = 0.35
+const T    = 5 #iteraciones
 const step = 250 #se recupera informacion cada step 
 
-f   = 0.01
+const f   = 0.02
 
 
 const N = convert(Int64, L^2 * p) # Numero de particulas (entero)
@@ -244,7 +244,7 @@ run(`mkdir ../$path/dists`)
 
 PrintParams()
 
-f = convert(Int64,floor(f*N)) # Conectividad en funcion de la fraccion de particulas
+k = convert(Int64,floor(f*N)) # Conectividad en funcion de la fraccion de particulas
 
 trays = open("../$path/trays.txt","w")
 
@@ -253,8 +253,8 @@ println("Radio = $r0")
 println("Conectividad = $f")
 
 
-pos = Array[] #Vector de posiciones
-vel = Array[] #Vector de velocidades
+pos = Array{Float64,2}[] #Vector de posiciones
+vel = Array{Float64,2}[] #Vector de velocidades
 
 Dist = zeros(N,N) #Matriz de distancias
 
@@ -263,7 +263,12 @@ LR = zeros(N,N) #Interacciones de lanrgo alcanze -> NO CAMBIA en tiempo
 
 StartPos()
 StartVels(v0)
-SetLR(f,LR)
+
+# println(typeof(k))
+# println(typeof(LR))
+# println(typeof(SR))
+
+SetLR(k,LR)
 
 # println("$vel\n")
 
