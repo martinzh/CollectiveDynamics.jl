@@ -1,50 +1,41 @@
 
 
 #Genera N vectores aleatorios de dimension dim
-function StartPos()
+function StartVecs(L::Float64,vel::Array{Array{Float64,2},1},pos::Array{Array{Float64,2},1})
     for i = 1:N
-        LL = convert(Float64,L)
-        # push!(pos,rand(-LL:LL,dim)) #inicia en una caja de tamanio L
-        # push!(vel,rand(dim))
-        push!(pos,[rand(-LL:LL) rand(-LL:LL)]) #inicia en una caja de tamanio L
+        push!(pos,[rand(-L:L) rand(-L:L)]) #inicia en una caja de tamanio L
         push!(vel,[rand() rand()])
     end
 end
 
 #Normaliza los vectores, magnitud v0 direccion aleatoria
-function StartVels(v0::Int64)
+function StartVels(v0::Float64,vel::Array{Array{Float64,2},1})
     for i in 1:N
-        vel[i] = vel[i] * (v0/norm(vel[i]))
+        @inbounds vel[i] = vel[i] * (v0/norm(vel[i]))
         #println(norm(vel[i]))
     end
 end
 
 #calcula distancias y adjacencia local
 function SetMatrix(r0::Float64,SR::Array{Float64,2},Dist::Array{Float64,2}) 
-
-    # SR = zeros(N,N) #Limpia matriz 
-    # Dist = zeros(N,N) #Limpia matriz 
-
     for i = 1:N
         for j = N:-1:i
             
-            d = norm(pos[i]-pos[j])
+            @inbounds d = norm(pos[i]-pos[j])
 
-            Dist[i;j] = Dist[j;i] = d
+            @inbounds Dist[i;j] = Dist[j;i] = d
             
             #d < r0 && d > 0 ? SR[i;j] = SR[j;i] = 1 : SR[i;j] = 0
-            d < r0 ? SR[i;j] = SR[j;i] = 1 : SR[i;j] = 0
+            @inbounds d < r0 ? SR[i;j] = SR[j;i] = 1 : SR[i;j] = 0
         end
     end
 end
 
 #Actualiza posiciones
-function UpdatePos()
-
+function UpdatePos(pos::Array{Array{Float64,2},1})
     for i = 1:N
-        pos[i] = pos[i] + vel[i]*dt
+        @inbounds pos[i] = pos[i] + vel[i]*dt
     end
-
 end
 
 #Calcula las direcciones de la velocidad promedio de cada vecindad
@@ -62,11 +53,8 @@ function GetAngs(A::Array{Float64,2})
         k = sum(A[i;:]) #Numero de parts en la vecindad 
 
         v_prom = 1/k * sum(U) #Calcula vector promedio
-    #    println(degs(atan2(v[2],v[1])))
 
-        # a = atan2(v_prom[2],v_prom[1]) #Direccion del vector promedio
-        # push!(angs,a) #agrega el angulo al arreglo
-        # # println("part $i -> ang prom $a")
+        # # println("part $i -> ang prom $(atan2(v_prom[2],v_prom[1]))")
 
         push!(angs,atan2(v_prom[2],v_prom[1])) #agrega el angulo al arreglo
     end
@@ -93,7 +81,7 @@ function SetLR(k::Int64,X::Array{Float64,2})
 end
 
 #Actualiza velocidades
-function UpdateVel()
+function UpdateVel(vel::Array{Array{Float64,2},1},SR::Array{Float64,2},LR::Array{Float64,2})
 
     AS = GetAngs(SR) #Angulos inter corto
     AL = GetAngs(LR) #Angulos inter largo
@@ -129,11 +117,10 @@ function UpdateVel()
         # println(vel[i])
 
     end
-
 end
 
 #Rota vector 2D
-function RotVec(vec,alpha)
+function RotVec(vec::Array{Float64,2},alpha::Float64)
 
     # println(vec)
 
@@ -149,9 +136,9 @@ function RotVec(vec,alpha)
 end
 
 #Escribe trayectorias
-function PrintTrays()
+function PrintTrays(pos::Array{Array{Float64,2},1})
     for i = 1:N
-        rr = repr(pos[i])
+        @inbounds rr = repr(pos[i])
         write(trays,rr[2:end-1])
         write(trays,"\t")
     end
@@ -159,10 +146,10 @@ function PrintTrays()
 end
 
 #Escribe Matriz Distancias
-function PrintDist(i)
+function PrintDist(i::Int64,Dist::Array{Float64,2})
     d = open("../$path/dists/$i.txt","w")
     for j = 1:size(Dist)[1]
-        write(d,repr(Dist[j;:])[2:end-1])
+        @inbounds write(d,repr(Dist[j;:])[2:end-1])
         write(d,"\n")
     end
     close(d)
@@ -200,26 +187,33 @@ end
     # r -> radio de interaccion
     # N -> numero de particulas
 
+if size(ARGS)[1] != 0
+
+    const f = float(ARGS[1])
+
+else
+    const f   = 0.099
+
+end
+
 #Valores default de parametros
-
 const dim  = 2 
-const dt   = 1
+const dt   = 1.0
 
-const v0   = 1
+const v0   = 1.0
 const w    = 0.15 # Peso relativo de vecindades
 
 const ht   = 0.25
 const hg   = 0.25
-const p    = 0.8
-const L    = 30 # Tamaño caja inicial
+const p    = 1.25
+const L    = 20.0 # Tamaño caja inicial
 const l    = 0.35
-const T    = 5 #iteraciones
+const T    = 25000 #iteraciones
 const step = 250 #se recupera informacion cada step 
 
-const f   = 0.02
 
 
-const N = convert(Int64, L^2 * p) # Numero de particulas (entero)
+const N = convert(Int64, L*L * p) # Numero de particulas (entero)
 
 r0 = v0 * dt / l
 
@@ -231,7 +225,7 @@ ruido = [ht hg] # [largo corto]
 
 # path = "data_f$(f)_w$w"
 
-path = "data_f$(f)"
+path = "/DATA/data_f$(f)"
 
 # run(`if [ ! -d ""../$path""  ]; then
 #   mkdir ../$path
@@ -256,13 +250,15 @@ println("Conectividad = $f")
 pos = Array{Float64,2}[] #Vector de posiciones
 vel = Array{Float64,2}[] #Vector de velocidades
 
+# println(typeof(vel))
+
 Dist = zeros(N,N) #Matriz de distancias
 
 SR = zeros(N,N) #Interacciones de corto alcanze
 LR = zeros(N,N) #Interacciones de lanrgo alcanze -> NO CAMBIA en tiempo
 
-StartPos()
-StartVels(v0)
+StartVecs(L,vel,pos)
+StartVels(v0,vel)
 
 # println(typeof(k))
 # println(typeof(LR))
@@ -296,13 +292,13 @@ for i = 1:T
     # println("velocidades:\n $vel")
 
     SetMatrix(r0,SR,Dist)
-    UpdatePos()
-    UpdateVel()
+    UpdatePos(pos)
+    UpdateVel(vel,SR,LR)
     
     if  i == 1 || i%step == 0
         println(i)
-        PrintTrays()
-        PrintDist(i)
+        PrintTrays(pos)
+        PrintDist(i,Dist)
     end
 
     # println("Long Range:\n $LR")
