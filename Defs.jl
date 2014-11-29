@@ -174,7 +174,7 @@ function PrintParams()
 
     write(d,"Particulas = $N\n")
     write(d,"densidad = $p\n")
-    write(d,"radio = r0\n");
+    write(d,"radio = $r0\n");
     write(d,"f = $f\n");
     write(d,"ruido geometrico = $hg\n");
     write(d,"ruido topologico = $ht\n");
@@ -202,21 +202,24 @@ end
 
 #Valores default de parametros
 
-dim = 2 
+const dim = 2 
+const dt  = 1
 
-dt  = 1
-f   = 0.05
-v0  = 1
-ht  = 0.25
-hg  = 0.25
-p   = 0.1
-l   = 0.25
-L   = 30 # Tamaño caja inicial
-w   = 0.3 # Peso relativo de vecindades
+const v0  = 1
+const w   = 0.15 # Peso relativo de vecindades
 
-T   = 10 #iteraciones
+const ht  = 0.25
+const hg  = 0.25
+const p   = 0.8
+const L   = 30 # Tamaño caja inicial
+const l   = 0.35
+const T    = 10000 #iteraciones
+const step = 250 #se recupera informacion cada step 
 
-N = convert(Int64, L^2 * p) # Numero de particulas (entero)
+f   = 0.01
+
+
+const N = convert(Int64, L^2 * p) # Numero de particulas (entero)
 
 r0 = v0 * dt / l
 
@@ -226,7 +229,9 @@ ruido = [ht hg] # [largo corto]
 
 #Crea estructura de folders
 
-path = "data_f$(f)_ro$p"
+# path = "data_f$(f)_w$w"
+
+path = "data_f$(f)"
 
 # run(`if [ ! -d ""../$path""  ]; then
 #   mkdir ../$path
@@ -235,6 +240,9 @@ path = "data_f$(f)_ro$p"
 
 run(`mkdir ../$path`)
 run(`mkdir ../$path/dists`)
+# run(`mkdir ../$path/adjs`)
+
+PrintParams()
 
 f = convert(Int64,floor(f*N)) # Conectividad en funcion de la fraccion de particulas
 
@@ -244,7 +252,6 @@ println("Particulas = $N")
 println("Radio = $r0")
 println("Conectividad = $f")
 
-PrintParams()
 
 pos = Array[] #Vector de posiciones
 vel = Array[] #Vector de velocidades
@@ -280,21 +287,22 @@ SetLR(f,LR)
 
 for i = 1:T
 
-#     # println("posiciones:\n $pos")
-#     # println("velocidades:\n $vel")
-    println(i)
+    # println("posiciones:\n $pos")
+    # println("velocidades:\n $vel")
+
     SetMatrix(r0,SR,Dist)
     UpdatePos()
     UpdateVel()
     
-    if  i%2 == 0
-
+    if  i == 1 || i%step == 0
+        println(i)
         PrintTrays()
         PrintDist(i)
     end
-#     # println("Long Range:\n $LR")
-#     # println("Short Range:\n $SR")
-#     # println("Distancias:\n $Dist")
+
+    # println("Long Range:\n $LR")
+    # println("Short Range:\n $SR")
+    # println("Distancias:\n $Dist")
 
 end
 
