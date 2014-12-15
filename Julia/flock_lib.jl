@@ -11,7 +11,7 @@ export SetPos, SetVels, SetMatrix, UpdatePos
 
 #Genera N vectores aleatorios de dimension dim
 function SetPos()
-    for i = 1:N
+    for i=1:N
         #push!(pos,rand(-L:L,dim)) #inicia en una caja de tamanio L
         push!(pos,rand(dim)*L) #inicia en una caja de tamanio L
         push!(vel,rand(dim))
@@ -31,14 +31,14 @@ function SetMatrix()
     # Adj = zeros(N,N) #Limpia matriz adjacencia
     # Dist = zeros(N,N) #Limpia matriz adjacencia
     # Usando sparse
-    Adj  = spzeros(N,N) #Limpia matriz adjacencia
-    Dist = spzeros(N,N) #Limpia matriz adjacencia
+    Adj=spzeros(N,N) #Limpia matriz adjacencia
+    Dist=spzeros(N,N) #Limpia matriz adjacencia
 
-    for i = 1:N
-        for j = N:-1:i
+    for i=1:N
+        for j=N:-1:i
             
-            d = norm(pos[i]-pos[j])
-            Dist[i;j] = Dist[j;i] = d
+            d=norm(pos[i]-pos[j])
+            Dist[i;j]=Dist[j;i]=d
             
             #d < r0 && d > 0 ? Adj[i;j] = Adj[j;i] = 1 : Adj[i;j] = 0
             d < r0 ? Adj[i;j] = Adj[j;i] = 1 : Adj[i;j] = 0
