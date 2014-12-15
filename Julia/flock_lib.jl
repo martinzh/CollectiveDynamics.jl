@@ -41,7 +41,7 @@ function SetMatrix()
             Dist[i;j]=Dist[j;i]=d
             
             #d < r0 && d > 0 ? Adj[i;j] = Adj[j;i] = 1 : Adj[i;j] = 0
-            d < r0 ? Adj[i;j] = Adj[j;i] = 1 : Adj[i;j] = 0
+            d < r0 ? Adj[i;j]=Adj[j;i]=1 : Adj[i;j]=0
         end
     end
 end
