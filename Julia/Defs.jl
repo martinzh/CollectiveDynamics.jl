@@ -17,7 +17,8 @@ function StartVels(v0::Float64,vel::Array{Array{Float64,2},1})
 end
 
 #calcula distancias y adjacencia local
-function SetMatrix(r0::Float64,SR::Array{Float64,2},Dist::Array{Float64,2}) 
+# function SetMatrix(r0::Float64,SR::Array{Float64,2},Dist::Array{Float64,2})
+function SetMatrix(r0::Float64,SR::SparseMatrixCSC{Float64,Int64},Dist::Array{Float64,2})
     for i = 1:N
         for j = N:-1:i
             
@@ -40,7 +41,8 @@ end
 
 #Calcula las direcciones de la velocidad promedio de cada vecindad
 # function GetAngs(A,vel)
-function GetAngs(A::Array{Float64,2})
+# function GetAngs(A::Array{Float64,2})
+function GetAngs(A::SparseMatrixCSC{Float64,Int64}) #con sparse
 
     angs = Float64[] #Arreglo para guardar angulos
 
@@ -49,10 +51,13 @@ function GetAngs(A::Array{Float64,2})
 
     for i = 1:size(A)[1]
 
-        U = vel'.*A[i;:] #Determina la vecindad
+        # U = vel'.*A[i;:] #Determina la vecindad
+        U = sum(broadcast(*,vel',A[i;:])) #com sparse
+
         k = sum(A[i;:]) #Numero de parts en la vecindad 
 
-        v_prom = 1/k * sum(U) #Calcula vector promedio
+        # v_prom = 1/k * sum(U) #Calcula vector promedio
+        v_prom = 1/k * U #Calcula vector promedio
 
         # # println("part $i -> ang prom $(atan2(v_prom[2],v_prom[1]))")
 
@@ -63,7 +68,8 @@ function GetAngs(A::Array{Float64,2})
 end
 
 #Construye red aleatoria de conectividad k
-function SetLR(k::Int64,X::Array{Float64,2})
+# function SetLR(k::Int64,X::Array{Float64,2})
+function SetLR(k::Int64,X::SparseMatrixCSC{Float64,Int64}) #con sparse
     #Matriz aleatoria
     for i = 1:size(X)[1]
         for j = 1:k        
@@ -81,7 +87,8 @@ function SetLR(k::Int64,X::Array{Float64,2})
 end
 
 #Actualiza velocidades
-function UpdateVel(vel::Array{Array{Float64,2},1},SR::Array{Float64,2},LR::Array{Float64,2})
+# function UpdateVel(vel::Array{Array{Float64,2},1},SR::Array{Float64,2},LR::Array{Float64,2})
+function UpdateVel(vel::Array{Array{Float64,2},1},SR::SparseMatrixCSC{Float64,Int64},LR::SparseMatrixCSC{Float64,Int64})
 
     AS = GetAngs(SR) #Angulos inter corto
     AL = GetAngs(LR) #Angulos inter largo
@@ -208,7 +215,8 @@ const hg   = 0.25
 const p    = 1.25
 const L    = 20.0 # Tamaño caja inicial
 const l    = 0.35
-const T    = 25000 #iteraciones
+# const T    = 25000 #iteraciones
+const T    = 1000 #iteraciones
 const step = 250 #se recupera informacion cada step 
 
 
@@ -225,7 +233,7 @@ ruido = [ht hg] # [largo corto]
 
 # path = "data_f$(f)_w$w"
 
-path = "/DATA/data_f$(f)"
+path = "DATA/data_f$(f)"
 
 # run(`if [ ! -d ""../$path""  ]; then
 #   mkdir ../$path
@@ -254,8 +262,12 @@ vel = Array{Float64,2}[] #Vector de velocidades
 
 Dist = zeros(N,N) #Matriz de distancias
 
-SR = zeros(N,N) #Interacciones de corto alcanze
-LR = zeros(N,N) #Interacciones de lanrgo alcanze -> NO CAMBIA en tiempo
+# SR = zeros(N,N) #Interacciones de corto alcanze
+# LR = zeros(N,N) #Interacciones de lanrgo alcanze -> NO CAMBIA en tiempo
+
+#Usando sparse
+SR = spzeros(N,N) #Interacciones de corto alcanze
+LR = spzeros(N,N) #Interacciones de lanrgo alcanze -> NO CAMBIA en tiempo
 
 StartVecs(L,vel,pos)
 StartVels(v0,vel)

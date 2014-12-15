@@ -17,8 +17,11 @@ end
 
 #calcula distancias y adjacencia
 function SetMatrix()
-    Adj = zeros(N,N) #Limpia matriz adjacencia
-    Dist = zeros(N,N) #Limpia matriz adjacencia
+    # Adj = zeros(N,N) #Limpia matriz adjacencia
+    # Dist = zeros(N,N) #Limpia matriz adjacencia
+    # Usando sparse
+    Adj  = spzeros(N,N) #Limpia matriz adjacencia
+    Dist = spzeros(N,N) #Limpia matriz adjacencia
 
     for i = 1:N
         for j = N:-1:i
