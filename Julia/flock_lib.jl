@@ -21,7 +21,7 @@ end
 #Normaliza los vectores, magnitud v0 direccion aleatoria
 function SetVels()
     for i in 1:N
-        vel[i] = vel[i] * (v0/norm(vel[i]))
+        vel[i]= vel[i] * (v0/norm(vel[i]))
         #println(norm(vel[i]))
     end
 end
@@ -50,7 +50,7 @@ end
 function UpdatePos()
     #println(pos)
     for i = 1:N
-        pos[i] = pos[i] + vel[i] 
+        pos[i]= pos[i] + vel[i] 
     end
 #println(pos)
 end
