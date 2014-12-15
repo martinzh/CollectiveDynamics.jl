@@ -232,8 +232,8 @@ ruido = [ht hg] # [largo corto]
 #Crea estructura de folders
 
 # path = "data_f$(f)_w$w"
-
-path = "DATA/data_f$(f)"
+# path = "JuliaFlocks/Julia/DATA/data_f$(f)"
+path = "../DATA/data_f$(f)"
 
 # run(`if [ ! -d ""../$path""  ]; then
 #   mkdir ../$path
