@@ -1,3 +1,14 @@
+module libflock
+
+# using #dependencies
+
+# import #methods to overload
+
+export SetPos, SetVels, SetMatrix, UpdatePos
+
+ #module body
+
+
 #Genera N vectores aleatorios de dimension dim
 function SetPos()
     for i = 1:N
@@ -42,4 +53,6 @@ function UpdatePos()
         pos[i] = pos[i] + vel[i] 
     end
 #println(pos)
+end
+
 end

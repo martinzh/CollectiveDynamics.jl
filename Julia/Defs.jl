@@ -1,4 +1,5 @@
-
+# using libflock
+include("flock_lib.jl")
 
 #Genera N vectores aleatorios de dimension dim
 function StartVecs(L::Float64,vel::Array{Array{Float64,2},1},pos::Array{Array{Float64,2},1})
