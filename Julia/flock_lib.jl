@@ -4,10 +4,10 @@ module libflock
 
 # import #methods to overload
 
-export SetPos, SetVels, SetMatrix, UpdatePos
+# export SetPos, SetVels, SetMatrix, UpdatePos
+export SetPos, SetVels
 
  #module body
-
 
 #Genera N vectores aleatorios de dimension dim
 function SetPos()

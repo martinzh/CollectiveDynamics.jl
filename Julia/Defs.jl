@@ -1,5 +1,5 @@
-# using libflock
-include("flock_lib.jl")
+# using libflockJu
+# include("flock_lib.jl")
 
 #Genera N vectores aleatorios de dimension dim
 function StartVecs(L::Float64,vel::Array{Array{Float64,2},1},pos::Array{Array{Float64,2},1})
@@ -28,7 +28,15 @@ function SetMatrix(r0::Float64,SR::SparseMatrixCSC{Float64,Int64},Dist::Array{Fl
             @inbounds Dist[i;j] = Dist[j;i] = d
             
             #d < r0 && d > 0 ? SR[i;j] = SR[j;i] = 1 : SR[i;j] = 0
-            @inbounds d < r0 ? SR[i;j] = SR[j;i] = 1 : SR[i;j] = 0
+
+            # @inbounds d < r0 ? SR[i;j] = SR[j;i] = 1 : SR[i;j] = 0
+
+            # if d < r0  
+            #     SR[i;j] = SR[j;i] = 1
+            # end
+
+            d < r0 && SR[i;j] = SR[j;i] = 1
+
         end
     end
 end
