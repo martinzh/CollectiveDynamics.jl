@@ -90,14 +90,16 @@ const w    = 0.15 # Peso relativo de vecindades
 
 const hl   = 0.25
 const hs   = 0.25
-const p    = 0.8
-const L    = 20.0 # Tamaño caja inicial
-const l    = 0.35
-# const T    = 25000 #iteraciones
-const T    = 1000 #iteraciones
-const step = 250 #se recupera informacion cada step 
 
-const N = convert(Int64, L*L * p) # Numero de particulas (entero)
+const p    = 4.0
+const L    = 30.0 # Tamaño caja inicial
+const l    = 0.25
+
+# const T    = 25000 #iteraciones
+const T    = 20000 #iteraciones
+const step = 400 #se recupera informacion cada step 
+
+const N = convert(Int64, L * L * p) # Numero de particulas (entero)
 
 r0 = v0 * dt / l
 
