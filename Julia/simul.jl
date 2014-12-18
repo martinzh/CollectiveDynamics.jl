@@ -37,9 +37,9 @@ function PrintParams()
     write(d,"densidad = $p\n")
     write(d,"radio = $r0\n");
     write(d,"f = $f\n");
-    write(d,"ruido geometrico = $hs\n");
-    write(d,"ruido topologico = $hl\n");
-    write(d,"peso geometrico = $w\n");
+    write(d,"ruido corto alcance = $hs\n");
+    write(d,"ruido largo alcance = $hl\n");
+    write(d,"peso relativo = $w\n");
     write(d,"regimen de velocidad = $l\n");
     write(d,"iteraciones = $T\n");
     write(d,"frec muestreo = $step\n");
