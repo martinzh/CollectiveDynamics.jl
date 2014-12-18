@@ -19,32 +19,53 @@ end
 
 #calcula distancias y adjacencia local
 # function SetMatrix(r0::Float64,SR::Array{Float64,2},Dist::Array{Float64,2})
-function SetMatrix(r0::Float64,SR::SparseMatrixCSC{Float64,Int64},Dist::Array{Float64,2})
-    for i = 1:N
-        for j = N:-1:i
+# function SetMatrix(r0::Float64,SR::SparseMatrixCSC{Float64,Int64},Dist::Array{Float64,2})
+function SetMatrix(r0::Float64,Dist::Array{Float64,2})
+
+    I = Int64[]
+    J = Int64[]
+
+    # IJ = Array{Int64,2}[]
+
+    for i = 1:N , j = N:-1:i
             
-            @inbounds d = norm(pos[i]-pos[j])
+        # @inbounds d = norm(pos[i]-pos[j])
+        d = norm(pos[i]-pos[j])
 
-            @inbounds Dist[i;j] = Dist[j;i] = d
-            
-            #d < r0 && d > 0 ? SR[i;j] = SR[j;i] = 1 : SR[i;j] = 0
-
-            # @inbounds d < r0 ? SR[i;j] = SR[j;i] = 1 : SR[i;j] = 0
-
-            # if d < r0  
-            #     SR[i;j] = SR[j;i] = 1
-            # end
-
-            d < r0 && SR[i;j] = SR[j;i] = 1
-
+        # @inbounds Dist[i;j] = Dist[j;i] = d
+        Dist[i;j] = Dist[j;i] = d
+        
+        if d < r0  
+            # SR[i;j] = SR[j;i] = 1
+            push!(I,i)
+            push!(J,j)
+            # push!(IJ, [i j])
         end
     end
+
+    # A = hcat(IJ[:]...)
+
+    # II = vcat(vec(A[1;:]),vec(A[2;:]))
+    # JJ = vcat(vec(A[2;:]),vec(A[1;:]))
+
+    # II = vcat(I,J)
+    # JJ = vcat(J,I)
+
+    # K = ones(size(II))
+
+    # SR = sparse(II,JJ,K)
+
+    K = ones(2*size(I)[1])
+
+    return sparse(vcat(I,J),vcat(J,I),K)
+
 end
 
 #Actualiza posiciones
 function UpdatePos(pos::Array{Array{Float64,2},1})
     for i = 1:N
-        @inbounds pos[i] = pos[i] + vel[i]*dt
+        # @inbounds pos[i] = pos[i] + vel[i]*dt
+        @inbounds pos[i] += vel[i]*dt
     end
 end
 
@@ -188,6 +209,15 @@ function PrintParams()
     close(d)
 end
 
+function MakeDir()
+    try
+        run(`mkdir ../$path`)
+        run(`mkdir ../$path/dists`)
+    catch y
+        println(typeof(y))
+    end
+end
+
 
 # ==================================== Parametros ==============================================
 
@@ -221,7 +251,7 @@ const w    = 0.15 # Peso relativo de vecindades
 
 const ht   = 0.25
 const hg   = 0.25
-const p    = 1.25
+const p    = 0.8
 const L    = 20.0 # Tamaño caja inicial
 const l    = 0.35
 # const T    = 25000 #iteraciones
@@ -249,8 +279,9 @@ path = "../DATA/data_f$(f)"
 #   mkdir ../$path/dists
 #     fi`)
 
-run(`mkdir ../$path`)
-run(`mkdir ../$path/dists`)
+MakeDir()
+# run(`mkdir ../$path`)
+# run(`mkdir ../$path/dists`)
 # run(`mkdir ../$path/adjs`)
 
 PrintParams()
@@ -275,7 +306,7 @@ Dist = zeros(N,N) #Matriz de distancias
 # LR = zeros(N,N) #Interacciones de lanrgo alcanze -> NO CAMBIA en tiempo
 
 #Usando sparse
-SR = spzeros(N,N) #Interacciones de corto alcanze
+# SR = spzeros(N,N) #Interacciones de corto alcanze
 LR = spzeros(N,N) #Interacciones de lanrgo alcanze -> NO CAMBIA en tiempo
 
 StartVecs(L,vel,pos)
@@ -312,12 +343,17 @@ for i = 1:T
     # println("posiciones:\n $pos")
     # println("velocidades:\n $vel")
 
-    SetMatrix(r0,SR,Dist)
+    # @time SetMatrix(r0,SR,Dist)
+    SR = SetMatrix(r0,Dist)
     UpdatePos(pos)
-    UpdateVel(vel,SR,LR)
+    @time UpdateVel(vel,SR,LR)
+    # @time UpdateVel(vel,SetMatrix(r0,Dist),LR)
+
+    # println(i)
     
     if  i == 1 || i%step == 0
-        println(i)
+        # println(i)
+        println("writing")
         PrintTrays(pos)
         PrintDist(i,Dist)
     end
