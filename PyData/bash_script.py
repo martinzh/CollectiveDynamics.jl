@@ -12,9 +12,9 @@ script.write("#!/bin/bash\n")
 
 for i in range(1,N+1):
   if i%4 == 0:
-    script.write( "julia Defs.jl " + repr(round(i*s,2)) + "\n")
+    script.write( "julia simul.jl " + repr(round(i*s,2)) + "\n")
   else:
-    script.write( "nohup julia Defs.jl " + repr(round(i*s,2)) + " &\n")
+    script.write( "nohup julia simul.jl " + repr(round(i*s,2)) + " &\n")
 
 
 script.close()
