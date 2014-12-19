@@ -91,8 +91,8 @@ const w    = 0.15 # Peso relativo de vecindades
 const hl   = 0.25
 const hs   = 0.25
 
-const p    = 4.0
-const L    = 30.0 # Tamaño caja inicial
+const p    = 1.0
+const L    = 25.0 # Tamaño caja inicial
 const l    = 0.25
 
 # const T    = 25000 #iteraciones
@@ -152,7 +152,7 @@ for i = 1:T
     UpdatePos(pos,dt)
     UpdateVel(vel,SR,LR)
 
-    # println(i)
+    println(i)
     
     if  i == 1 || i%step == 0
         println("writing")
