@@ -80,7 +80,7 @@ else
 end
 
 #Valores default de parametros
-const dim  = 2 
+const dim  = 2
 const dt   = 1.0
 
 const v0   = 1.0
@@ -93,7 +93,7 @@ const L    = 20.0 # Tamaño caja inicial
 const l    = 0.35
 # const T    = 25000 #iteraciones
 const T    = 1000 #iteraciones
-const step = 250 #se recupera informacion cada step 
+const step = 250 #se recupera informacion cada step
 
 
 
@@ -163,7 +163,7 @@ SetLR(k,LR)
 #     println(vel[i])
 
 #     otro = Array(2*vel[i])
-    
+
 #     println("otro")
 #     println(otro)
 
@@ -188,7 +188,7 @@ for i = 1:T
     # @time UpdateVel(vel,SetMatrix(r0,Dist),LR)
 
     # println(i)
-    
+
     if  i == 1 || i%step == 0
         # println(i)
         println("writing")

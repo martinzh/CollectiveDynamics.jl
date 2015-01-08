@@ -92,12 +92,12 @@ const hl   = 0.25
 const hs   = 0.25
 
 const p    = 1.0
-const L    = 25.0 # Tamaño caja inicial
+const L    = 30.0 # Tamaño caja inicial
 const l    = 0.25
 
 # const T    = 25000 #iteraciones
-const T    = 20000 #iteraciones
-const step = 400 #se recupera informacion cada step 
+const T    = 1000 #iteraciones
+const step = 250 #se recupera informacion cada step 
 
 const N = convert(Int64, L * L * p) # Numero de particulas (entero)
 
@@ -155,8 +155,8 @@ for i = 1:T
     println(i)
     
     if  i == 1 || i%step == 0
-        println("writing")
-        println(i)
+        println("t = $i writing")
+        # println(i)
         PrintTrays(pos)
         PrintDist(i,Dist)
     end
