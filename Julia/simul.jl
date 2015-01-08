@@ -12,7 +12,8 @@ include("flock_lib.jl")
 #Escribe trayectorias
 function PrintTrays(pos::Array{Array{Float64,1},1})
     for i = 1:N
-        @inbounds rr = repr(pos[i])
+        # @inbounds rr = repr(pos[i])
+        rr = repr(pos[i])
         write(trays,rr[2:end-1])
         write(trays,"\t")
     end
@@ -23,7 +24,8 @@ end
 function PrintDist(i::Int64,Dist::Array{Float64,2})
     d = open("../$path/dists/$i.txt","w")
     for j = 1:size(Dist)[1]
-        @inbounds write(d,repr(Dist[j;:])[2:end-1])
+        # @inbounds write(d,repr(Dist[j;:])[2:end-1])
+        write(d,repr(Dist[j;:])[2:end-1])
         write(d,"\n")
     end
     close(d)
@@ -82,7 +84,7 @@ else
 end
 
 #Valores default de parametros
-const dim  = 2 
+const dim  = 2
 const dt   = 1.0
 
 const v0   = 1.0
@@ -91,13 +93,13 @@ const w    = 0.15 # Peso relativo de vecindades
 const hl   = 0.25
 const hs   = 0.25
 
-const p    = 1.0
+const p    = 0.5  # Densidad
 const L    = 30.0 # Tamaño caja inicial
-const l    = 0.25
+const l    = 0.25 # Regimen de Velocidad
 
 # const T    = 25000 #iteraciones
 const T    = 1000 #iteraciones
-const step = 250 #se recupera informacion cada step 
+const step = 250 #se recupera informacion cada step
 
 const N = convert(Int64, L * L * p) # Numero de particulas (entero)
 
@@ -130,7 +132,7 @@ vel = Array{Float64,1}[] #Vector de velocidades
 Dist = zeros(N,N) #Matriz de distancias
 
 #Usando sparse
-LR = spzeros(N,N) #Interacciones de largo alcanze 
+LR = spzeros(N,N) #Interacciones de largo alcanze
                   #No cambia en el tiempo
 
 StartVecs(L,vel,pos)
@@ -138,28 +140,37 @@ StartVels(v0,vel)
 
 SetLR(k,LR)
 
-# SR = SetSR(r0,Dist)
+SR = SetSR(r0,Dist)
+
+# Comentarios para probar
+
+# println("Getting angles")
+
 # @time GetAngs(vel,SR)
 # @time GetAngs(vel,LR)
-
+#
+# println("Update vel")
+#
 # @time UpdateVel(vel,SR,LR)
 # println(issparse(SR))
 
 for i = 1:T
- 
-    SR = SetSR(r0,Dist)
 
-    UpdatePos(pos,dt)
-    UpdateVel(vel,SR,LR)
+    # SR = SetSR(r0,Dist)
+    #
+    # UpdatePos(pos,dt)
+    # UpdateVel(vel,SR,LR)
+    #
+    # # println(i)
+    #
+    # if  i == 1 || i%step == 0
+    #     println("t = $i writing")
+    #     # println(i)
+    #     PrintTrays(pos)
+    #     PrintDist(i,Dist)
+    # end
 
-    println(i)
-    
-    if  i == 1 || i%step == 0
-        println("t = $i writing")
-        # println(i)
-        PrintTrays(pos)
-        PrintDist(i,Dist)
-    end
+    @time Evoluciona(i,step)
 
 end
 
