@@ -93,7 +93,7 @@ const w    = 0.15 # Peso relativo de vecindades
 const hl   = 0.25
 const hs   = 0.25
 
-const p    = 0.5  # Densidad
+const p    = 1.2  # Densidad
 const L    = 30.0 # Tamaño caja inicial
 const l    = 0.25 # Regimen de Velocidad
 
