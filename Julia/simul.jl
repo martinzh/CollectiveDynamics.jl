@@ -20,6 +20,17 @@ function PrintTrays(pos::Array{Array{Float64,1},1})
         write(trays,"\n")
 end
 
+#Escribe velocidades
+function PrintVels(vel::Array{Array{Float64,1},1})
+    for i = 1:N
+        # @inbounds rr = repr(vel[i])
+        rr = repr(vel[i])
+        write(vels,rr[2:end-1])
+        write(vels,"\t")
+    end
+        write(vels,"\n")
+end
+
 #Escribe Matriz Distancias
 function PrintDist(i::Int64,Dist::Array{Float64,2})
     d = open("../$path/dists/$i.txt","w")
@@ -119,6 +130,7 @@ PrintParams()
 k = convert(Int64,floor(f*N)) # Conectividad en funcion de la fraccion de particulas
 
 trays = open("../$path/trays.txt","w")
+vels = open("../$path/vels.txt","w")
 
 println("Particulas = $N")
 println("Radio = $r0")

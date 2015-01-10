@@ -154,6 +154,7 @@ function Evoluciona(i::Int64, step::Int64)
     println("t = $i writing")
     # println(i)
     PrintTrays(pos)
+    PrintVels(vel)
     PrintDist(i,Dist)
   end
 
