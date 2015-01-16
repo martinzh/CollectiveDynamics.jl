@@ -109,8 +109,8 @@ const L    = 30.0 # Tamaño caja inicial
 const l    = 0.25 # Regimen de Velocidad
 
 # const T    = 25000 #iteraciones
-const T    = 1000 #iteraciones
-const step = 250 #se recupera informacion cada step
+const T    = 10000 #iteraciones
+const step = 500 #se recupera informacion cada step
 
 const N = convert(Int64, L * L * p) # Numero de particulas (entero)
 
@@ -182,7 +182,8 @@ for i = 1:T
     #     PrintDist(i,Dist)
     # end
 
-    @time Evoluciona(i,step)
+    # @time Evoluciona(i,step)
+    Evoluciona(i,step)
 
 end
 
