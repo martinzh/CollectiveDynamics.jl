@@ -30,7 +30,7 @@ def GetParams(path):
 
 # Obtiene matriz de distancias completa
 def GetDists(path, t):
-	
+
 	DD = [] #Arreglo para guradar distancias
 
 	ruta = path + dists + repr(t) + ext
@@ -69,11 +69,11 @@ def CalcHist(dists, num_bin):
 	# print(n)
 
 	for i in range(n):
-	    
+
 	    for k in range(n-j):
-	        
+
 	        DD.append(dists[i][k])
-	    
+
 	    j += 1
 
 	DD.sort() #Ordena de menor a mayor
@@ -84,25 +84,25 @@ def CalcHist(dists, num_bin):
 	epsilon = DD[-1]/num_bin #Tamanio de cada bin en funcion del maximo
 
 	for d in DD:
-	    count = d/epsilon    
+	    count = d/epsilon
 	    if count > 0: hist[int(count-1)] += 1.0 #contador de cada bin
 
 	# Calcula distancia promedio
 	r_prom = 0
-    
+
 	for i in range(int(num_bin)):
-        
+
 		# r_prom += (epsilon*(i)*hist[i])/num_bin
 		r_prom += epsilon*(i+1)*hist[i]
 
 	r_prom *= 1/num_bin
 
 	#Falta determinar bien el r mas probable
-        
+
 	r_max = np.argmax(hist)*epsilon # distancia mas probable
 	std_dev = np.std(DD) #desviacion estandar
 
-	return [hist,r_prom,r_max,std_dev]
+	return [hist,r_prom,r_max,std_dev,epsilon]
 
 ########################################################
 
@@ -114,15 +114,15 @@ def CalcAdjs(dists,r):
 	for i in range(len(dists)):
 
 		adj = [] #adjacencia particula i
-		
+
 		adj.append(i)
 
 		for j in range(len(dists[i])):
 
 			if dists[i][j] > 0 and dists[i][j] <= r :
 
-				adj.append(j) 
-		
+				adj.append(j)
+
 		ADJ.append(adj)
 
 	return ADJ
@@ -171,7 +171,7 @@ def Cluster(neigh):
 		#print (neigh[i])
 
 	label = zeros(len(neigh)) # vector de etiquetas
-	cl_size = {} # diccionario: llave= cluster, valor:tamanio
+	cl_size = {} # diccionario: llave:cluster, valor:tamanio
 	#print (labels)
 
 	for i in range(len(neigh)):
@@ -191,7 +191,19 @@ def Cluster(neigh):
 
 		c += 1
 
+	# numero de clusters
+	NC = len(cl_size)
+
+	# indice mas alto
+	IM = max(cl_size)
+
+	# llaves
+	# sorted(cl_size.keys())
+	# valores
+	# sorted(cl_size.values())
+
+	# cluster mas grande
+	CM = sorted(cl_size.values())[-1]
+
 	# print (label)
-	return [label,cl_size]
-
-
+	return [label,cl_size,CM]

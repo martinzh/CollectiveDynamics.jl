@@ -1,6 +1,6 @@
 
 import sys
-  
+
 nombre = '../Julia/runs_script.sh'
 
 script = open(nombre,'w')
