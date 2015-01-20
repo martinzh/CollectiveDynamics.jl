@@ -17,11 +17,12 @@ f = float(sys.argv[1]) #conectividad en funcion de fraccion de N
 # path = "../GitRepos/DATA/data_f"+ str(f) +"/"
 
 path = "../../DATA/data_f"+ str(f) +"/"
-img_path = "../../Grafs/"
+
+# img_path = "../../Grafs/con_r0/datos_clusters"
+img_path = "../../Grafs/con_rprom/"
 # img_path = "../../Grafs/"+ str(f) +"/"
 
-
-print (path)
+# print (path)
 
 # Estructura parametros:
 	# Particulas
@@ -64,7 +65,8 @@ it_tot = t_f/step #muestras totales
 
 max_cls = [] # Para guardar clsuter mas grande
 
-cls_data = open(img_path+"cls_data"+str(f)+".dat",'w')
+# cls_data = open(img_path+"cls_data"+str(f)+".dat",'w')
+cls_data = open(img_path+"/datos_clusters/cls_data"+str(f)+".txt",'w')
 
 for i in range(-1,int(it_tot)):
 
@@ -73,15 +75,20 @@ for i in range(-1,int(it_tot)):
 	else:
 		j =	(i+1)*int(step)
 
-	print(repr(j))
+	# print(repr(j))
 
 	dists = GetDists(path,j) #obtiene distancias
 	# print(dists)
 
-	adj = CalcAdjs(dists,r_0) #calcula adjacencias
+	hist = CalcHist(dists,num_bin) #calcula histograma
+
+	print(str(f) + "\t" + repr(j) + "\tr_prom:" + repr(hist[1]) + "\tr_0:" + repr(r_0) + "\tr_max:" + repr(hist[2]))
+
+	# adj = CalcAdjs(dists,r_0) #calcula adjacencias con r_0
+	# adj = CalcAdjs(dists,hist[1]) #calcula adjacencias con r_prom
+	adj = CalcAdjs(dists,hist[2]) #calcula adjacencias con r_max
 	# PrintAdjs(adj)
 
-	hist = CalcHist(dists,num_bin)
 	# print(sum(hist[0]))
 	# print(hist[1:4])
 
@@ -97,7 +104,9 @@ for i in range(-1,int(it_tot)):
 
 	cls_data.write(repr(j) + "\t" + repr(clusters[2]/N) + "\n")
 
-pylab.savefig(img_path+"dist_"+str(f)+".png")
+pylab.savefig(img_path+"/graficas_distribucion/dist_"+str(f)+".png")
+
+cls_data.close()
 
 # print(max_cls)
 # pylab.plot(tiempo,max_cls)

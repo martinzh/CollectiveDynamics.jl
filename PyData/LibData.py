@@ -5,6 +5,9 @@
 import networkx as nx
 import matplotlib.pyplot as plt
 from pylab import *
+import sys
+
+sys.setrecursionlimit(3000)
 
 ext = ".txt" #Extension de los archivos de datos
 dists = "dists/" #Directorio con archivos de distancias
@@ -90,10 +93,12 @@ def CalcHist(dists, num_bin):
 	# Calcula distancia promedio
 	r_prom = 0
 
-	for i in range(int(num_bin)):
+	# for i in range(int(num_bin)):
+	for i in range(1,int(num_bin)):
 
 		# r_prom += (epsilon*(i)*hist[i])/num_bin
-		r_prom += epsilon*(i+1)*hist[i]
+		# r_prom += epsilon*(i+1)*hist[i]
+		r_prom += epsilon*i*hist[i]
 
 	r_prom *= 1/num_bin
 
