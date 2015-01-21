@@ -37,7 +37,7 @@ def GetDists(path, t):
 	DD = [] #Arreglo para guradar distancias
 
 	ruta = path + dists + repr(t) + ext
-	print(ruta)
+	# print(ruta)
 
 	data = open(ruta,'rb')
 
@@ -94,7 +94,7 @@ def CalcHist(dists, num_bin):
 	r_prom = 0
 
 	# for i in range(int(num_bin)):
-	for i in range(1,int(num_bin)):
+	for i in range(int(num_bin)):
 
 		# r_prom += (epsilon*(i)*hist[i])/num_bin
 		# r_prom += epsilon*(i+1)*hist[i]
@@ -107,7 +107,7 @@ def CalcHist(dists, num_bin):
 	r_max = np.argmax(hist)*epsilon # distancia mas probable
 	std_dev = np.std(DD) #desviacion estandar
 
-	return [hist,r_prom,r_max,std_dev,epsilon]
+	return [hist,r_prom,r_max,std_dev,epsilon,sum(hist)]
 
 ########################################################
 

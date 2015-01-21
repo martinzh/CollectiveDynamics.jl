@@ -8,12 +8,14 @@ nombre = './stats_script.sh'
 
 script = open(nombre,'w')
 
-N = 20
-s = 0.05
+start = float(sys.argv[1])
+stop  = float(sys.argv[2])
+step  = float(sys.argv[3])
+N     = int((stop - start)/step)
 
 script.write("#!/bin/bash\n")
 
 for i in range(1,N+1):
-  script.write( "python Stats.py " + repr(round(i*s,2)) + "\n")
+  script.write( "python Stats.py " + repr(round(i*step,4)) + "\n")
 
 script.close()

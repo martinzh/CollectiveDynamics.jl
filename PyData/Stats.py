@@ -82,7 +82,10 @@ for i in range(-1,int(it_tot)):
 
 	hist = CalcHist(dists,num_bin) #calcula histograma
 
-	print(str(f) + "\t" + repr(j) + "\tr_prom:" + repr(hist[1]) + "\tr_0:" + repr(r_0) + "\tr_max:" + repr(hist[2]))
+	print(hist[5])
+
+	print(str(f) + "\t" + repr(j) + "\tr_prom:" + repr(hist[1])
+			+ "\tr_0:" + repr(r_0) + "\tr_max:" + repr(hist[2]))
 
 	# adj = CalcAdjs(dists,r_0) #calcula adjacencias con r_0
 	# adj = CalcAdjs(dists,hist[1]) #calcula adjacencias con r_prom
