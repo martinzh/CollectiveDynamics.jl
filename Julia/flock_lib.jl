@@ -3,6 +3,7 @@
 # Martin Zumaya Hernandez
 # Diciembre 2014
 # Libreria para flocks
+# Se usan vectores y matrices
 
 ########################
 

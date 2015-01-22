@@ -7,25 +7,21 @@
 ########################
 
 
-include("flock_lib.jl")
+include("obj_lib.jl")
 
 #Escribe trayectorias
-function PrintTrays(pos::Array{Array{Float64,1},1})
-    for i = 1:N
-        # @inbounds rr = repr(pos[i])
-        rr = repr(pos[i])
-        write(trays,rr[2:end-1])
+function PrintTrays(parts::Array{Bird})
+    for bird = parts
+        write(trays,repr(bird.pos)[2:end-1])
         write(trays,"\t")
     end
         write(trays,"\n")
 end
 
 #Escribe velocidades
-function PrintVels(vel::Array{Array{Float64,1},1})
-    for i = 1:N
-        # @inbounds rr = repr(vel[i])
-        rr = repr(vel[i])
-        write(vels,rr[2:end-1])
+function PrintVels(parts::Array{Bird})
+    for bird = parts
+        write(vels,repr(bird.vel)[2:end-1])
         write(vels,"\t")
     end
         write(vels,"\n")
@@ -35,7 +31,6 @@ end
 function PrintDist(i::Int64,Dist::Array{Float64,2})
     d = open("../$path/dists/$i.txt","w")
     for j = 1:size(Dist)[1]
-        # @inbounds write(d,repr(Dist[j;:])[2:end-1])
         write(d,repr(Dist[j;:])[2:end-1])
         write(d,"\n")
     end
@@ -108,9 +103,8 @@ const p    = 1.2  # Densidad
 const L    = 30.0 # Tamaño caja inicial
 const l    = 0.25 # Regimen de Velocidad
 
-# const T    = 25000 #iteraciones
-const T    = 10000 #iteraciones
-const step = 500 #se recupera informacion cada step
+const T    = 1000 #iteraciones
+const step = 200 #se recupera informacion cada step
 
 const N = convert(Int64, L * L * p) # Numero de particulas (entero)
 
@@ -136,10 +130,7 @@ println("Particulas = $N")
 println("Radio = $r0")
 println("Conectividad = $f")
 
-pos = Array{Float64,1}[] #Vector de posiciones
-vel = Array{Float64,1}[] #Vector de velocidades
-
-# println(typeof(vel))
+parts = Array(Bird,N)
 
 Dist = zeros(N,N) #Matriz de distancias
 
@@ -147,24 +138,9 @@ Dist = zeros(N,N) #Matriz de distancias
 LR = spzeros(N,N) #Interacciones de largo alcanze
                   #No cambia en el tiempo
 
-StartVecs(L,vel,pos)
-StartVels(v0,vel)
+InitParts()
 
 SetLR(k,LR)
-
-# SR = SetSR(r0,Dist)
-
-# Comentarios para probar
-
-# println("Getting angles")
-
-# @time GetAngs(vel,SR)
-# @time GetAngs(vel,LR)
-#
-# println("Update vel")
-#
-# @time UpdateVel(vel,SR,LR)
-# println(issparse(SR))
 
 for i = 1:T
 
@@ -182,8 +158,9 @@ for i = 1:T
     #     PrintDist(i,Dist)
     # end
 
-    # @time Evoluciona(i,step)
-    Evoluciona(i,step)
+    # @time Evoluciona(i,step,parts)
+    @time Evoluciona(i,step,parts)
+    # Evoluciona(i,step,parts)
 
 end
 
