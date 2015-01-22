@@ -171,17 +171,19 @@ function UpdateVel(parts::Array{Bird},SR::SparseMatrixCSC{Float64,Int64},LR::Spa
     for i = 1:N
 
     		# dos ruidos, dos intensidades:
-        eta = RandVec(1pi) # Vector de angs aleatorios
+        # eta = RandVec(1pi) # Vector de angs aleatorios
 
-        ang = ruido.*eta # aleatorios * eta
+        # ang = ruido.*eta # aleatorios * eta
 
-        ang_tot =  w * (AS[i]+ang[1]) + (1-w) * (AL[i]+ang[2]) 
+        # ang_tot =  w * (AS[i]+ang[1]) + (1-w) * (AL[i]+ang[2]) 
+
+##############################
 
         # un ruido, una intensidad
 
-				# eta = RandNum(1pi) # angulo aleatorio        
+				eta = RandNum(1pi) # angulo aleatorio        
 
-    		# ang_tot =  w * (AS[i]) + (1-w) * (AL[i]) + eta*ruido
+    		ang_tot =  w * (AS[i]) + (1-w) * (AL[i]) + eta*ruido[1]
 
         parts[i].vel = RotVec(parts[i].vel,ang_tot)
 

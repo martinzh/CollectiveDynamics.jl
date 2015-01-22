@@ -152,21 +152,6 @@ SetLR(k,LR)
 
 for i = 1:T
 
-    # SR = SetSR(r0,Dist)
-    #
-    # UpdatePos(pos,dt)
-    # UpdateVel(vel,SR,LR)
-    #
-    # # println(i)
-    #
-    # if  i == 1 || i%step == 0
-    #     println("t = $i writing")
-    #     # println(i)
-    #     PrintTrays(pos)
-    #     PrintDist(i,Dist)
-    # end
-
-    # @time Evoluciona(i,step,parts)
     # @time Evoluciona(i,step,parts)
     Evoluciona(i,step,parts)
 
