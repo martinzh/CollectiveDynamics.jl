@@ -167,8 +167,8 @@ for i = 1:T
     # end
 
     # @time Evoluciona(i,step,parts)
-    @time Evoluciona(i,step,parts)
-    # Evoluciona(i,step,parts)
+    # @time Evoluciona(i,step,parts)
+    Evoluciona(i,step,parts)
 
 end
 
