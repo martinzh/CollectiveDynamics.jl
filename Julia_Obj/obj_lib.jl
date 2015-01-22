@@ -205,8 +205,8 @@ function Evoluciona(i::Int64, step::Int64, parts::Array{Bird})
   if  i == 1 || i%step == 0
     println("t = $i writing")
     # println(i)
-    PrintTrays(parts)
-    PrintVels(parts)
+    PrintTrays(i,parts)
+    PrintVels(i,parts)
     PrintDist(i,Dist)
   end
 

@@ -10,25 +10,33 @@
 include("flock_lib.jl")
 
 #Escribe trayectorias
-function PrintTrays(pos::Array{Array{Float64,1},1})
+function PrintTrays(i::Int64,pos::Array{Array{Float64,1},1})
+
+    write(trays,"$i\t")
+
     for i = 1:N
         # @inbounds rr = repr(pos[i])
         rr = repr(pos[i])
         write(trays,rr[2:end-1])
         write(trays,"\t")
     end
-        write(trays,"\n")
+
+    write(trays,"\n")
 end
 
 #Escribe velocidades
 function PrintVels(vel::Array{Array{Float64,1},1})
+
+    write(vels,"$i\t")
+
     for i = 1:N
         # @inbounds rr = repr(vel[i])
         rr = repr(vel[i])
         write(vels,rr[2:end-1])
         write(vels,"\t")
     end
-        write(vels,"\n")
+
+    write(vels,"\n")
 end
 
 #Escribe Matriz Distancias

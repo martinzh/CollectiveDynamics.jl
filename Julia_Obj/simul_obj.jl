@@ -10,21 +10,29 @@
 include("obj_lib.jl")
 
 #Escribe trayectorias
-function PrintTrays(parts::Array{Bird})
+function PrintTrays(i::Int64,parts::Array{Bird})
+
+    write(trays,"$i\t")
+    
     for bird = parts
         write(trays,repr(bird.pos)[2:end-1])
         write(trays,"\t")
     end
-        write(trays,"\n")
+
+    write(trays,"\n")
 end
 
 #Escribe velocidades
-function PrintVels(parts::Array{Bird})
+function PrintVels(i::Int64,parts::Array{Bird})
+    
+    write(vels,"$i\t")
+
     for bird = parts
         write(vels,repr(bird.vel)[2:end-1])
         write(vels,"\t")
     end
-        write(vels,"\n")
+
+    write(vels,"\n")
 end
 
 #Escribe Matriz Distancias
