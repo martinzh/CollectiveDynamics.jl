@@ -111,8 +111,8 @@ const p    = 1.2  # Densidad
 const L    = 30.0 # Tamaño caja inicial
 const l    = 0.25 # Regimen de Velocidad
 
-const T    = 1000 #iteraciones
-const step = 200 #se recupera informacion cada step
+const T    = 15000 #iteraciones
+const step = 500 #se recupera informacion cada step
 
 const N = convert(Int64, L * L * p) # Numero de particulas (entero)
 
