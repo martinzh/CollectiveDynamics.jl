@@ -15,7 +15,8 @@ function PrintTrays(i::Int64,parts::Array{Bird})
     write(trays,"$i\t")
     
     for bird = parts
-        write(trays,repr(bird.pos)[2:end-1])
+        # write(trays,repr(bird.pos)[2:end-1])
+        writedlm(trays,bird.pos,'\t')
         write(trays,"\t")
     end
 
@@ -28,7 +29,8 @@ function PrintVels(i::Int64,parts::Array{Bird})
     write(vels,"$i\t")
 
     for bird = parts
-        write(vels,repr(bird.vel)[2:end-1])
+        # write(vels,repr(bird.vel)[2:end-1])
+        write(vels,bird.vel,'\t')
         write(vels,"\t")
     end
 
@@ -38,10 +40,11 @@ end
 #Escribe Matriz Distancias
 function PrintDist(i::Int64,Dist::Array{Float64,2})
     d = open("../$path/dists/$i.txt","w")
-    for j = 1:size(Dist)[1]
-        write(d,repr(Dist[j;:])[2:end-1])
-        write(d,"\n")
-    end
+    # for j = 1:size(Dist)[1]
+    #     write(d,repr(Dist[j;:])[2:end-1])
+    #     write(d,"\n")
+    # end
+    writedlm(d,Dist,'\t')
     close(d)
 end
 
@@ -104,15 +107,15 @@ const dt   = 1.0
 const v0   = 1.0
 const w    = 0.15 # Peso relativo de vecindades
 
-const hl   = 0.25
-const hs   = 0.25
+const hl   = 0.1
+const hs   = 0.1
 
 const p    = 1.2  # Densidad
 const L    = 30.0 # Tamaño caja inicial
 const l    = 0.25 # Regimen de Velocidad
 
-const T    = 15000 #iteraciones
-const step = 500 #se recupera informacion cada step
+const T    = 100 #iteraciones
+const step = 50 #se recupera informacion cada step
 
 const N = convert(Int64, L * L * p) # Numero de particulas (entero)
 

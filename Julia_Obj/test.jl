@@ -1,13 +1,13 @@
 
 include("obj_lib.jl")
 
-N  = 5
+N  = 2000
 L  = 10.0
 v0 = 5.0
 dt = 1.0
 k = 2
 r0 = 5.0
-
+w = 0.15
 # una = Bird(RandVec(1.0),RandVec(1.0))
 # una = Bird(RandVec(5.0) , RandVec(5.0))
 
@@ -20,6 +20,8 @@ parts = Array(Bird,N)
 println("Inicializa:")
 @time InitParts()
 
+println(size(parts,1))
+
 Dist = zeros(N,N) #Matriz de distancias
 
 #Usando sparse
@@ -30,8 +32,8 @@ LR = spzeros(N,N) #Interacciones de largo alcanze
 println("Crea no-contacto:")
 @time SetLR(k,LR)
 
-println(LR)
-println(issparse(LR))
+# println(LR)
+# println(issparse(LR))
 
 # rows = rowvals(LR)
 # # vals = nonzeros(LR)
@@ -60,6 +62,7 @@ println(issparse(LR))
 # end
 
 # println(GetAngs(parts,LR))
+println("GetAngs:")
 @time GetAngs(parts,LR)
 
 # for i = 1:size(LR)[1]
@@ -102,12 +105,12 @@ println("Calcula dist y adj:")
 println("Actualiza posicion:")
 @time UpdatePos(parts,dt)
 
-# println("Actualiza velocidad:")
-# @time UpdateVel(parts,SR,LR)
+println("Actualiza velocidad:")
+@time UpdateVel(parts,SR,LR)
 
-for bird = parts
-	println(repr(bird.pos)[2:end-1])
-end
+# for bird = parts
+# 	println(repr(bird.pos)[2:end-1])
+# end
 
 
 

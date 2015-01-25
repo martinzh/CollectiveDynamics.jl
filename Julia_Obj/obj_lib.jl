@@ -56,7 +56,7 @@ end
 
 function SetLR(k::Int64,X::SparseMatrixCSC{Float64,Int64}) #con sparse
     #Matriz aleatoria
-    for i = 1:size(X)[1]
+    for i = 1:size(X,1)
         for j = 1:k
             switch = true
             while switch
@@ -75,14 +75,12 @@ end
 
 #calcula distancias y adjacencia local
 
-function SetSR(r0::Float64,Dist::Array{Float64,2},parts::Array{Bird})
+function SetDistAdj(N::Int64,Dist::Array{Float64,2})
 
-    I = Int64[]
-    J = Int64[]
+  I = Int64[]
+  J = Int64[]
 
-    N = size(parts)[1]
-
-    for i = 1:N , j = N:-1:i
+	for i = 1:N , j = N:-1:i
 
         d = norm(parts[i].pos-parts[j].pos)
 
@@ -94,7 +92,31 @@ function SetSR(r0::Float64,Dist::Array{Float64,2},parts::Array{Bird})
         end
     end
 
-    return sparse(vcat(I,J),vcat(J,I),ones(2*size(I)[1]))
+    return [I J]
+end
+
+
+function SetSR(r0::Float64,Dist::Array{Float64,2},parts::Array{Bird})
+
+    N = size(parts,1)
+
+    I = Int64[]
+    J = Int64[]
+
+    for i = 1:N , j = N:-1:i
+
+        d = norm(parts[i].pos - parts[j].pos)
+
+        Dist[i;j] = Dist[j;i] = d
+
+        if d > 0.0 && d < r0
+            push!(I,i)
+            push!(J,j)
+        end
+    end
+    return sparse(vcat(I,J),vcat(J,I),ones(2*size(I,1)))
+	  # Adj = SetDistAdj(N,Dist)
+   #  return sparse(vcat(Adj[1],Adj[2]),vcat(Adj[2],Adj[1]),ones(2*size(Adj[1],1)))
 end
 
 ########################################################
@@ -104,7 +126,7 @@ end
 
 function GetAngs(parts::Array{Bird}, A::SparseMatrixCSC{Float64,Int64})
 
-		N = size(parts)[1]
+		N = size(parts,1)
 
 		# Arreglo de angulos, 1 por particula
     angs = zeros(N)
@@ -112,9 +134,10 @@ function GetAngs(parts::Array{Bird}, A::SparseMatrixCSC{Float64,Int64})
     # println(angs)
 
     neigh = rowvals(A) 
-    m, n = size(A)
+    # m, n = size(A)
 
-    for i = 1:n #itera sobre las particulas con vecindad
+    # for i = 1:n #itera sobre las particulas con vecindad
+    for i = 1:size(A,2) #itera sobre las particulas con vecindad
 
     		k = 0 # para guardar numero de parts en la vecindad
     		
@@ -166,7 +189,7 @@ function UpdateVel(parts::Array{Bird},SR::SparseMatrixCSC{Float64,Int64},LR::Spa
     AS = GetAngs(parts,SR) #Angulos inter corto
     AL = GetAngs(parts,LR) #Angulos inter largo
 
-    N = size(parts)[1]
+    N = size(parts,1)
 
     for i = 1:N
 
