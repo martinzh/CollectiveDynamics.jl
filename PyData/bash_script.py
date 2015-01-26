@@ -1,7 +1,8 @@
 
 import sys
 
-nombre = '../Julia/runs_script.sh'
+# nombre = '../Julia/runs_script.sh'
+nombre = '../Julia_Obj/runs_script.sh'
 
 script = open(nombre,'w')
 
