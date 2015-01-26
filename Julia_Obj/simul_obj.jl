@@ -15,9 +15,9 @@ function PrintTrays(i::Int64,parts::Array{Bird})
     write(trays,"$i\t")
     
     for bird = parts
-        # write(trays,repr(bird.pos)[2:end-1])
+        write(trays,repr(bird.pos)[2:end-1])
         # writedlm(trays,bird.pos,'\t')
-        write(trays,bird.pos)
+        # write(trays,bird.pos)
         write(trays,"\t")
     end
 
@@ -30,9 +30,9 @@ function PrintVels(i::Int64,parts::Array{Bird})
     write(vels,"$i\t")
 
     for bird = parts
-        # write(vels,repr(bird.vel)[2:end-1])
+        write(vels,repr(bird.vel)[2:end-1])
         # write(vels,bird.vel,'\t')
-        write(vels,bird.vel)
+        # write(vels,bird.vel)
         write(vels,"\t")
     end
 
