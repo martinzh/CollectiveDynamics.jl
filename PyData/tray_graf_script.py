@@ -8,7 +8,8 @@
 
 import sys
 
-nombre = '../../DATA_1r/DATA/graf.gp'
+# nombre = '../../DATA_1r/DATA/graf.gp'
+nombre = '../../datos_varios/DATA_1r/DATA/graf.gp'
 
 script = open(nombre,'w')
 
@@ -20,8 +21,11 @@ script.write("set terminal png size 800,600\n")
 # script.write("set output 'clust_"+prob+".png'\n")
 script.write("set output 'trayectorias.png'\n")
 
+script.write("set palette model RGB defined ( 1 'red', 15000 'green' )\n")
+
 # script.write("set key top right\n")
 # script.write("set xlabel 'tiempo'\n")
+# 
 script.write("set grid\n")
 script.write("unset key\n")
 
@@ -40,7 +44,9 @@ script.write('plot ')
 
 for i in range(2,N-2,2):
 
-	script.write(data + " u " + repr(i) + ":" + repr(i+1) + " w lp , ")
+	# script.write(data + " u " + repr(i) + ":" + repr(i+1) + " w lp , ")
+	# script.write(data + " u " + repr(i) + ":" + repr(i+1) + " :( $1 == 0 ? 0 : 1 ) with lp palette , ")
+	script.write(data + " u " + repr(i) + ":" + repr(i+1) + " :( $1 ) with lp palette , ")
 # script.write('\n')
 
 script.close()
