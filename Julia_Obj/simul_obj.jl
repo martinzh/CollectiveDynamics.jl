@@ -95,10 +95,14 @@ end
 
 if size(ARGS)[1] != 0
 
-    const f = float(ARGS[1])
+    const f    = float(ARGS[1])
+    const T    = int(ARGS[2])
+    const step = int(ARGS[3])
 
 else
-    const f   = 0.099
+    const f    = 0.099
+    const T    = 25000 #iteraciones
+    const step = 500 #se recupera informacion cada step
 
 end
 
@@ -116,14 +120,13 @@ const p    = 1.2  # Densidad
 const L    = 30.0 # Tamaño caja inicial
 const l    = 0.25 # Regimen de Velocidad
 
-const T    = 25000 #iteraciones
-const step = 500 #se recupera informacion cada step
 
 const N = convert(Int64, L * L * p) # Numero de particulas (entero)
 
 r0 = v0 * dt / l
 
-ruido = [hl,hs] # [largo,corto]
+# ruido = [hl,hs] # [largo,corto]
+ruido = hl # [largo,corto]
 
 # println(ruido)
 
