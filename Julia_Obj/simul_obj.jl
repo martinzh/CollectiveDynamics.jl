@@ -170,8 +170,8 @@ SetLR(k,LR)
 
 for i = 1:T
 
-    @time Evoluciona(i,step,parts)
-    # Evoluciona(i,step,parts)
+    # @time Evoluciona(i,step,parts)
+    Evoluciona(i,step,parts)
 
 end
 
