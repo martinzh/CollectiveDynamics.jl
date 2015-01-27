@@ -125,9 +125,9 @@ end
 
 function GetAngs(parts::Array{Bird}, A::SparseMatrixCSC{Float64,Int64})
 
-		N = size(parts,1)
+	N = size(parts,1)
 
-		# Arreglo de angulos, 1 por particula
+	# Arreglo de angulos, 1 por particula
     angs = zeros(N)
 
     # println(angs)
@@ -219,8 +219,8 @@ end
 # function Evoluciona(i::Int64, step::Int64, parts::Array{Bird})
 function Evoluciona(i::Int64, step::Int64, parts::Array{Bird})
 
-  @time SR = SetSR(r0,Dist,parts)
-  # SR = SetSR(r0,Dist,parts)
+  # @time SR = SetSR(r0,Dist,parts)
+  SR = SetSR(r0,Dist,parts)
 
   UpdatePos(parts,dt)
   UpdateVel(parts,SR,LR)
