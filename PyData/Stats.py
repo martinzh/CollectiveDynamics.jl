@@ -79,7 +79,7 @@ for i in range(-1,int(it_tot)):
 
 	# print(repr(j))
 
-	dists = GetDists(path,j) #obtiene distancias
+	dists = GetDists(path,j,N) #obtiene distancias
 	# print(dists)
 
 	# hist = CalcHist(dists,num_bin) #calcula histograma
@@ -90,7 +90,10 @@ for i in range(-1,int(it_tot)):
 	print(str(f) + "\t" + repr(j) + "\tr_prom:" + repr(hist[1])
 			+ "\tr_0:" + repr(r_0) + "\tr_max:" + repr(hist[2]))
 
-	adj = CalcAdjs(dists,r_0) #calcula adjacencias con r_0
+	# adj = CalcAdjs1(N,dists,r_0) #calcula adjacencias con r_0
+	adj = CalcAdjs1(N,dists,hist[2]) #calcula adjacencias con r_0
+	
+	# adj = CalcAdjs(dists,r_0) #calcula adjacencias con r_0
 	# adj = CalcAdjs(dists,hist[1]) #calcula adjacencias con r_prom
 	# adj = CalcAdjs(dists,hist[2]) #calcula adjacencias con r_max
 	# PrintAdjs(adj)

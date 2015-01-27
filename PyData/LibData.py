@@ -15,6 +15,7 @@ dists = "dists/" #Directorio con archivos de distancias
 ########################################################
 
 # Obtiene parametros de archivo en el directorio path
+
 def GetParams(path):
 
 	params = []
@@ -25,14 +26,14 @@ def GetParams(path):
 	    # print(repr(line.split()[0]) +"\t"+ repr(line.split()[-1]))
 	    params.append(float(line.split()[-1]))
 
-	# close(data) #Falta cerrar archivo
+	data.close()
 
 	return params
 
 ########################################################
 
 # Obtiene matriz de distancias completa
-def GetDists(path, t):
+def GetDists(path, t, N):
 
 	DD = [] #Arreglo para guradar distancias
 
@@ -41,17 +42,28 @@ def GetDists(path, t):
 
 	data = open(ruta,'rb')
 
+	i = 0
+
 	for line in data.readlines():
 
-		dd = []
+		# dd = []
 
 		vals = line.split()
 
-		for k in range(len(vals)):
+		# print(repr(len(vals))+"\n")
+		# print(repr(i)+"\n")
 
-			dd.append(float(vals[k]))
+		# for k in range(len(vals)):
+		for k in range(i+1,N):
 
-		DD.append(dd)
+			# dd.append(float(vals[k]))
+			DD.append(float(vals[k]))
+
+		# DD.append(dd)
+
+		i += 1
+
+	# print(len(DD))
 
 	return DD
 
@@ -113,39 +125,22 @@ def CalcHist(dists, num_bin):
 ########################################################
 
 # Calcula distribucion de distancias (version numpy)
+
 def CalcHist1(dists, num_bin):
 
-	# bins = arange(1,num_bin+1) #Arreglo de bins
-	# hist = zeros(num_bin) #inicializa el histograma
+	dists.sort() #Ordena de menor a mayor
 
-	DD = []
+	#print dists[0]
+	#print len(dists)
 
-	j = 0
+	epsilon = dists[-1]/num_bin #Tamanio de cada bin en funcion del maximo
 
-	n = len(dists)
-
-	# print(n)
-
-	for i in range(n):
-
-	    for k in range(n-j):
-
-	        DD.append(dists[i][k])
-
-	    j += 1
-
-	DD.sort() #Ordena de menor a mayor
-
-	#print DD[0]
-	#print len(DD)
-
-	epsilon = DD[-1]/num_bin #Tamanio de cada bin en funcion del maximo
-
-	# for d in DD:
+	# for d in dists:
 	#     count = d/epsilon
 	#     if count > 0: hist[int(count-1)] += 1.0 #contador de cada bin
 
-	hist = np.histogram(DD,num_bin, density = True)
+	hist = np.histogram(dists,num_bin, density = True)
+	# hist = np.histogram(dists,num_bin)
 
 	# Calcula distancia promedio
 	r_prom = 0
@@ -155,14 +150,15 @@ def CalcHist1(dists, num_bin):
 
 		# r_prom += (epsilon*(i)*hist[i])/num_bin
 		# r_prom += epsilon*(i+1)*hist[i]
-		r_prom += epsilon*i*hist[0][i]
+		# r_prom += epsilon*i*hist[0][i]
+		r_prom += np.diff(hist[1])[i]*i*hist[0][i]
 
-	r_prom *= 1/num_bin
+	# r_prom *= 1/num_bin
 
 	#Falta determinar bien el r mas probable
 
 	r_max = np.argmax(hist[0])*epsilon # distancia mas probable
-	std_dev = np.std(DD) #desviacion estandar
+	std_dev = np.std(dists) #desviacion estandar
 
 	return [hist[0],r_prom,r_max,std_dev,epsilon,sum(hist[0])]
 
@@ -184,6 +180,35 @@ def CalcAdjs(dists,r):
 			if dists[i][j] > 0 and dists[i][j] <= r :
 
 				adj.append(j)
+
+		ADJ.append(adj)
+
+	return ADJ
+
+########################################################
+
+########################################################
+
+# Calcula lista de adjacencia a partir de dists y r
+def CalcAdjs1(N,dists,r):
+
+	ADJ = [] #adjacencia toda la red
+
+	k = 0
+
+	for i in range(N):
+
+		adj = [] #adjacencia particula i
+
+		adj.append(i)
+
+		for j in range(i+1,N):
+
+			if dists[k] > 0 and dists[k] <= r :
+
+				adj.append(j)
+
+			k += 1
 
 		ADJ.append(adj)
 
