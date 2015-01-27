@@ -6,6 +6,15 @@
 
 ########################
 
+########################
+
+# Parametros de linea de comandos:
+
+# 1 -> Conectividad
+# 2 -> Total de iteraciones
+# 3 -> Frecuencia de muestreo
+
+########################
 
 include("obj_lib.jl")
 
@@ -126,7 +135,8 @@ const N = convert(Int64, L * L * p) # Numero de particulas (entero)
 r0 = v0 * dt / l
 
 # ruido = [hl,hs] # [largo,corto]
-ruido = hl # [largo,corto]
+
+ruido = hl # solo un parametro de intensidad de ruido
 
 # println(ruido)
 

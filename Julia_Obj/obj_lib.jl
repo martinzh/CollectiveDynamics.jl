@@ -80,13 +80,13 @@ function SetDistAdj(N::Int64,Dist::Array{Float64,2})
   I = Int64[]
   J = Int64[]
 
-	for i = 1:N , j = N:-1:i
+	for i = 1:N , j = i+1:N
 
         d = norm(parts[i].pos-parts[j].pos)
 
         Dist[i;j] = Dist[j;i] = d
 
-        if d > 0.0 && d < r0
+        if d < r0
             push!(I,i)
             push!(J,j)
         end
@@ -103,11 +103,12 @@ function SetSR(r0::Float64,Dist::Array{Float64,2},parts::Array{Bird})
     I = Int64[]
     J = Int64[]
 
-    for i = 1:N , j = N:-1:i
+    for i = 1:N , j = i+1:N
 
         d = norm(parts[i].pos - parts[j].pos)
 
         Dist[i;j] = Dist[j;i] = d
+        # Dist[i;j] = d
 
         if d > 0.0 && d < r0
             push!(I,i)
@@ -115,8 +116,6 @@ function SetSR(r0::Float64,Dist::Array{Float64,2},parts::Array{Bird})
         end
     end
     return sparse(vcat(I,J),vcat(J,I),ones(2*size(I,1)))
-	  # Adj = SetDistAdj(N,Dist)
-   #  return sparse(vcat(Adj[1],Adj[2]),vcat(Adj[2],Adj[1]),ones(2*size(Adj[1],1)))
 end
 
 ########################################################
@@ -204,9 +203,9 @@ function UpdateVel(parts::Array{Bird},SR::SparseMatrixCSC{Float64,Int64},LR::Spa
 
         # un ruido, una intensidad
 
-				eta = RandNum(1pi) # angulo aleatorio        
+		eta = RandNum(1pi) # angulo aleatorio        
 
-    		ang_tot =  w * (AS[i]) + (1-w) * (AL[i]) + eta*ruido[1]
+		ang_tot =  w * (AS[i]) + (1-w) * (AL[i]) + eta*ruido
 
         parts[i].vel = RotVec(parts[i].vel,ang_tot)
 
@@ -220,7 +219,8 @@ end
 # function Evoluciona(i::Int64, step::Int64, parts::Array{Bird})
 function Evoluciona(i::Int64, step::Int64, parts::Array{Bird})
 
-  SR = SetSR(r0,Dist,parts)
+  @time SR = SetSR(r0,Dist,parts)
+  # SR = SetSR(r0,Dist,parts)
 
   UpdatePos(parts,dt)
   UpdateVel(parts,SR,LR)

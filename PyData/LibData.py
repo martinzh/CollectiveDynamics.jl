@@ -110,6 +110,63 @@ def CalcHist(dists, num_bin):
 	return [hist,r_prom,r_max,std_dev,epsilon,sum(hist)]
 
 ########################################################
+########################################################
+
+# Calcula distribucion de distancias (version numpy)
+def CalcHist1(dists, num_bin):
+
+	# bins = arange(1,num_bin+1) #Arreglo de bins
+	# hist = zeros(num_bin) #inicializa el histograma
+
+	DD = []
+
+	j = 0
+
+	n = len(dists)
+
+	# print(n)
+
+	for i in range(n):
+
+	    for k in range(n-j):
+
+	        DD.append(dists[i][k])
+
+	    j += 1
+
+	DD.sort() #Ordena de menor a mayor
+
+	#print DD[0]
+	#print len(DD)
+
+	epsilon = DD[-1]/num_bin #Tamanio de cada bin en funcion del maximo
+
+	# for d in DD:
+	#     count = d/epsilon
+	#     if count > 0: hist[int(count-1)] += 1.0 #contador de cada bin
+
+	hist = np.histogram(DD,num_bin, density = True)
+
+	# Calcula distancia promedio
+	r_prom = 0
+
+	# for i in range(int(num_bin)):
+	for i in range(int(num_bin)):
+
+		# r_prom += (epsilon*(i)*hist[i])/num_bin
+		# r_prom += epsilon*(i+1)*hist[i]
+		r_prom += epsilon*i*hist[0][i]
+
+	r_prom *= 1/num_bin
+
+	#Falta determinar bien el r mas probable
+
+	r_max = np.argmax(hist[0])*epsilon # distancia mas probable
+	std_dev = np.std(DD) #desviacion estandar
+
+	return [hist[0],r_prom,r_max,std_dev,epsilon,sum(hist[0])]
+
+########################################################
 
 # Calcula lista de adjacencia a partir de dists y r
 def CalcAdjs(dists,r):

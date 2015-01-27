@@ -22,7 +22,7 @@ script.write("set terminal png size 800,600\n")
 # script.write("set output 'clust_"+prob+".png'\n")
 script.write("set output 'trayectorias.png'\n")
 
-script.write("set palette model RGB defined ( 1 'red', 15000 'green' )\n")
+script.write("set palette model RGB defined ( 1 'red', " + sys.argv[2] +  "'green' )\n")
 
 # script.write("set key top right\n")
 # script.write("set xlabel 'tiempo'\n")

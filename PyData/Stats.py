@@ -7,9 +7,11 @@ import pylab
 import sys
 # import numpy as np
 
+# Parametros de linea de comandos:
+# 1 -> conectividad
+
 # ruta a directorio principal, se identifica por f
 
-# f = 0.2 #conectividad en funcion de fraccion de N
 f = float(sys.argv[1]) #conectividad en funcion de fraccion de N
 
 #path = "../data_f"+ str(f) +"/"
@@ -19,7 +21,7 @@ f = float(sys.argv[1]) #conectividad en funcion de fraccion de N
 path = "../../DATA/data_f"+ str(f) +"/"
 
 # img_path = "../../Grafs/con_r0/datos_clusters"
-img_path = "../../Grafs/con_rprom/"
+img_path = "../../Grafs/con_rprom"
 # img_path = "../../Grafs/"+ str(f) +"/"
 
 # print (path)
@@ -80,16 +82,17 @@ for i in range(-1,int(it_tot)):
 	dists = GetDists(path,j) #obtiene distancias
 	# print(dists)
 
-	hist = CalcHist(dists,num_bin) #calcula histograma
+	# hist = CalcHist(dists,num_bin) #calcula histograma
+	hist = CalcHist1(dists,num_bin) #calcula histograma
 
 	print(hist[5])
 
 	print(str(f) + "\t" + repr(j) + "\tr_prom:" + repr(hist[1])
 			+ "\tr_0:" + repr(r_0) + "\tr_max:" + repr(hist[2]))
 
-	# adj = CalcAdjs(dists,r_0) #calcula adjacencias con r_0
+	adj = CalcAdjs(dists,r_0) #calcula adjacencias con r_0
 	# adj = CalcAdjs(dists,hist[1]) #calcula adjacencias con r_prom
-	adj = CalcAdjs(dists,hist[2]) #calcula adjacencias con r_max
+	# adj = CalcAdjs(dists,hist[2]) #calcula adjacencias con r_max
 	# PrintAdjs(adj)
 
 	# print(sum(hist[0]))
