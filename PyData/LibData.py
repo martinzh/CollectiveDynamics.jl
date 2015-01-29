@@ -160,7 +160,7 @@ def CalcHist1(dists, num_bin):
 	r_max = np.argmax(hist[0])*epsilon # distancia mas probable
 	std_dev = np.std(dists) #desviacion estandar
 
-	return [hist[0],r_prom,r_max,std_dev,epsilon,sum(hist[0])]
+	return [hist[0],r_prom,r_max,std_dev,epsilon,sum(hist[0]),hist[1]]
 
 ########################################################
 

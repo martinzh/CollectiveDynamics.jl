@@ -22,7 +22,7 @@ script = open(nombre,'w')
 script.write("set terminal png size 800,600\n")
 
 # script.write("set output 'clust_"+prob+".png'\n")
-script.write("set output 'trayectorias_" + f + ".png'\n")
+script.write("set output '../Grafs/Trayectorias/trayectorias_" + f + ".png'\n")
 
 script.write("set palette model RGB defined ( 1 'red', " + sys.argv[2] +  "'green' )\n")
 
@@ -49,10 +49,16 @@ for i in range(2,N-2,2):
 
 	# script.write(data + " u " + repr(i) + ":" + repr(i+1) + " w lp , ")
 	# script.write(data + " u " + repr(i) + ":" + repr(i+1) + " :( $1 == 0 ? 0 : 1 ) with lp palette , ")
+
+	# if i != N-3 : 
+	# 	script.write(data + " u " + repr(i) + ":" + repr(i+1) + " :( $1 ) with lp palette , ")
+	# else:
+	# 	script.write(data + " u " + repr(i) + ":" + repr(i+1) + " :( $1 ) with lp palette ")
+
 	if i != N-3 : 
-		script.write(data + " u " + repr(i) + ":" + repr(i+1) + " :( $1 ) with lp palette , ")
+		script.write(data + " u " + repr(i) + ":" + repr(i+1) + " :( $1 ) with l palette , ")
 	else:
-		script.write(data + " u " + repr(i) + ":" + repr(i+1) + " :( $1 ) with lp palette ")
+		script.write(data + " u " + repr(i) + ":" + repr(i+1) + " :( $1 ) with l palette ")
 
 # script.write('\n')
 

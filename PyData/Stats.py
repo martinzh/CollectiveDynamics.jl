@@ -20,7 +20,7 @@ f = float(sys.argv[1]) #conectividad en funcion de fraccion de N
 
 path = "../../DATA/data_f"+ str(f) +"/"
 
-# img_path = "../../Grafs/con_r0/datos_clusters"
+# img_path = "../../Grafs/con_r0"
 img_path = "../../Grafs/con_rprom"
 # img_path = "../../Grafs/"+ str(f) +"/"
 
@@ -85,13 +85,14 @@ for i in range(-1,int(it_tot)):
 	# hist = CalcHist(dists,num_bin) #calcula histograma
 	hist = CalcHist1(dists,num_bin) #calcula histograma
 
-	print(hist[5])
+	# print(hist[5])
 
 	print(str(f) + "\t" + repr(j) + "\tr_prom:" + repr(hist[1])
 			+ "\tr_0:" + repr(r_0) + "\tr_max:" + repr(hist[2]))
 
 	# adj = CalcAdjs1(N,dists,r_0) #calcula adjacencias con r_0
-	adj = CalcAdjs1(N,dists,hist[2]) #calcula adjacencias con r_0
+	adj = CalcAdjs1(N,dists,hist[1]) #calcula adjacencias con r_prom
+	# adj = CalcAdjs1(N,dists,hist[1]) #calcula adjacencias con r_max
 	
 	# adj = CalcAdjs(dists,r_0) #calcula adjacencias con r_0
 	# adj = CalcAdjs(dists,hist[1]) #calcula adjacencias con r_prom
@@ -109,7 +110,9 @@ for i in range(-1,int(it_tot)):
 
 	max_cls.append(clusters[2]/N)
 
-	pylab.plot(hist[4]*bin_vec,hist[0])
+	pylab.plot(bin_vec,hist[0])
+	# pylab.plot(hist[4]*bin_vec,hist[0])
+	# pylab.plot(hist[6],hist[0])
 
 	cls_data.write(repr(j) + "\t" + repr(clusters[2]/N) + "\n")
 
