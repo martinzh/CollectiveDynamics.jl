@@ -8,6 +8,8 @@
 
 import sys
 
+f = sys.argv[1]
+
 # nombre = '../../DATA_1r/DATA/graf.gp'
 nombre = '../../DATA/graf.gp'
 # nombre = '../../datos_varios/DATA_1r/DATA/graf.gp'
@@ -20,7 +22,7 @@ script = open(nombre,'w')
 script.write("set terminal png size 800,600\n")
 
 # script.write("set output 'clust_"+prob+".png'\n")
-script.write("set output 'trayectorias.png'\n")
+script.write("set output 'trayectorias_" + f + ".png'\n")
 
 script.write("set palette model RGB defined ( 1 'red', " + sys.argv[2] +  "'green' )\n")
 
@@ -39,7 +41,7 @@ script.write("unset key\n")
 
 N = 1080
 
-data = '"data_f'+sys.argv[1]+'/trays_mod.txt"'
+data = '"data_f'+ f +'/trays_mod.txt"'
 
 script.write('plot ')
 
