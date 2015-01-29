@@ -30,9 +30,9 @@ script.write("#!/bin/bash\n")
 for i in range(N):
   # if i%6 == 0:
   if i%(procs) == 0:
-    script.write( "julia simul_obj.jl " + repr(start + round(i*step,8)) + " " + T + " " + rate + "\n")
+    script.write( "julia simul_obj.jl " + repr(start + round(i*step,7)) + " " + T + " " + rate + "\n")
   else:
-    script.write( "nohup julia simul_obj.jl " + repr(start + round(i*step,8)) + " " + T + " " + rate + " &\n")
+    script.write( "nohup julia simul_obj.jl " + repr(start + round(i*step,7)) + " " + T + " " + rate + " &\n")
 
 
 script.close()
