@@ -1,9 +1,9 @@
 #!/bin/bash
 
-for i in {1..19}
+for i in {0..19}
 do
 
-  var=$(echo "0.05*$i" | bc -l)
+  var=$(echo "0.005*$i" | bc -l)
   # echo cls_data0"$var".dat
   # echo awk '{print $2}' cls_data0$var.dat | tail -1 > tmp
   awk '{print $2}' cls_data0$var.dat | tail -1 > tmp
