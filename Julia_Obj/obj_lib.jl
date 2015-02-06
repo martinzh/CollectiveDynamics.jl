@@ -132,8 +132,7 @@ function GetAngs(parts::Array{Bird}, A::SparseMatrixCSC{Float64,Int64})
 
     # println(angs)
 
-    neigh = rowvals(A) 
-    # m, n = size(A)
+    neigh = rowvals(A)
 
     # for i = 1:n #itera sobre las particulas con vecindad
     for i = 1:size(A,2) #itera sobre las particulas con vecindad
@@ -148,7 +147,7 @@ function GetAngs(parts::Array{Bird}, A::SparseMatrixCSC{Float64,Int64})
 
     			# println("part : $i ; vecina : $tal")
 
-	        v_prom += parts[neigh[j]].vel 
+	           v_prom += parts[neigh[j]].vel 
     			
     			k += 1
 
@@ -216,7 +215,6 @@ end
 
 #Actualiza todo
 
-# function Evoluciona(i::Int64, step::Int64, parts::Array{Bird})
 function Evoluciona(i::Int64, step::Int64, parts::Array{Bird})
 
   # @time SR = SetSR(r0,Dist,parts)
@@ -230,9 +228,9 @@ function Evoluciona(i::Int64, step::Int64, parts::Array{Bird})
   if  i == 1 || i%step == 0
     println("t = $i writing")
     # println(i)
-    PrintTrays(i,parts)
-    PrintVels(i,parts)
-    PrintDist(i,Dist)
+    # PrintTrays(i,parts)
+    # PrintVels(i,parts)
+    # # PrintDist(i,Dist)
   end
 
 end
