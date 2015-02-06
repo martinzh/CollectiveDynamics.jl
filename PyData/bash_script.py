@@ -34,5 +34,12 @@ for i in range(N):
   else:
     script.write( "nohup julia simul_obj.jl " + repr(start + round(i*step,7)) + " " + T + " " + rate + " &\n")
 
+for i in range(N):
+  # if i%6 == 0:
+  if i%(procs) == 0:
+    script.write( "(time julia simul_obj.jl " + repr(start + round(i*step,7)) + " " + T + " " + rate + ") 2>> tiempo.dat \n")
+  else:
+    script.write( "(time nohup julia simul_obj.jl " + repr(start + round(i*step,7)) + " " + T + " " + rate + " &) 2>> tiempo.dat\n")
+
 
 script.close()
