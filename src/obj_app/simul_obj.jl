@@ -50,7 +50,8 @@ end
 
 #Escribe Matriz Distancias
 function PrintDist(i::Int64,Dist::Array{Float64,2})
-    d = open("../$path/dists/$i.txt","w")
+    # d = open("../$path/dists/$i.txt","w")
+    d = open("$path/dists/$i.txt","w")
     # for j = 1:size(Dist)[1]
     #     write(d,repr(Dist[j;:])[2:end-1])
     #     write(d,"\n")
@@ -61,14 +62,15 @@ end
 
 #Escribe Archivo de Parametros
 function PrintParams()
-    d = open("../$path/params.txt","w")
+    # d = open("../$path/params.txt","w")
+    d = open("$path/params.txt","w")
 
     write(d,"Particulas = $N\n")
     write(d,"densidad = $p\n")
     write(d,"radio = $r0\n");
     write(d,"f = $f\n");
-    write(d,"ruido corto alcance = $hs\n");
-    write(d,"ruido largo alcance = $hl\n");
+    write(d,"intensidad de ruido = $eta\n");
+    # write(d,"ruido largo alcance = $hl\n");
     write(d,"peso relativo = $w\n");
     write(d,"regimen de velocidad = $l\n");
     write(d,"iteraciones = $T\n");
@@ -79,8 +81,12 @@ end
 
 function MakeDir()
     try
-        run(`mkdir ../$path`)
-        run(`mkdir ../$path/dists`)
+        # run(`mkdir ../$path`)
+        # run(`mkdir ../$path/dists`)
+        # run(`mkdir ../$path/adjs`)
+
+        run(`mkdir $path`)
+        run(`mkdir $path/dists`)
         # run(`mkdir ../$path/adjs`)
     catch y
         println(typeof(y))
@@ -110,8 +116,8 @@ if size(ARGS)[1] != 0
 
 else
     const f    = 0.099
-    const T    = 25000 #iteraciones
-    const step = 500 #se recupera informacion cada step
+    const T    = 1000 #iteraciones
+    const step = 50 #se recupera informacion cada step
 
 end
 
@@ -122,8 +128,8 @@ const dt   = 1.0
 const v0   = 1.0
 const w    = 0.15 # Peso relativo de vecindades
 
-const hl   = 0.1
-const hs   = 0.1
+const eta   = 0.1 #Parametro de ruido
+# const hs   = 0.1
 
 const p    = 1.2  # Densidad
 const L    = 30.0 # Tamaño caja inicial
@@ -134,23 +140,23 @@ const N = convert(Int64, L * L * p) # Numero de particulas (entero)
 
 r0 = v0 * dt / l
 
-# ruido = [hl,hs] # [largo,corto]
-
-ruido = hl # solo un parametro de intensidad de ruido
-
-# println(ruido)
+println(eta)
 
 #Crea estructura de folders
 
-path = "../DATA/data_f$(f)"
+# path = "../DATA/data_f$(f)"
+path = "/home/martin/DATOS_SIMS/DataJul/data_f$(f)"
 
 MakeDir()
 PrintParams()
 
 k = convert(Int64,floor(f*N)) # Conectividad en funcion de la fraccion de particulas
 
-trays = open("../$path/trays.txt","w")
-vels = open("../$path/vels.txt","w")
+# trays = open("../$path/trays.txt","w")
+# vels = open("../$path/vels.txt","w")
+
+trays = open("$path/trays.txt","w")
+vels = open("$path/vels.txt","w")
 
 println("Particulas = $N")
 println("Radio = $r0")
@@ -170,8 +176,8 @@ SetLR(k,LR)
 
 for i = 1:T
 
-    # @time Evoluciona(i,step,parts)
-    Evoluciona(i,step,parts)
+    @time Evoluciona(i,step,parts,eta,w)
+    # Evoluciona(i,step,parts,eta,w)
 
 end
 

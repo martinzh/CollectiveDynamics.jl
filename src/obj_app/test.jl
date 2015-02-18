@@ -1,12 +1,13 @@
 include("obj_lib.jl")
 
-N  = 2000
+N  = 5
 L  = 10.0
 v0 = 5.0
 dt = 1.0
 k = 2
 r0 = 5.0
 w = 0.15
+η = 0.1
 # una = Bird(RandVec(1.0),RandVec(1.0))
 # una = Bird(RandVec(5.0) , RandVec(5.0))
 
@@ -15,9 +16,34 @@ w = 0.15
 
 parts = Array(Bird,N)
 
+typeof(parts)
 # InitParts()
 println("Inicializa:")
 @time InitParts()
+
+for bird = parts
+  println(bird.pos)
+end
+
+typeof(parts[1].vel)
+
+vel = RandVec(1.0)
+
+typeof(vel)
+
+scale!(vel,v0/norm(vel))
+
+typeof(vel)
+
+norm(vel)
+
+s = [1.0,2.0,0.0]
+
+for i = s
+  println(i)
+end
+
+typeof(s)
 
 println(size(parts,1))
 
@@ -31,6 +57,7 @@ LR = spzeros(N,N) #Interacciones de largo alcanze
 println("Crea no-contacto:")
 @time SetLR(k,LR)
 
+LR
 # println(LR)
 # println(issparse(LR))
 
@@ -102,14 +129,23 @@ println("Calcula dist y adj:")
 
 # UpdatePos(parts,dt)
 println("Actualiza posicion:")
-@time UpdatePos(parts,dt)
+@time UpdatePos!(parts,dt)
 
 println("Actualiza velocidad:")
-@time UpdateVel(parts,SR,LR)
+@time UpdateVel!(parts,SR,LR,η,w)
 
 # for bird = parts
 # 	println(repr(bird.pos)[2:end-1])
 # end
 
+V = [1.0 0.0]
+α = pi/2
 
+@time RotVec(V,α)
+@time RotVec!(V,α)
+V
+size(parts,1)
+RotVec!(parts[1].vel,α)
 
+@time RandVec(5.0)
+@time RandVec1(5.0)
