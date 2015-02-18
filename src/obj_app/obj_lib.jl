@@ -249,7 +249,7 @@ function Evoluciona(i::Int64, step::Int64, parts::Array{Bird},ruido::Float64,w::
     # println(i)
     PrintTrays(i,parts)
     PrintVels(i,parts)
-    # PrintDist(i,Dist)
+    PrintDist(i,Dist)
   end
 
 end
