@@ -247,9 +247,9 @@ function Evoluciona(i::Int64, step::Int64, parts::Array{Bird},ruido::Float64,w::
   if  i == 1 || i%step == 0
     println("t = $i writing")
     # println(i)
-    PrintTrays(i,parts)
-    PrintVels(i,parts)
-    PrintDist(i,Dist)
+    # PrintTrays(i,parts)
+    # PrintVels(i,parts)
+    # PrintDist(i,Dist)
   end
 
 end
