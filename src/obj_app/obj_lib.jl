@@ -40,10 +40,10 @@ end
 # Inicializa posiciones y velocidades
 # Velocidades normallizadas a v0
 
-function InitParts()
+function InitParts(N::Int64,L::Float64,v0::Float64)
 	for i = 1:N
 	vel = RandVec(1.0)
-	parts[i] = Bird(RandVec(5.0) , scale!(vel,v0/norm(vel)))
+	parts[i] = Bird(RandVec(L) , scale!(vel,v0/norm(vel)))
 	end
 end
 
@@ -79,7 +79,7 @@ end
 #     end
 # end
 
-function SetLR(k::Int64,X::SparseMatrixCSC{Float64,Int64}) #con sparse
+function SetLR(k::Int64,N::Int64,X::SparseMatrixCSC{Float64,Int64}) #con sparse
     #Matriz aleatoria
     for i = 1:size(X,1) , j = 1:k
         switch = true
@@ -133,7 +133,8 @@ function SetSR(r0::Float64,Dist::Array{Float64,2},parts::Array{Bird,1})
         Dist[i,j] = Dist[j,i] = d
         # Dist[i;j] = d
 
-        if d > 0.0 && d < r0
+        # if d > 0.0 && d < r0
+        if d < r0
             push!(I,i)
             push!(J,j)
         end
@@ -234,7 +235,7 @@ end
 
 #Actualiza todo
 
-function Evoluciona(i::Int64, step::Int64, parts::Array{Bird},ruido::Float64,w::Float64)
+function Evoluciona(i::Int64, step::Int64, parts::Array{Bird,1},ruido::Float64,w::Float64)
 
   # @time SR = SetSR(r0,Dist,parts)
   SR = SetSR(r0,Dist,parts)
@@ -247,9 +248,9 @@ function Evoluciona(i::Int64, step::Int64, parts::Array{Bird},ruido::Float64,w::
   if  i == 1 || i%step == 0
     println("t = $i writing")
     # println(i)
-    # PrintTrays(i,parts)
-    # PrintVels(i,parts)
-    # PrintDist(i,Dist)
+    PrintTrays(i,parts)
+    PrintVels(i,parts)
+    PrintDist(i,Dist)
   end
 
 end

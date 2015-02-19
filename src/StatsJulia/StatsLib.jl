@@ -6,6 +6,7 @@
 
 module Tmp
 using DataFrames
+using Wavelets
 
 ########################################################
 # 			INICIA MODULO

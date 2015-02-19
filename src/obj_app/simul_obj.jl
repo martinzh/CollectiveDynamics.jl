@@ -145,7 +145,8 @@ println(eta)
 #Crea estructura de folders
 
 # path = "../DATA/data_f$(f)"
-path = "/home/martin/DATOS_SIMS/DataJul/data_f$(f)"
+# path = "/home/martin/DATOS_SIMS/DataJul/data_f$(f)"
+path = "/Users/martinzh/DATOS_SIMS/DatJul/data_f$(f)"
 
 MakeDir()
 PrintParams()
@@ -170,9 +171,9 @@ Dist = zeros(N,N) #Matriz de distancias
 LR = spzeros(N,N) #Interacciones de largo alcanze
                   #No cambia en el tiempo
 
-InitParts()
+InitParts(N,L,v0)
 
-SetLR(k,LR)
+SetLR(k,N,LR)
 
 for i = 1:T
 
