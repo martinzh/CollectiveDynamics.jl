@@ -19,7 +19,7 @@
 include("obj_lib.jl")
 
 #Escribe trayectorias
-function PrintTrays(i::Int64,parts::Array{Bird})
+function PrintTrays(i::Int64,parts::Array{Bird1,1})
 
     write(trays,"$i\t")
     
@@ -34,7 +34,7 @@ function PrintTrays(i::Int64,parts::Array{Bird})
 end
 
 #Escribe velocidades
-function PrintVels(i::Int64,parts::Array{Bird})
+function PrintVels(i::Int64,parts::Array{Bird1,1})
     
     write(vels,"$i\t")
 
@@ -145,8 +145,8 @@ println(eta)
 #Crea estructura de folders
 
 # path = "../DATA/data_f$(f)"
-# path = "/home/martin/DATOS_SIMS/DataJul/data_f$(f)"
-path = "/Users/martinzh/DATOS_SIMS/DatJul/data_f$(f)"
+path = "/home/martin/DATOS_SIMS/DataJul/data_f$(f)"
+# path = "/Users/martinzh/DATOS_SIMS/DatJul/data_f$(f)"
 
 MakeDir()
 PrintParams()
@@ -163,17 +163,19 @@ println("Particulas = $N")
 println("Radio = $r0")
 println("Conectividad = $f")
 
-parts = Array(Bird,N)
+# parts = Array(Bird,N)
+parts = Array(Bird1,N)
 
 Dist = zeros(N,N) #Matriz de distancias
 
 #Usando sparse
 LR = spzeros(N,N) #Interacciones de largo alcanze
                   #No cambia en el tiempo
+# SetLR(k,N,LR)
 
-InitParts(N,L,v0)
+# InitParts(N,L,v0)
+InitParts(N,L,v0,k)
 
-SetLR(k,N,LR)
 
 for i = 1:T
 

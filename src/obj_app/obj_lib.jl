@@ -12,6 +12,12 @@ type Bird
   vel::Array{Float64,1}
 end
 
+type Bird1
+  pos::Array{Float64,1}
+  vel::Array{Float64,1}
+  inputs::Array{Int64,1}
+end
+
 ########################################################
 
 # Regresa Vector aleatorio entre -L:L
@@ -41,9 +47,16 @@ end
 # Velocidades normallizadas a v0
 
 function InitParts(N::Int64,L::Float64,v0::Float64)
+    for i = 1:N
+    vel = RandVec(1.0)
+    parts[i] = Bird(RandVec(L) , scale!(vel,v0/norm(vel)))
+    end
+end
+
+function InitParts(N::Int64,L::Float64,v0::Float64,k::Int64)
 	for i = 1:N
 	vel = RandVec(1.0)
-	parts[i] = Bird(RandVec(L) , scale!(vel,v0/norm(vel)))
+	parts[i] = Bird1(RandVec(L) , scale!(vel,v0/norm(vel)), Inputs(k,N))
 	end
 end
 
@@ -52,6 +65,13 @@ end
 # Actualiza posiciones
 
 function UpdatePos!(parts::Array{Bird,1},dt::Float64)
+        for bird = parts
+        broadcast!(+,bird.pos,bird.pos,scale(bird.vel,dt))
+        # bird.pos = bird.pos .+ scale(bird.vel,dt)
+        end
+end
+
+function UpdatePos!(parts::Array{Bird1,1},dt::Float64)
 		for bird = parts
     	broadcast!(+,bird.pos,bird.pos,scale(bird.vel,dt))
     	# bird.pos = bird.pos .+ scale(bird.vel,dt)
@@ -62,22 +82,22 @@ end
 
 #Construye red aleatoria de conectividad k
 
-# function SetLR(k::Int64,X::SparseMatrixCSC{Float64,Int64}) #con sparse
-#     #Matriz aleatoria
-#     for i = 1:size(X,1)
-#         for j = 1:k
-#             switch = true
-#             while switch
-#                 s = rand(1:N)
-#                 if s != i
-#                     X[i,s] = 1
-#                     #X[i,s] = X[s,i] = 1
-#                     switch = false
-#                 end
-#             end
-#         end
-#     end
-# end
+function Inputs(k::Int64,N::Int64)
+    
+    ins = Array(Int64,k)
+    
+    for j = 1:k
+        switch = true
+            while switch
+                s = rand(1:N)
+                if s != j
+                    ins[j] = s
+                    switch = false
+                end
+            end
+    end 
+    return ins
+end
 
 function SetLR(k::Int64,N::Int64,X::SparseMatrixCSC{Float64,Int64}) #con sparse
     #Matriz aleatoria
@@ -98,28 +118,30 @@ end
 
 #calcula distancias y adjacencia local
 
-# function SetDistAdj(N::Int64,Dist::Array{Float64,2})
-
-#   I = Int64[]
-#   J = Int64[]
-
-# 	for i = 1:N , j = i+1:N
-
-#         d = norm(parts[i].pos-parts[j].pos)
-
-#         Dist[i,j] = Dist[j,i] = d
-
-#         if d < r0
-#             push!(I,i)
-#             push!(J,j)
-#         end
-#     end
-
-#     return [I J]
-# end
-
-
 function SetSR(r0::Float64,Dist::Array{Float64,2},parts::Array{Bird,1})
+
+    N = size(parts,1)
+
+    I = Int64[]
+    J = Int64[]
+
+    for i = 1:N , j = i+1:N
+
+        d = norm(parts[i].pos - parts[j].pos)
+
+        Dist[i,j] = Dist[j,i] = d
+        # Dist[i;j] = d
+
+        # if d > 0.0 && d < r0
+        if d < r0
+            push!(I,i)
+            push!(J,j)
+        end
+    end
+    return sparse(vcat(I,J),vcat(J,I),ones(2*size(I,1)))
+end
+
+function SetSR(r0::Float64,Dist::Array{Float64,2},parts::Array{Bird1,1})
 
     N = size(parts,1)
 
@@ -149,9 +171,9 @@ end
 
 function GetAngs(parts::Array{Bird,1}, A::SparseMatrixCSC{Float64,Int64})
 
-	N = size(parts,1)
+    N = size(parts,1)
 
-	# Arreglo de angulos, 1 por particula
+    # Arreglo de angulos, 1 por particula
     angs = zeros(N)
 
     # println(angs)
@@ -161,28 +183,102 @@ function GetAngs(parts::Array{Bird,1}, A::SparseMatrixCSC{Float64,Int64})
     # for i = 1:n #itera sobre las particulas con vecindad
     for i = 1:size(A,2) #itera sobre las particulas con vecindad
 
-    		k = 0.0 # para guardar numero de parts en la vecindad
+            k = 0.0 # para guardar numero de parts en la vecindad
 
-    		v_prom = parts[i].vel
+            v_prom = parts[i].vel
 
-    		for j = nzrange(A,i)
+            for j = nzrange(A,i)
 
-    			# tal = neigh[j]
+                # tal = neigh[j]
 
-    			# println("part : $i ; vecina : $tal")
+                # println("part : $i ; vecina : $tal")
 
-	           v_prom += parts[neigh[j]].vel
+               v_prom += parts[neigh[j]].vel
 
-    			k += 1.0
+                k += 1.0
 
-    		end
+            end
 
-    		# println("k = $k")
+            # println("k = $k")
 
         if k > 0
-        	scale!(v_prom,1.0/k)
-        	angs[i] = atan2(v_prom[2],v_prom[1]) #agrega el angulo al arreglo
-       	end
+            scale!(v_prom,1.0/k)
+            angs[i] = atan2(v_prom[2],v_prom[1]) #agrega el angulo al arreglo
+        end
+
+    end
+
+    return angs
+end
+
+function GetAngs(parts::Array{Bird1,1}, A::SparseMatrixCSC{Float64,Int64})
+
+    N = size(parts,1)
+
+    # Arreglo de angulos, 1 por particula
+    angs = zeros(N)
+
+    # println(angs)
+
+    neigh = rowvals(A)
+
+    # for i = 1:n #itera sobre las particulas con vecindad
+    for i = 1:size(A,2) #itera sobre las particulas con vecindad
+
+            k = 0.0 # para guardar numero de parts en la vecindad
+
+            v_prom = parts[i].vel
+
+            for j = nzrange(A,i)
+
+                # tal = neigh[j]
+
+                # println("part : $i ; vecina : $tal")
+
+               v_prom += parts[neigh[j]].vel
+
+                k += 1.0
+
+            end
+
+            # println("k = $k")
+
+        if k > 0
+            scale!(v_prom,1.0/k)
+            angs[i] = atan2(v_prom[2],v_prom[1]) #agrega el angulo al arreglo
+        end
+
+    end
+
+    return angs
+end
+
+# Angulos de entradas en la red de itneraccion
+
+function GetAngsIN(parts::Array{Bird1,1})
+
+	k = size(parts[1].inputs,1) # conectividad
+
+    N = size(parts,1)
+
+	# Arreglo de angulos, 1 por particula
+    angs = zeros(N)
+
+    # println(angs)
+
+    if k>0
+
+        for i = 1:N
+            
+            v_prom = parts[i].vel
+
+            for j = parts[i].inputs
+                v_prom += parts[j].vel
+            end
+
+            scale!(v_prom,1.0/k)
+            angs[i] = atan2(v_prom[2],v_prom[1]) #agrega el angulo al arreglo
+        end
 
     end
 
@@ -231,11 +327,47 @@ function UpdateVel!(parts::Array{Bird,1},SR::SparseMatrixCSC{Float64,Int64},LR::
     end
 end
 
+function UpdateVel!(parts::Array{Bird1,1},SR::SparseMatrixCSC{Float64,Int64},LR::SparseMatrixCSC{Float64,Int64},ruido::Float64,w::Float64)
+
+    AS = GetAngs(parts,SR) #Angulos inter corto
+    AL = GetAngsIN(parts) #Angulos inter largo
+
+    for i = 1:size(parts,1)
+
+      ang_rand = RandNum(1.0*pi) # angulo aleatorio
+
+      ang_tot =  w * (AS[i]) + (1-w) * (AL[i]) + ang_rand*ruido
+
+      RotVec!(parts[i].vel,ang_tot)
+
+    end
+end
+
 ########################################################
 
 #Actualiza todo
 
 function Evoluciona(i::Int64, step::Int64, parts::Array{Bird,1},ruido::Float64,w::Float64)
+
+  # @time SR = SetSR(r0,Dist,parts)
+  SR = SetSR(r0,Dist,parts)
+
+  UpdatePos!(parts,dt)
+  UpdateVel!(parts,SR,LR,ruido,w)
+
+  # println(i)
+
+  if  i == 1 || i%step == 0
+    println("t = $i writing")
+    # println(i)
+    PrintTrays(i,parts)
+    PrintVels(i,parts)
+    PrintDist(i,Dist)
+  end
+
+end
+
+function Evoluciona(i::Int64, step::Int64, parts::Array{Bird1,1},ruido::Float64,w::Float64)
 
   # @time SR = SetSR(r0,Dist,parts)
   SR = SetSR(r0,Dist,parts)
