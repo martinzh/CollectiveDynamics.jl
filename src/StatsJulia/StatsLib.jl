@@ -96,23 +96,44 @@ end
 
 function VecProm(vecs::Array{Float64,2}, itTot::Int64, step::Int64)
 
-	tiempo = vcat([1],[ i*step for i = 1:itTot])
+	# tiempo = vcat([1],[ i*step for i = 1:itTot])
 
-	vProm = zeros(2)
+	tiempo = size(vecs,1)
+	NumParts = size(vecs,2)
 
-	N = size(vecs,1)
-	M = size(vecs,2)
+	# println("$tiempo,$NumParts")
 
-	println("$M,$N")
+	VecsProm = Array(Array{Float64,1}, tiempo)
 
-	for i in 1:2:M
-		vProm += [vecs[i],vecs[i+1]]
+	for i in 1:tiempo
+		vProm = zeros(2)
+		println(vProm)
+		for j in 1:2:NumParts
+			# vProm += [vecs[i,j],vecs[i,j+1]]
+			broadcast!(+,vProm,vProm,[vecs[i,j],vecs[i,j+1]])
+			# println(vProm)
+		end
+		# scale!(vProm,1/NumParts)
+		# println(vProm)
+		
+		# push!(VecsProm, vProm)
+		VecsProm[i] = vProm
 	end
 
-	println(vProm)
-	scale!(vProm,1/M)
-	println(vProm)
-	println(norm(vProm))
+	return VecsProm
+end
+
+## =========================== ## ## =========================== ##
+
+function OrderParam(proms::Vector, v0::Float64)
+
+	psi = Array(Float64,size(proms,1))
+
+	for i in 1:size(proms,1)
+		psi[i] = norm(proms[i])/v0
+	end
+
+	return psi
 end
 
 ## =========================== ## ## =========================== ##

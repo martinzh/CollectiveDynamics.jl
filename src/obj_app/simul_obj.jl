@@ -89,6 +89,7 @@ function PrintParams()
     write(d,"regimen de velocidad = $l\n");
     write(d,"iteraciones = $T\n");
     write(d,"frec muestreo = $step\n");
+    write(d,"v0 = $v0\n");
 
     close(d)
 end
@@ -145,11 +146,11 @@ end
 const dt   = 1.0
 
 const v0   = 1.0
-const w    = 1.0 # Peso relativo de vecindades
+const w    = 0.0 # Peso relativo de vecindades
 
 
-const p    = 3.5  # Densidad
-const L    = 10.0 # Tamaño caja inicial
+const p    = 350.0  # Densidad
+const L    = 1.0 # Tamaño caja inicial
 const l    = 0.25 # Regimen de Velocidad
 
 const N = convert(Int64, L * L * p) # Numero de particulas (entero)
@@ -161,11 +162,12 @@ r0 = v0 * dt / l
 # ==================================== Salida de Datos ===========================================
 
 # path = "../DATA/data_f$(f)"
-# path = "/Users/martinzh/DATOS_SIMS/DatJul/data_f$(f)"
 
 # path = "/home/martin/DATOS_SIMS/DataJul/data_f$(f)"
+# path = "/home/martin/DATOS_SIMS/DataJul/data_eta$(eta)"
 
-path = "/home/martin/DATOS_SIMS/DataJul/data_eta$(eta)"
+# path = "/Users/martinzh/DATOS_SIMS/DatJul/data_f$(f)"
+path = "/Users/martinzh/DATOS_SIMS/DatJul/data_eta$(eta)"
 
 MakeDir()
 PrintParams()

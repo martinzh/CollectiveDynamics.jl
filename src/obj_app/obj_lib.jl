@@ -225,7 +225,7 @@ end
 
 #Actualiza velocidades
 
-function UpdateVel!(parts::Array{Bird,1},SR::SparseMatrixCSC{Float64,Int64},LR::SparseMatrixCSC{Float64,Int64},ruido::Float64,w::Float64)
+function UpdateVel!(parts::Array{Bird,1},SR::SparseMatrixCSC{Float64,Int64},ruido::Float64,w::Float64)
 
     AS = GetAngs(parts,SR) #Angulos inter corto
     AL = GetAngsIN(parts) #Angulos inter largo
@@ -234,7 +234,7 @@ function UpdateVel!(parts::Array{Bird,1},SR::SparseMatrixCSC{Float64,Int64},LR::
 
       ang_rand = RandNum(1.0*pi) # angulo aleatorio
 
-      ang_tot =  w * (AS[i]) + (1-w) * (AL[i]) + ang_rand*ruido
+      ang_tot =  w * (AS[i]) + (1.0 - w) * (AL[i]) + ang_rand*ruido
 
       RotVec!(parts[i].vel,ang_tot)
 
@@ -251,7 +251,7 @@ function Evoluciona(i::Int64, step::Int64, parts::Array{Bird,1},ruido::Float64,w
   SR = SetSR(r0,Dist,parts)
 
   UpdatePos!(parts,dt)
-  UpdateVel!(parts,SR,LR,ruido,w)
+  UpdateVel!(parts,SR,ruido,w)
 
   # println(i)
 
