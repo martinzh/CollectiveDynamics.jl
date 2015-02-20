@@ -28,10 +28,11 @@ function PrintTrays(i::Int64,parts::Array{Bird,1})
     N = size(parts,1)
 
     line = ""
+
     for i in 1:N
-        line *= replace(repr(parts[i].pos)[2:end-1],","," ")
+        line *= replace(repr(parts[i].pos)[2:end-1],",",'\t')
         if i<N
-            line *= " "
+            line *= "\t"
         end
     end
 
@@ -48,11 +49,14 @@ function PrintVels(i::Int64,parts::Array{Bird,1})
     
     # write(vels,"$i\t")
 
+    N = size(parts,1)
+
     line = ""
+
     for i in 1:N
-        line *= replace(repr(parts[i].vel)[2:end-1],","," ")
+        line *= replace(repr(parts[i].vel)[2:end-1],",",'\t')
         if i<N
-            line *= " "
+            line *= "\t"
         end
     end
 
@@ -67,10 +71,10 @@ end
 #Escribe Matriz Distancias
 function PrintDist(i::Int64,Dist::Array{Float64,2})
     # d = open("../$path/dists/$i.txt","w")
-    d = open("$path/dists/$i.txt","w")
-
-    writedlm(d,Dist,'\t')
-    close(d)
+    # d = open("$path/dists/$i.txt","w")
+    # writedlm(d,Dist,'\t')
+    # close(d)
+    writedlm("$path/dists/$i.txt",Dist,'\t')
 end
 
 ## =========================== ## ## =========================== ##

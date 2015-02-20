@@ -1,8 +1,8 @@
 ## =========================== ## ## =========================== ##
 
-# 				Libreria para estadistica de datos de simulacion
-#											 Martin Zumaya Hernandez 
-# 														9/2/15
+## 				Libreria para estadistica de datos de simulacion			 ##	
+##										 Martin Zumaya Hernandez 									 ##
+## 														9/2/15														 ##
 
 ## =========================== ## ## =========================== ##
 
