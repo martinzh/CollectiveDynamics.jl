@@ -99,25 +99,41 @@ function VecProm(vecs::Array{Float64,2}, itTot::Int64, step::Int64)
 	# tiempo = vcat([1],[ i*step for i = 1:itTot])
 
 	tiempo = size(vecs,1)
-	NumParts = size(vecs,2)
+	NumCols = size(vecs,2)
 
-	# println("$tiempo,$NumParts")
+	# println("$tiempo,$NumCols")
 
-	VecsProm = Array(Array{Float64,1}, tiempo)
+	# VecsProm = Array(Array{Float64,1}, tiempo)
+
+	VecsProm = zeros(tiempo,2)
 
 	for i in 1:tiempo
 		vProm = zeros(2)
-		println(vProm)
-		for j in 1:2:NumParts
+		# println(vProm)
+		# k = 0
+		for j in 1:2:NumCols
+			
 			# vProm += [vecs[i,j],vecs[i,j+1]]
-			broadcast!(+,vProm,vProm,[vecs[i,j],vecs[i,j+1]])
+
+			vProm[1] += vecs[i,j]
+			vProm[2] += vecs[i,j+1]
+
+			# println("$i\t$j\t$(j+1)")
+			# broadcast!(+,vProm,vProm,[vecs[i,j],vecs[i,j+1]])
 			# println(vProm)
+			# k += 1
 		end
-		# scale!(vProm,1/NumParts)
+		# println(k)
+		# println(0.5*NumCols)
+
+		scale!(vProm,1.0/(0.5*NumCols))
 		# println(vProm)
 		
 		# push!(VecsProm, vProm)
-		VecsProm[i] = vProm
+		
+		VecsProm[i,1] = vProm[1]
+		VecsProm[i,2] = vProm[2]
+
 	end
 
 	return VecsProm
@@ -125,12 +141,24 @@ end
 
 ## =========================== ## ## =========================== ##
 
-function OrderParam(proms::Vector, v0::Float64)
+function OrderParam(vecs::Array{Float64,2}, v0::Float64)
 
-	psi = Array(Float64,size(proms,1))
+	tiempo = size(vecs,1)
+	NumParts = size(vecs,2)
 
-	for i in 1:size(proms,1)
-		psi[i] = norm(proms[i])/v0
+	psi = zeros(tiempo)
+
+	for i in 1:tiempo
+
+		vProm = zeros(2)
+
+		for j in 1:2:NumParts
+			vProm += [vecs[i,j],vecs[i,j+1]]
+			# broadcast!(+,vProm,vProm,[vecs[i,j],vecs[i,j+1]])
+		end
+
+		psi[i] = norm(vProm)/(0.5*NumParts*v0)
+
 	end
 
 	return psi
