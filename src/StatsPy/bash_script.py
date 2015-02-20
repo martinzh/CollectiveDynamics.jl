@@ -1,8 +1,7 @@
 
 import sys
 
-# nombre = '../Julia/runs_script.sh'
-nombre = '../Julia_Obj/runs_script.sh'
+nombre = '../obj_app/runs_script.sh'
 
 script = open(nombre,'w')
 
@@ -34,12 +33,19 @@ script.write("#!/bin/bash\n")
 #   else:
 #     script.write( "nohup julia simul_obj.jl " + repr(start + round(i*step,7)) + " " + T + " " + rate + " &\n")
 
+# for i in range(N):
+#   # if i%6 == 0:
+#   if i%(procs) == 0:
+#     script.write( "(time julia simul_obj.jl " + repr(start + round(i*step,7)) + " " + T + " " + rate + ") 2>> tiempo.dat \n")
+#   else:
+#     script.write( "(time nohup julia simul_obj.jl " + repr(start + round(i*step,7)) + " " + T + " " + rate + " &) 2>> tiempo.dat\n")
+
 for i in range(N):
   # if i%6 == 0:
   if i%(procs) == 0:
-    script.write( "(time julia simul_obj.jl " + repr(start + round(i*step,7)) + " " + T + " " + rate + ") 2>> tiempo.dat \n")
+    script.write( "(time julia simul_obj.jl 0.0 " + T + " " + rate + " " + repr(start + round(i*step,7)) + ") 2>> tiempo.dat \n")
   else:
-    script.write( "(time nohup julia simul_obj.jl " + repr(start + round(i*step,7)) + " " + T + " " + rate + " &) 2>> tiempo.dat\n")
+    script.write( "(time nohup julia simul_obj.jl 0.0 " + T + " " + rate + " " + repr(start + round(i*step,7)) + " &) 2>> tiempo.dat\n")
 
 
 script.close()

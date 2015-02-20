@@ -1,27 +1,31 @@
-########################################################
-# Libreria para estadistica de datos de simulacion
-# Martin Zumaya Hernandez 
-# 9/2/15
-########################################################
+## =========================== ## ## =========================== ##
+
+# 				Libreria para estadistica de datos de simulacion
+#											 Martin Zumaya Hernandez 
+# 														9/2/15
+
+## =========================== ## ## =========================== ##
 
 module Tmp
 using DataFrames
 using Wavelets
 
-########################################################
-# 			INICIA MODULO
-########################################################
+## =========================== ## ## =========================== ##
+# 										  		INICIA MODULO
+## =========================== ## ## =========================== ##
 
-ext = ".dat" #Extension de los archivos de datos
-dists = "dists_mat/" #Directorio con archivos de distancias
 
-########################################################
+# ext = ".dat" #Extension de los archivos de datos
+ext = ".txt" #Extension de los archivos de datos
+dists = "dists/" #Directorio con archivos de distancias
 
-	# Obtiene parametros de archivo en el directorio path
+## =========================== ## ## =========================== ##
 
-function GetParams(path)
+# Obtiene parametros de archivo en el directorio path
 
-	data = "$path/parametros$ext"
+function GetParams(path::String)
+
+	data = "$path/params$ext"
 
 	println(data)
 
@@ -40,41 +44,25 @@ function GetParams(path)
 
 end
 
-########################################################
+## =========================== ## ## =========================== ##
+
 
 	# Obtiene trayectorias de archivo
 
-function	GetTrays(path)
+function	GetVecs(path::String, comp::String)
 
-	data = "$path/trays$ext"
-
-	println(data)
-
-	raw_trays = readdlm(data,'\t')
-
-	return convert(Array{Float64,2},raw_trays[1:end,1:end-1])
-
-end
-
-########################################################
-
-function	GetVels(path)
-
-	# Obtiene velocidades de archivo
-
-	data = "$path/vels$ext"
+	data = "$path/$comp$ext"
 
 	println(data)
 
-	raw_vels = readdlm(data,'\t')
-
-	return convert(Array{Float64,2},raw_vels[1:end,1:end-1])
+	return readdlm(data)
 
 end
 
-########################################################
+## =========================== ## ## =========================== ##
 
-function	GetDists(path, t::Int64)
+
+function	GetDists(path::String, t::Int64)
 
 	# Obtiene matriz de distancias
 
@@ -88,7 +76,6 @@ function	GetDists(path, t::Int64)
 
 	# Matriz traignular de distancias
 
-	# dist_LT = triu(convert(Array{Float64,2},raw_dists[1:end,1:end-1]))
 	dist_LT = tril(convert(Array{Float64,2},raw_dists[1:end,1:end-1]))
 
 	# Vector con de distancias
@@ -105,10 +92,31 @@ function	GetDists(path, t::Int64)
 
 end
 
-########################################################
+## =========================== ## ## =========================== ##
 
-########################################################
-# 					TERMINA MODULO 
-########################################################
+function VecProm(vecs::Array{Float64,2}, itTot::Int64, step::Int64)
+
+	tiempo = vcat([1],[ i*step for i = 1:itTot])
+
+	vProm = zeros(2)
+
+	N = size(vecs,1)
+	M = size(vecs,2)
+
+	println("$M,$N")
+
+	for i in 1:2:M
+		vProm += [vecs[i],vecs[i+1]]
+	end
+
+	println(vProm)
+	scale!(vProm,1/M)
+	println(vProm)
+	println(norm(vProm))
+end
+
+## =========================== ## ## =========================== ##
+#								 					TERMINA MODULO 
+## =========================== ## ## =========================== ##
 
 end

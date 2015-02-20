@@ -1,12 +1,10 @@
-########################
+## =========================== ##
 
 # Martin Zumaya Hernandez
 # Diciembre 2014
 # Simulacion Flocks
 
-########################
-
-########################
+## =========================== ##
 
 # Parametros de linea de comandos:
 
@@ -14,51 +12,68 @@
 # 2 -> Total de iteraciones
 # 3 -> Frecuencia de muestreo
 
-########################
+## =========================== ##
 
 include("obj_lib.jl")
 
-#Escribe trayectorias
-function PrintTrays(i::Int64,parts::Array{Bird1,1})
+# ==================================== Funciones  ==============================================
 
-    write(trays,"$i\t")
-    
-    for bird = parts
-        write(trays,repr(bird.pos)[2:end-1])
-        # writedlm(trays,bird.pos,'\t')
-        # write(trays,bird.pos)
-        write(trays,"\t")
+## =========================== ## ## =========================== ##
+
+#Escribe trayectorias
+function PrintTrays(i::Int64,parts::Array{Bird,1})
+
+    # write(trays,"$i\t")
+
+    N = size(parts,1)
+
+    line = ""
+    for i in 1:N
+        line *= replace(repr(parts[i].pos)[2:end-1],","," ")
+        if i<N
+            line *= " "
+        end
     end
 
-    write(trays,"\n")
+    line *= "\n"
+
+    write(trays,line)
+
 end
+
+## =========================== ## ## =========================== ##
 
 #Escribe velocidades
-function PrintVels(i::Int64,parts::Array{Bird1,1})
+function PrintVels(i::Int64,parts::Array{Bird,1})
     
-    write(vels,"$i\t")
+    # write(vels,"$i\t")
 
-    for bird = parts
-        write(vels,repr(bird.vel)[2:end-1])
-        # write(vels,bird.vel,'\t')
-        # write(vels,bird.vel)
-        write(vels,"\t")
+    line = ""
+    for i in 1:N
+        line *= replace(repr(parts[i].vel)[2:end-1],","," ")
+        if i<N
+            line *= " "
+        end
     end
 
-    write(vels,"\n")
+    line *= "\n"
+
+    write(vels,line)
+
 end
+
+## =========================== ## ## =========================== ##
 
 #Escribe Matriz Distancias
 function PrintDist(i::Int64,Dist::Array{Float64,2})
     # d = open("../$path/dists/$i.txt","w")
     d = open("$path/dists/$i.txt","w")
-    # for j = 1:size(Dist)[1]
-    #     write(d,repr(Dist[j;:])[2:end-1])
-    #     write(d,"\n")
-    # end
+
     writedlm(d,Dist,'\t')
     close(d)
 end
+
+## =========================== ## ## =========================== ##
 
 #Escribe Archivo de Parametros
 function PrintParams()
@@ -70,7 +85,6 @@ function PrintParams()
     write(d,"radio = $r0\n");
     write(d,"f = $f\n");
     write(d,"intensidad de ruido = $eta\n");
-    # write(d,"ruido largo alcance = $hl\n");
     write(d,"peso relativo = $w\n");
     write(d,"regimen de velocidad = $l\n");
     write(d,"iteraciones = $T\n");
@@ -79,82 +93,84 @@ function PrintParams()
     close(d)
 end
 
+## =========================== ## ## =========================== ##
+
 function MakeDir()
     try
         # run(`mkdir ../$path`)
         # run(`mkdir ../$path/dists`)
-        # run(`mkdir ../$path/adjs`)
 
         run(`mkdir $path`)
         run(`mkdir $path/dists`)
-        # run(`mkdir ../$path/adjs`)
+
     catch y
         println(typeof(y))
     end
 end
 
+## =========================== ## ## =========================== ##
 
-# ==================================== Parametros ==============================================
+# ==================================== Funciones END ============================================
 
-    # dt -> delta t
-    # f -> fraccion de conexiones aleatorias relativo al total de parts
-    # Vo -> magnitud de la velocidad de las particulas
-    # ht ->ruido topologico
-    # hg -> ruido geometrico
-    # pg -> peso de vecindad geometrica
-    # p  -> densidad
-    # psi -> parametro de orden
-    # l  -> regimen de velocidad (tamanio de paso relativo al radio de interaccion)
-    # r -> radio de interaccion
-    # N -> numero de particulas
+# ==================================== Parametros START ==========================================
+
+# dt  = delta t
+# f   = fraccion de conexiones aleatorias relativo al total de parts
+# Vo  = magnitud de la velocidad de las particulas
+# eta = intensidad del ruido
+# pg  = peso de vecindad geometrica
+# p   = densidad
+# psi = parametro de orden
+# l   = regimen de velocidad (tamanio de paso relativo al radio de interaccion)
+# r   = radio de interaccion
+# N   = numero de particulas
 
 if size(ARGS)[1] != 0
 
     const f    = float(ARGS[1])
     const T    = int(ARGS[2])
     const step = int(ARGS[3])
+    const eta  = float(ARGS[4])
 
 else
     const f    = 0.099
-    const T    = 1000 #iteraciones
+    const T    = 500 #iteraciones
     const step = 50 #se recupera informacion cada step
+    const eta  = 0.1 #Parametro de ruido
 
 end
 
 #Valores default de parametros
-const dim  = 2
+
 const dt   = 1.0
 
 const v0   = 1.0
-const w    = 0.15 # Peso relativo de vecindades
+const w    = 1.0 # Peso relativo de vecindades
 
-const eta   = 0.1 #Parametro de ruido
-# const hs   = 0.1
 
-const p    = 1.2  # Densidad
-const L    = 30.0 # Tamaño caja inicial
+const p    = 3.5  # Densidad
+const L    = 10.0 # Tamaño caja inicial
 const l    = 0.25 # Regimen de Velocidad
-
 
 const N = convert(Int64, L * L * p) # Numero de particulas (entero)
 
 r0 = v0 * dt / l
 
-println(eta)
+# ==================================== Parametros END ============================================
 
-#Crea estructura de folders
+# ==================================== Salida de Datos ===========================================
 
 # path = "../DATA/data_f$(f)"
-path = "/home/martin/DATOS_SIMS/DataJul/data_f$(f)"
 # path = "/Users/martinzh/DATOS_SIMS/DatJul/data_f$(f)"
+
+# path = "/home/martin/DATOS_SIMS/DataJul/data_f$(f)"
+
+path = "/home/martin/DATOS_SIMS/DataJul/data_eta$(eta)"
 
 MakeDir()
 PrintParams()
 
 k = convert(Int64,floor(f*N)) # Conectividad en funcion de la fraccion de particulas
-
-# trays = open("../$path/trays.txt","w")
-# vels = open("../$path/vels.txt","w")
 
 trays = open("$path/trays.txt","w")
 vels = open("$path/vels.txt","w")
@@ -163,25 +179,27 @@ println("Particulas = $N")
 println("Radio = $r0")
 println("Conectividad = $f")
 
-# parts = Array(Bird,N)
-parts = Array(Bird1,N)
+# ==================================== Inicializacion ============================================
 
+parts = Array(Bird,N)
 Dist = zeros(N,N) #Matriz de distancias
 
 #Usando sparse
 LR = spzeros(N,N) #Interacciones de largo alcanze
                   #No cambia en el tiempo
-# SetLR(k,N,LR)
 
-# InitParts(N,L,v0)
 InitParts(N,L,v0,k)
 
+# ==================================== Simulacion ============================================
 
 for i = 1:T
 
-    @time Evoluciona(i,step,parts,eta,w)
-    # Evoluciona(i,step,parts,eta,w)
+    # @time Evoluciona(i,step,parts,eta,w)
+    Evoluciona(i,step,parts,eta,w)
 
 end
 
+# ==================================== Cierra ============================================
+
 close(trays)
+close(vels)
