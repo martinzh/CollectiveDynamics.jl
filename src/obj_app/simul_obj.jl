@@ -67,9 +67,9 @@ r0 = v0 * dt / l
 
 # ==================================== Salida de Datos ===========================================
 
-path = "/home/martin/DATOS_SIMS/DataJul/data_eta$(eta)_k$(k)"
+# path = "/home/martin/DATOS_SIMS/DataJul/data_eta$(eta)_k$(k)"
 
-# path = "/Users/martinzh/DATOS_SIMS/DatJul/data_eta$(eta)_k$(k)"
+path = "/Users/martinzh/DATOS_SIMS/DatJul/data_eta$(eta)_k$(k)"
 
 MakeDir()
 PrintParams()
