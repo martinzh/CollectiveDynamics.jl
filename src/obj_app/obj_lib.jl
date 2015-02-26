@@ -18,7 +18,6 @@ type Bird
   pos::Array{Float64,1}
   vel::Array{Float64,1}
   inputs::Array{Int64,1}
-  # tag::Int64
 end
 
 ## =========================== ## ## =========================== ##
@@ -31,6 +30,16 @@ end
 
 function RandNum(L::Float64)
   return -L + rand()*2.0*L
+end
+
+## =========================== ## ## =========================== ##
+
+# Regresa angulo entre 2 vectores
+
+function AngVecs(v1::Array{Float64,1},v2::Array{Float64,1})
+    a1 = atan2(v1[2],v1[1])
+    a2 = atan2(v2[2],v2[1])
+    return a2-a1
 end
 
 ## =========================== ## ## =========================== ##
@@ -178,7 +187,8 @@ function GetAngs(parts::Array{Bird,1}, A::SparseMatrixCSC{Float64,Int64})
 
         if k > 0
             scale!(v_prom,1.0/k)
-            angs[i] = atan2(v_prom[2],v_prom[1]) #agrega el angulo al arreglo
+            # angs[i] = atan2(v_prom[2],v_prom[1]) #agrega el angulo al arreglo
+            angs[i] = AngVecs(parts[i].vel,v_prom) #agrega el angulo al arreglo
         end
 
     end
@@ -213,7 +223,9 @@ function GetAngsIN(parts::Array{Bird,1})
             end
 
             scale!(v_prom,1.0/k)
-            angs[i] = atan2(v_prom[2],v_prom[1]) #agrega el angulo al arreglo
+            # angs[i] = atan2(v_prom[2],v_prom[1]) #agrega el angulo al arreglo
+            angs[i] = AngVecs(parts[i].vel,v_prom) #agrega el angulo al arreglo
+            
         end
 
     end

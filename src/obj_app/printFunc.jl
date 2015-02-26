@@ -64,7 +64,7 @@ function PrintParams()
     # d = open("../$path/params.txt","w")
     d = open("$path/params.txt","w")
 
-    write(d,"Particulas = $N\n")
+    write(d,"particulas = $N\n")
     write(d,"densidad = $p\n")
     write(d,"radio = $r0\n");
     write(d,"conectividad = $k\n");

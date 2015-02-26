@@ -37,12 +37,14 @@ if size(ARGS)[1] != 0
     const T    = int(ARGS[2])
     const step = int(ARGS[3])
     const eta  = float(ARGS[4])
+    const w    = float(ARGS[5])
 
 else
     const k    = 2
     const T    = 500 #iteraciones
     const step = 50 #se recupera informacion cada step
     const eta  = 0.1 #Parametro de ruido
+    const w    = 1.0 # Peso relativo de vecindades : 0 => solo IN ; 1 => solo Geometricas
 
 end
 
@@ -51,24 +53,25 @@ end
 const dt   = 1.0
 
 const v0   = 1.0
-const w    = 1.0 # Peso relativo de vecindades : 0 => solo IN ; 1 => solo Geometricas
 
-const p    = 50.0  # Densidad
-const L    = 1.0 # Tamaño caja inicial
-const l    = 0.08 # Regimen de Velocidad
+const p    = 5.0  # Densidad
+const l    = 0.1 # Regimen de Velocidad
 
 # const N = convert(Int64, L * L * p) # Numero de particulas (entero)
+r0 = v0 * dt / l
 
+const L = r0 # Tamaño caja inicial
 const N = int(L * L * p) # Numero de particulas (entero)
 
-r0 = v0 * dt / l
 
 # ==================================== Parametros END ============================================
 
 # ==================================== Salida de Datos ===========================================
 
+# path = "/home/martin/DATOS_SIMS/DataJul/data_eta$(eta)_k$(k)_w$(w)"
 path = "/home/martin/DATOS_SIMS/DataJul/data_eta$(eta)_k$(k)"
 
+# path = "/Users/martinzh/DATOS_SIMS/DatJul/data_eta$(eta)_k$(k)_w$(w)"
 # path = "/Users/martinzh/DATOS_SIMS/DatJul/data_eta$(eta)_k$(k)"
 
 MakeDir()
@@ -86,7 +89,7 @@ println("Conectividad = $k")
 parts = Array(Bird,N)
 Dist = zeros(N,N) #Matriz de distancias
 
-InitParts(N,L,v0,k)
+InitParts(N,4*L,v0,k)
 
 #Usando sparse ==> Se hace con los arreglos de cada particula
 # LR = spzeros(N,N) #Interacciones de largo alcanze
