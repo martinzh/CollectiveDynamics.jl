@@ -68,17 +68,10 @@ const N = int(L * L * p) # Numero de particulas (entero)
 
 # ==================================== Salida de Datos ===========================================
 
-<<<<<<< HEAD
-# path = "/home/martin/DATOS_SIMS/DataJul/data_eta$(eta)_k$(k)_w$(w)"
-path = "/home/martin/DATOS_SIMS/DataJul/data_eta$(eta)_k$(k)"
 
-# path = "/Users/martinzh/DATOS_SIMS/DatJul/data_eta$(eta)_k$(k)_w$(w)"
+path = "/Users/martinzh/DATOS_SIMS/DatJul/data_eta$(eta)_k$(k)_w$(w)"
 # path = "/Users/martinzh/DATOS_SIMS/DatJul/data_eta$(eta)_k$(k)"
-=======
-# path = "/home/martin/DATOS_SIMS/DataJul/data_eta$(eta)_k$(k)"
 
-path = "/Users/martinzh/DATOS_SIMS/DatJul/data_eta$(eta)_k$(k)"
->>>>>>> d72f798f8b217669cf805ccbbcc5afb160c22f5e
 
 MakeDir()
 PrintParams()
