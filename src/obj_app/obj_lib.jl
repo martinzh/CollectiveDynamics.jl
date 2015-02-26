@@ -135,7 +135,7 @@ function SetSR(r0::Float64,Dist::Array{Float64,2},parts::Array{Bird,1})
         d = norm(parts[i].pos - parts[j].pos)
 
         Dist[i,j] = Dist[j,i] = d
-        # Dist[i;j] = d
+        # Dist[j,i] = d
 
         # if d > 0.0 && d < r0
         if d <= r0
