@@ -18,14 +18,6 @@ print(N)
 
 script.write("#!/bin/bash\n")
 
-# for i in range(1,N+1):
-# for i in range(N):
-#   # if i%6 == 0:
-#   if i%(N/2) == 0:
-#     script.write( "julia simul.jl " + repr(start + round(i*step,4)) + "\n")
-#   else:
-#     script.write( "nohup julia simul.jl " + repr(start + round(i*step,4)) + " &\n")
-
 # for i in range(N):
 #   # if i%6 == 0:
 #   if i%(procs) == 0:
