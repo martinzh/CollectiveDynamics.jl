@@ -91,7 +91,7 @@ println("Conectividad = $k")
 parts = Array(Bird,N)
 Dist = zeros(N,N) #Matriz de distancias
 
-InitParts(N,10*L,v0,k)
+InitParts(N,5*L,v0,k)
 
 #Usando sparse ==> Se hace con los arreglos de cada particula
 # LR = spzeros(N,N) #Interacciones de largo alcanze
