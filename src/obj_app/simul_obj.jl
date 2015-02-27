@@ -54,7 +54,7 @@ const dt   = 1.0
 
 const v0   = 1.0
 
-const p    = 5.0  # Densidad
+const p    = 2.5  # Densidad
 const l    = 0.1 # Regimen de Velocidad
 
 # const N = convert(Int64, L * L * p) # Numero de particulas (entero)
@@ -69,8 +69,11 @@ const N = int(L * L * p) # Numero de particulas (entero)
 # ==================================== Salida de Datos ===========================================
 
 
-path = "/Users/martinzh/DATOS_SIMS/DatJul/data_eta$(eta)_k$(k)_w$(w)"
-# path = "/Users/martinzh/DATOS_SIMS/DatJul/data_eta$(eta)_k$(k)"
+# path = "/Users/martinzh/DATOS_SIMS/DatJul/data_eta$(eta)_k$(k)_w$(w)"
+
+path = "/home/martin/DATOS_SIMS/DatJul/data_eta$(eta)_k$(k)_w$(w)"
+
+
 
 
 MakeDir()
@@ -88,7 +91,7 @@ println("Conectividad = $k")
 parts = Array(Bird,N)
 Dist = zeros(N,N) #Matriz de distancias
 
-InitParts(N,4*L,v0,k)
+InitParts(N,10*L,v0,k)
 
 #Usando sparse ==> Se hace con los arreglos de cada particula
 # LR = spzeros(N,N) #Interacciones de largo alcanze

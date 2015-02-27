@@ -10,7 +10,10 @@ stop  = float(sys.argv[2])
 step  = float(sys.argv[3])
 T     = sys.argv[4]
 rate  = sys.argv[5]
-procs = float(sys.argv[6])
+eta   = sys.argv[6]
+w     = sys.argv[7]
+
+procs = float(sys.argv[8])
 
 N     = int((stop - start)/step)
 
@@ -32,12 +35,15 @@ script.write("#!/bin/bash\n")
 #   else:
 #     script.write( "(time nohup julia simul_obj.jl " + repr(start + round(i*step,7)) + " " + T + " " + rate + " &) 2>> tiempo.dat\n")
 
+# eta = "0.35"
+# w   = "0.1"
+
 for i in range(N):
   # if i%6 == 0:
   if i%(procs) == 0:
-    script.write( "(time julia simul_obj.jl 0.0 " + T + " " + rate + " " + repr(start + round(i*step,7)) + ") 2>> tiempo.dat \n")
+    script.write( "(time julia simul_obj.jl " + repr(i) + " " + T + " " + rate + " " + eta + " " + w + ") 2>> tiempo.dat \n")
   else:
-    script.write( "(time nohup julia simul_obj.jl 0.0 " + T + " " + rate + " " + repr(start + round(i*step,7)) + " &) 2>> tiempo.dat\n")
+    script.write( "(time nohup julia simul_obj.jl " + repr(i) + " " + T + " " + rate + " " + eta + " " + w + " &) 2>> tiempo.dat\n")
 
 
 script.close()
