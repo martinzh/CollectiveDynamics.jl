@@ -1,7 +1,10 @@
 
-include("StatsLib.jl")
+# include("StatsLib.jl")
+include("../src/StatsJulia/StatsLib.jl")
 
-path = "/home/martin/DATOS_SIMS/DATOS/data_f0.0"
+# path = "/home/martin/DATOS_SIMS/DATOS/data_f0.0"
+
+path = "/Users/martinzh/DATOS_SIMS/DatJul/data_"
 
 # println(path)
 

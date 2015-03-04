@@ -1,4 +1,5 @@
-include("obj_lib.jl")
+# include("obj_lib.jl")
+include("../obj_lib.jl")
 
 N  = 2000
 L  = 10.0
