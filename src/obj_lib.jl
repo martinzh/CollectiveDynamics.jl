@@ -20,6 +20,8 @@ type Bird
   inputs::Array{Int64,1}
 end
 
+nzrange(S::SparseMatrixCSC, col::Integer) = S.colptr[col]:(S.colptr[col+1]-1)
+
 ## =========================== ## ## =========================== ##
 
 # Regresa Vector aleatorio entre -L:L
@@ -161,7 +163,8 @@ function GetAngs(parts::Array{Bird,1}, A::SparseMatrixCSC{Float64,Int64})
 
     # println(angs)
 
-    neigh = rowvals(A)
+    # neigh = rowvals(A)
+    neigh = A.rowval
 
     # for i = 1:n #itera sobre las particulas con vecindad
     for i = 1:size(A,2) #itera sobre las particulas con vecindad
