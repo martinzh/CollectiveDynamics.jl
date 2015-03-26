@@ -1,6 +1,11 @@
-# ==================================== Funciones  ==============================================
+## =========================== ##
 
-# Funciones para imprimirs
+# Martin Zumaya Hernandez
+# Enero 2015
+# Implementacion Flocks en Julia
+# Funciones para salida de Datos
+
+## =========================== ##
 
 ## =========================== ## ## =========================== ##
 

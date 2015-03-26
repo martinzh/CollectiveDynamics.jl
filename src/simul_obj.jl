@@ -12,6 +12,7 @@
 # 2 -> Total de iteraciones
 # 3 -> Frecuencia de muestreo
 # 4 -> Intensidad de ruido
+# 5 -> Peso vecindad geometrica (0 => solo IN ; 1 => solo Geometricas)
 
 ## =========================== ##
 
@@ -63,18 +64,12 @@ r0 = v0 * dt / l
 const L = r0 # Tamaño caja inicial
 const N = int(L * L * p) # Numero de particulas (entero)
 
-
-# ==================================== Parametros END ============================================
-
 # ==================================== Salida de Datos ===========================================
 
 
 # path = "/Users/martinzh/DATOS_SIMS/DatJul/data_eta$(eta)_k$(k)_w$(w)"
 
 path = "/home/martin/DATOS_SIMS/DatJul/data_eta$(eta)_k$(k)_w$(w)"
-
-
-
 
 MakeDir()
 PrintParams()
@@ -93,21 +88,13 @@ Dist = zeros(N,N) #Matriz de distancias
 
 InitParts(N,5*L,v0,k)
 
-#Usando sparse ==> Se hace con los arreglos de cada particula
-# LR = spzeros(N,N) #Interacciones de largo alcanze
-                  #No cambia en el tiempo
-
-
 # ==================================== Simulacion ============================================
 
 for i = 1:T
-
     # @time Evoluciona(i,step,parts,eta,w)
     Evoluciona(i,step,parts,eta,w)
-
 end
 
 # ==================================== Cierra ============================================
-
 close(trays)
 close(vels)

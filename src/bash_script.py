@@ -1,7 +1,7 @@
 
 import sys
 
-nombre = '../obj_app/runs_script.sh'
+nombre = './runs_script.sh'
 
 script = open(nombre,'w')
 
@@ -13,11 +13,15 @@ rate  = sys.argv[5]
 eta   = sys.argv[6]
 w     = sys.argv[7]
 
-procs = float(sys.argv[8])
 
 N     = int((stop - start)/step)
 
-print(N)
+if len(sys.argv) == 9 :
+	procs = float(sys.argv[8])
+else:
+	procs = N/2
+
+print(N,procs)
 
 script.write("#!/bin/bash\n")
 
