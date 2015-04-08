@@ -255,14 +255,14 @@ end
 
 function UpdateVel!(parts::Array{Bird,1},SR::SparseMatrixCSC{Float64,Int64},ruido::Float64,w::Float64)
 
-    AS = GetAngs(parts,SR) #Angulos inter corto
-    AL = GetAngsIN(parts) #Angulos inter largo
+    LOC = GetAngs(parts,SR) #Angulos inter corto
+    IN = GetAngsIN(parts) #Angulos inter largo
 
     for i = 1:size(parts,1)
 
       ang_rand = RandNum(1.0*pi) # angulo aleatorio
 
-      ang_tot =  w * (AS[i]) + (1.0 - w) * (AL[i]) + ang_rand*ruido
+      ang_tot =  w * (IN[i]) + (1.0 - w) * (LOC[i]) + ang_rand*ruido
 
       RotVec!(parts[i].vel,ang_tot)
 

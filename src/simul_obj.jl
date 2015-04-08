@@ -45,7 +45,7 @@ else
     const T    = 500 #iteraciones
     const step = 50 #se recupera informacion cada step
     const eta  = 0.25 #Parametro de ruido
-    const w    = 1.0 # Peso relativo de vecindades : 0 => solo IN ; 1 => solo Geometricas
+    const w    = 1.0 # Peso relativo de vecindades : 1 => solo IN ; 0 => solo Geometricas
 
 end
 
@@ -54,7 +54,7 @@ end
 const dt   = 1.0
 const v0   = 1.0
 
-const p    = 25  # Densidad
+const p    = 15  # Densidad
 const l    = 0.1 # Regimen de Velocidad
 
 # const N = convert(Int64, L * L * p) # Numero de particulas (entero)
@@ -65,8 +65,8 @@ const N = int(L * L * p) # Numero de particulas (entero)
 
 # ==================================== Salida de Datos ===========================================
 
-# path = "/Users/martinzh/DATOS_SIMS/DatJul/data_eta$(eta)_k$(k)_w$(w)"
-path = "/home/martin/DATOS_SIMS/DatJul/data_eta$(eta)_k$(k)_w$(w)"
+path = "/Users/martinzh/DATOS_SIMS/DatJul/data_eta$(eta)_k$(k)_w$(w)"
+# path = "/home/martin/DATOS_SIMS/DatJul/data_eta$(eta)_k$(k)_w$(w)"
 
 MakeDir()
 PrintParams()
@@ -83,7 +83,7 @@ println("Conectividad = $k")
 parts = Array(Bird,N)
 Dist = zeros(N,N) #Matriz de distancias
 
-InitParts(N,5*L,v0,k)
+InitParts(N,10*L,v0,k)
 
 # ==================================== Simulacion ============================================
 
