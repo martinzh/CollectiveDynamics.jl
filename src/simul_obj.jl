@@ -32,13 +32,14 @@ include("printFunc.jl")
 # r   = radio de interaccion
 # N   = numero de particulas
 
-if size(ARGS)[1] != 0
+if size(ARGS,1) != 0
 
     const k    = int(ARGS[1])
     const T    = int(ARGS[2])
     const step = int(ARGS[3])
     const eta  = float(ARGS[4])
     const w    = float(ARGS[5])
+    const p    = float(ARGS[6])  # Densidad
 
 else
     const k    = 2
@@ -46,6 +47,7 @@ else
     const step = 50 #se recupera informacion cada step
     const eta  = 0.25 #Parametro de ruido
     const w    = 1.0 # Peso relativo de vecindades : 1 => solo IN ; 0 => solo Geometricas
+    const p    = 5  # Densidad
 
 end
 
@@ -54,7 +56,6 @@ end
 const dt   = 1.0
 const v0   = 1.0
 
-const p    = 15  # Densidad
 const l    = 0.1 # Regimen de Velocidad
 
 # const N = convert(Int64, L * L * p) # Numero de particulas (entero)
@@ -88,8 +89,8 @@ InitParts(N,10*L,v0,k)
 # ==================================== Simulacion ============================================
 
 for i = 1:T
-    @time Evoluciona(i,step,parts,eta,w)
-    # Evoluciona(i,step,parts,eta,w)
+    # @time Evoluciona(i,step,parts,eta,w)
+    Evoluciona(i,step,parts,eta,w)
 end
 
 # ==================================== Cierra ============================================
