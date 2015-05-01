@@ -64,6 +64,16 @@ end
 
 ## =========================== ## ## =========================== ##
 
+#Escribe Adjacencias de la Red de Interaccion
+function PrintIntNet(parts::Array{Bird,1})
+    intNet = open("$path/intNet.txt","w")
+    for i in 1:size(parts,1)
+        write(intNet,repr(parts[i].inputs)[2:end-1]*"\n")
+    end
+end
+
+## =========================== ## ## =========================== ##
+
 #Escribe Archivo de Parametros
 function PrintParams()
     # d = open("../$path/params.txt","w")

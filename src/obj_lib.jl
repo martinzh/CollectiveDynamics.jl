@@ -49,18 +49,22 @@ end
 # Inicializa posiciones y velocidades
 # Velocidades normallizadas a v0
 
-# function InitParts(N::Int64,L::Float64,v0::Float64)
-#     for i = 1:N
-#     vel = RandVec(1.0)
-#     parts[i] = Bird(RandVec(L) , scale!(vel,v0/norm(vel)))
-#     end
-# end
+function InitParts(path::String,parts::Array{Bird,1})
 
-function InitParts(N::Int64,L::Float64,v0::Float64,k::Int64)
-	for i = 1:N
-	vel = RandVec(1.0)
-	parts[i] = Bird(RandVec(L) , scale!(vel,v0/norm(vel)), Inputs(k,N,i))
-	end
+    pos    = readdlm("$path/trays.txt")
+    vel    = readdlm("$path/vels.txt")
+    intNet = readdlm("$path/intNet.txt")
+
+    for i = 0:int(size(pos,2)*0.5)-1
+    parts[i] = Bird(pos[1,2i+1:2i+2]',vel[1,2i+1:2i+2]', intNet'[:,i+1])
+    end
+end
+
+function InitParts(parts::Array{Bird,1},N::Int64,L::Float64,v0::Float64,k::Int64)
+    for i = 1:N
+    vel = RandVec(1.0)
+    parts[i] = Bird(RandVec(L) , scale!(vel,v0/norm(vel)), Inputs(k,N,i))
+    end
 end
 
 ## =========================== ## ## =========================== ##
@@ -72,7 +76,7 @@ function UpdatePos!(parts::Array{Bird,1},dt::Float64)
     	broadcast!(+,bird.pos,bird.pos,scale(bird.vel,dt))
     	# bird.pos += scale(bird.vel,dt)
 		end
-end
+ end
 
 ## =========================== ## ## =========================== ##
 
@@ -201,7 +205,7 @@ end
 
 ## =========================== ## ## =========================== ##
 
-# Angulos de entradas en la red de itneraccion
+# Angulos de entradas en la red de interaccion
 
 function GetAngsIN(parts::Array{Bird,1})
 
@@ -210,7 +214,7 @@ function GetAngsIN(parts::Array{Bird,1})
     N = size(parts,1)
 
 	# Arreglo de angulos, 1 por particula
-    angs = zeros(N)
+    angs = Array(Float64,N)
 
     # println(angs)
 

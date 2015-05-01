@@ -43,11 +43,11 @@ if size(ARGS,1) != 0
 
 else
     const k    = 2
-    const T    = 500 #iteraciones
+    const T    = s500 #iteraciones
     const step = 50 #se recupera informacion cada step
-    const eta  = 0.25 #Parametro de ruido
-    const w    = 1.0 # Peso relativo de vecindades : 1 => solo IN ; 0 => solo Geometricas
-    const p    = 5  # Densidad
+    const eta  = 0.005 #Parametro de ruido
+    const w    = 0.005 # Peso relativo de vecindades : 1 => solo IN ; 0 => solo Geometricas
+    const p    = 20  # Densidad
 
 end
 
@@ -84,13 +84,13 @@ println("Conectividad = $k")
 parts = Array(Bird,N)
 Dist = zeros(N,N) #Matriz de distancias
 
-InitParts(N,10*L,v0,k)
+InitParts(parts,N,10*L,v0,k)
 
 # ==================================== Simulacion ============================================
 
 for i = 1:T
-    # @time Evoluciona(i,step,parts,eta,w)
-    Evoluciona(i,step,parts,eta,w)
+    @time Evoluciona(i,step,parts,eta,w)
+    # Evoluciona(i,step,parts,eta,w)
 end
 
 # ==================================== Cierra ============================================
