@@ -43,11 +43,11 @@ if size(ARGS,1) != 0
 
 else
     const k    = 2
-    const T    = s500 #iteraciones
+    const T    = 100 #iteraciones
     const step = 50 #se recupera informacion cada step
     const eta  = 0.005 #Parametro de ruido
     const w    = 0.005 # Peso relativo de vecindades : 1 => solo IN ; 0 => solo Geometricas
-    const p    = 20  # Densidad
+    const p    = 10  # Densidad
 
 end
 
@@ -58,7 +58,6 @@ const v0   = 1.0
 
 const l    = 0.1 # Regimen de Velocidad
 
-# const N = convert(Int64, L * L * p) # Numero de particulas (entero)
 r0 = v0 * dt / l
 
 const L = r0 # Tamaño caja inicial
@@ -66,8 +65,8 @@ const N = int(L * L * p) # Numero de particulas (entero)
 
 # ==================================== Salida de Datos ===========================================
 
-# path = "/Users/martinzh/DATOS_SIMS/DatJul/data_eta$(eta)_k$(k)_w$(w)"
-path = "/home/martin/DATOS_SIMS/DatJul/data_eta$(eta)_k$(k)_w$(w)"
+path = "/Users/martinzh/DATOS_SIMS/DatJul/data_eta$(eta)_k$(k)_w$(w)"
+# path = "/home/martin/DATOS_SIMS/DatJul/data_eta$(eta)_k$(k)_w$(w)"
 
 MakeDir()
 PrintParams()
@@ -82,15 +81,17 @@ println("Conectividad = $k")
 # ==================================== Inicializacion ============================================
 
 parts = Array(Bird,N)
-Dist = zeros(N,N) #Matriz de distancias
+dists = zeros(Float64,N,N) #Matriz de distancias
+noise = Array(Float64, N)
 
 InitParts(parts,N,10*L,v0,k)
+PrintIntNet(parts)
 
 # ==================================== Simulacion ============================================
 
 for i = 1:T
-    @time Evoluciona(i,step,parts,eta,w)
-    # Evoluciona(i,step,parts,eta,w)
+    @time Evoluciona(i,step,parts,eta,w,noise,dists)
+    # Evoluciona(i,step,parts,eta,w,noise,dists)
 end
 
 # ==================================== Cierra ============================================

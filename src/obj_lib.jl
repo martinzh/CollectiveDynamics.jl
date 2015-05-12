@@ -9,11 +9,6 @@
 
 # Definicion del tipo Bird
 
-# type Bird
-#   pos::Array{Float64,1}
-#   vel::Array{Float64,1}
-# end
-
 type Bird
   pos::Array{Float64,1}
   vel::Array{Float64,1}
@@ -32,6 +27,12 @@ end
 
 function RandNum(L::Float64)
   return -L + rand()*2.0*L
+end
+
+function setNoise(noise::Array{Float64,1})
+    for i in size(noise,1)
+        noise[i] = RandNum(1.0*pi)
+    end
 end
 
 ## =========================== ## ## =========================== ##
@@ -129,7 +130,8 @@ end
 
 #calcula distancias y adjacencia local
 
-function SetSR(r0::Float64,Dist::Array{Float64,2},parts::Array{Bird,1})
+function SetSR(r0::Float64,dists::Array{Float64,2},parts::Array{Bird,1})
+# function SetSR(r0::Float64,parts::Array{Bird,1})
 
     N = size(parts,1)
 
@@ -138,13 +140,11 @@ function SetSR(r0::Float64,Dist::Array{Float64,2},parts::Array{Bird,1})
 
     for i = 1:N , j = i+1:N
 
-        d = norm(parts[i].pos - parts[j].pos)
+        d = norm2(parts[i].pos - parts[j].pos)
 
-        Dist[i,j] = Dist[j,i] = d
-        # Dist[j,i] = d
+        dists[i,j] = dists[j,i] = d
 
-        # if d > 0.0 && d < r0
-        if d <= r0
+        if d <= r0*r0
             push!(I,i)
             push!(J,j)
         end
@@ -160,23 +160,17 @@ end
 
 function GetAngs(parts::Array{Bird,1}, A::SparseMatrixCSC{Float64,Int64})
 
-    N = size(parts,1)
-
     # Arreglo de angulos, 1 por particula
-    angs = zeros(N)
+    angs = zeros(Float64,size(parts,1))
 
-    # println(angs)
-
-    # neigh = rowvals(A)
     neigh = A.rowval
 
-    # for i = 1:n #itera sobre las particulas con vecindad
     for i = 1:size(A,2) #itera sobre las particulas con vecindad
 
             k = 0.0 # para guardar numero de parts en la vecindad
 
             # v_prom = parts[i].vel
-            v_prom = zeros(2)
+            v_prom = zeros(Float64,2)
 
             for j = nzrange(A,i)
 
@@ -194,7 +188,6 @@ function GetAngs(parts::Array{Bird,1}, A::SparseMatrixCSC{Float64,Int64})
 
         if k > 0
             scale!(v_prom,1.0/k)
-            # angs[i] = atan2(v_prom[2],v_prom[1]) #agrega el angulo al arreglo
             angs[i] = AngVecs(parts[i].vel,v_prom) #agrega el angulo al arreglo
         end
 
@@ -214,7 +207,8 @@ function GetAngsIN(parts::Array{Bird,1})
     N = size(parts,1)
 
 	# Arreglo de angulos, 1 por particula
-    angs = Array(Float64,N)
+    # angs = Array(Float64,N)
+    angs = zeros(Float64,N)
 
     # println(angs)
 
@@ -223,14 +217,13 @@ function GetAngsIN(parts::Array{Bird,1})
         for i = 1:N
             
             # v_prom = parts[i].vel
-            v_prom = zeros(2)
+            v_prom = zeros(Float64,2)
 
             for j = parts[i].inputs
                 v_prom += parts[j].vel
             end
 
             scale!(v_prom,1.0/k)
-            # angs[i] = atan2(v_prom[2],v_prom[1]) #agrega el angulo al arreglo
             angs[i] = AngVecs(parts[i].vel,v_prom) #agrega el angulo al arreglo
             
         end
@@ -257,16 +250,14 @@ end
 
 #Actualiza velocidades
 
-function UpdateVel!(parts::Array{Bird,1},SR::SparseMatrixCSC{Float64,Int64},ruido::Float64,w::Float64)
+function UpdateVel!(parts::Array{Bird,1},SR::SparseMatrixCSC{Float64,Int64},eta::Float64,w::Float64,ruido::Array{Float64,1})
 
     LOC = GetAngs(parts,SR) #Angulos inter corto
     IN = GetAngsIN(parts) #Angulos inter largo
 
     for i = 1:size(parts,1)
 
-      ang_rand = RandNum(1.0*pi) # angulo aleatorio
-
-      ang_tot =  w * (IN[i]) + (1.0 - w) * (LOC[i]) + ang_rand*ruido
+      ang_tot =  w * (IN[i]) + (1.0 - w) * (LOC[i]) + eta*ruido[i]
 
       RotVec!(parts[i].vel,ang_tot)
 
@@ -277,19 +268,20 @@ end
 
 #Actualiza todo
 
-function Evoluciona(i::Int64, step::Int64, parts::Array{Bird,1},ruido::Float64,w::Float64)
+function Evoluciona(i::Int64, step::Int64, parts::Array{Bird,1},eta::Float64,w::Float64, noise::Array{Float64,1}, dists::Array{Float64,2})
 
-  # @time SR = SetSR(r0,Dist,parts)
-  SR = SetSR(r0,Dist,parts)
+  setNoise(noise)
+  SR = SetSR(r0,dists,parts)
+  # SR = SetSR(r0,parts)
 
+  UpdateVel!(parts,SR,eta,w,noise)
   UpdatePos!(parts,dt)
-  UpdateVel!(parts,SR,ruido,w)
 
   if  i == 1 || i%step == 0
     println("t = $i writing")
     PrintTrays(i,parts)
     PrintVels(i,parts)
-    PrintDist(i,Dist)
+    PrintDist(i,dists)
   end
 
 end
