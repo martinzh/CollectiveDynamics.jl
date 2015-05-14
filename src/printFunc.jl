@@ -35,7 +35,7 @@ end
 
 #Escribe velocidades
 function PrintVels(i::Int64,parts::Array{Bird,1})
-    
+
     # write(vels,"$i\t")
 
     N = size(parts,1)
@@ -71,44 +71,41 @@ function PrintIntNet(parts::Array{Bird,1})
     for i in 1:size(parts,1)
         write(intNet,repr(parts[i].inputs)[2:end-1]*"\n")
     end
-    
+
     close(intNet)
 end
 
 ## =========================== ## ## =========================== ##
 
 #Escribe Archivo de Parametros
-function PrintParams()
-    # d = open("../$path/params.txt","w")
-    d = open("$path/params.txt","w")
+function PrintParams(path::ASCIIString)
 
-    write(d,"particulas = $N\n")
-    write(d,"densidad = $p\n")
-    write(d,"radio = $r0\n");
-    write(d,"conectividad = $k\n");
-    write(d,"intensidad de ruido = $eta\n");
-    write(d,"peso relativo = $w\n");
-    write(d,"regimen de velocidad = $l\n");
-    write(d,"iteraciones = $T\n");
-    write(d,"frec muestreo = $step\n");
-    write(d,"v0 = $v0\n");
+  d = open("$path/params.txt","w")
 
-    close(d)
+  write(d,"particulas           = $N\n")
+  write(d,"densidad             = $(params["p"])\n")
+  write(d,"radio                = $r0\n");
+  write(d,"conectividad         = $(params["k"])\n");
+  write(d,"intensidad de ruido  = $(params["eta"])\n");
+  write(d,"peso relativo        = $(params["w"])\n");
+  write(d,"regimen de velocidad = $l\n");
+  write(d,"iteraciones          = $(params["T"])\n");
+  write(d,"frec muestreo        = $(params["step"])\n");
+  write(d,"v0                   = $v0\n");
+
+  close(d)
+
 end
 
 ## =========================== ## ## =========================== ##
 
-function MakeDir()
-    try
-        # run(`mkdir ../$path`)
-        # run(`mkdir ../$path/dists`)
-
-        run(`mkdir $path`)
-        run(`mkdir $path/dists`)
-
-    catch y
-        println(typeof(y))
-    end
+function MakeDir(path::ASCIIString)
+  try
+    run(`mkdir $path`)
+    run(`mkdir $path/dists`)
+  catch y
+    println(typeof(y))
+  end
 end
 
 ## =========================== ## ## =========================== ##

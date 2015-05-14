@@ -43,9 +43,9 @@ end
 # Regresa angulo entre 2 vectores
 
 function AngVecs(v1::Array{Float64,1},v2::Array{Float64,1})
-    a1 = atan2(v1[2],v1[1])
-    a2 = atan2(v2[2],v2[1])
-    return a2-a1
+  a1 = atan2(v1[2],v1[1])
+  a2 = atan2(v2[2],v2[1])
+  return a2-a1
 end
 
 ## =========================== ## ## =========================== ##
@@ -54,33 +54,31 @@ end
 # Velocidades normallizadas a v0
 
 function InitParts(path::String,parts::Array{Bird,1})
+  pos    = readdlm("$path/trays.txt")
+  vel    = readdlm("$path/vels.txt")
+  intNet = readdlm("$path/intNet.txt",',',Int64)
 
-    pos    = readdlm("$path/trays.txt")
-    vel    = readdlm("$path/vels.txt")
-    intNet = readdlm("$path/intNet.txt")
-
-    for i = 0:int(size(pos,2)*0.5)-1
-    parts[i] = Bird(pos[1,2i+1:2i+2]',vel[1,2i+1:2i+2]', intNet'[:,i+1])
-    end
+  for i = 0:int(size(pos,2)*0.5)-1
+    parts[i+1] = Bird(reshape(pos[1,2i+1:2i+2],2), reshape(vel[1,2i+1:2i+2],2), reshape(intNet[i+1,:],2))
+  end
 end
 
 function InitParts(parts::Array{Bird,1},N::Int64,L::Float64,v0::Float64,k::Int64)
-    for i = 1:N
-      vel = RandVec(1.0)
-      parts[i] = Bird(RandVec(L) , scale!(vel,v0/norm(vel)), Inputs(k,N,i))
-    end
+  for i = 1:N
+    vel = RandVec(1.0)
+    parts[i] = Bird(RandVec(L) , scale!(vel,v0/norm(vel)), Inputs(k,N,i))
+  end
 end
 
 ## =========================== ## ## =========================== ##
 
 # Actualiza posiciones
-
 function UpdatePos!(parts::Array{Bird,1},dt::Float64)
-		for bird = parts
-    	broadcast!(+,bird.pos,bird.pos,scale(bird.vel,dt))
-    	# bird.pos += scale(bird.vel,dt)
-		end
- end
+	for bird = parts
+  	broadcast!(+,bird.pos,bird.pos,scale(bird.vel,dt))
+  	# bird.pos += scale(bird.vel,dt)
+	end
+end
 
 ## =========================== ## ## =========================== ##
 
@@ -131,26 +129,25 @@ end
 #calcula distancias y adjacencia local
 
 function SetSR(r0::Float64,dists::Array{Float64,2},parts::Array{Bird,1})
-# function SetSR(r0::Float64,parts::Array{Bird,1})
 
-    N = size(parts,1)
+  N = size(parts,1)
 
-    I = Int64[]
-    J = Int64[]
+  I = Int64[]
+  J = Int64[]
 
-    for i = 1:N , j = i+1:N
+  for i = 1:N , j = i+1:N
 
-        d = norm(parts[i].pos - parts[j].pos)
+    d = norm(parts[i].pos - parts[j].pos)
 
-        dists[i,j] = dists[j,i] = d
+    dists[i,j] = dists[j,i] = d
 
-        if d <= r0
-            push!(I,i)
-            push!(J,j)
-        end
+    if d <= r0
+      push!(I,i)
+      push!(J,j)
     end
+  end
 
-    return sparse(vcat(I,J),vcat(J,I),ones(2*size(I,1)))
+  return sparse(vcat(I,J),vcat(J,I),ones(2*size(I,1)))
 end
 
 ## =========================== ## ## =========================== ##
@@ -160,38 +157,38 @@ end
 
 function GetAngs(parts::Array{Bird,1}, A::SparseMatrixCSC{Float64,Int64})
 
-    # Arreglo de angulos, 1 por particula
-    angs = zeros(Float64,size(parts,1))
+  # Arreglo de angulos, 1 por particula
+  angs = zeros(Float64,size(parts,1))
 
-    neigh = A.rowval
+  neigh = A.rowval
 
-    for i = 1:size(A,2) #itera sobre las particulas con vecindad
+  for i = 1:size(A,2) #itera sobre las particulas con vecindad
 
-      k = 0.0 # para guardar numero de parts en la vecindad
+    k = 0.0 # para guardar numero de parts en la vecindad
 
-      # v_prom = parts[i].vel
-      v_prom = zeros(Float64,2)
+    # v_prom = parts[i].vel
+    v_prom = zeros(Float64,2)
 
-      for j = nzrange(A,i)
+    for j = nzrange(A,i)
 
-        # tal = neigh[j]
-        # println("part : $i ; vecina : $tal")
+      # tal = neigh[j]
+      # println("part : $i ; vecina : $tal")
 
-        v_prom += parts[neigh[j]].vel
+      v_prom += parts[neigh[j]].vel
 
-        k += 1.0
-
-      end
-
-      # println("k = $k")
-      if k > 0
-          scale!(v_prom,1.0/k)
-          angs[i] = AngVecs(parts[i].vel,v_prom) #agrega el angulo al arreglo
-      end
+      k += 1.0
 
     end
 
-    return angs
+    # println("k = $k")
+    if k > 0
+      scale!(v_prom,1.0/k)
+      angs[i] = AngVecs(parts[i].vel,v_prom) #agrega el angulo al arreglo
+    end
+
+  end
+
+  return angs
 end
 
 ## =========================== ## ## =========================== ##
@@ -213,21 +210,21 @@ function GetAngsIN(parts::Array{Bird,1})
 
     for i = 1:N
 
-    # v_prom = parts[i].vel
-    v_prom = zeros(Float64,2)
+      # v_prom = parts[i].vel
+      v_prom = zeros(Float64,2)
 
-    for j = parts[i].inputs
-      v_prom += parts[j].vel
-    end
+      for j = parts[i].inputs
+        v_prom += parts[j].vel
+      end
 
-    scale!(v_prom,1.0/k)
-    angs[i] = AngVecs(parts[i].vel,v_prom) #agrega el angulo al arreglo
+      scale!(v_prom,1.0/k)
+      angs[i] = AngVecs(parts[i].vel,v_prom) #agrega el angulo al arreglo
 
     end
 
   end
 
-    return angs
+  return angs
 end
 
 ## =========================== ## ## =========================== ##
@@ -268,13 +265,10 @@ end
 
 #Actualiza todo
 
-function Evoluciona(i::Int64, step::Int64, parts::Array{Bird,1},eta::Float64,w::Float64, noise::Array{Float64,1}, dists::Array{Float64,2})
+function Evoluciona(i::Int64, step::Int64, parts::Array{Bird,1},eta::Float64,w::Float64, dists::Array{Float64,2})
 
-  # setNoise(noise)
   SR = SetSR(r0,dists,parts)
-  # SR = SetSR(r0,parts)
 
-  # UpdateVel!(parts,SR,eta,w,noise)
   UpdateVel!(parts,SR,eta,w,setNoise(size(parts,1)))
   UpdatePos!(parts,dt)
 

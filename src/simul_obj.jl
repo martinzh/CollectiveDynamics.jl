@@ -6,18 +6,10 @@
 
 ## =========================== ##
 
-# Parametros de linea de comandos:
-
-# 1 -> Conectividad
-# 2 -> Total de iteraciones
-# 3 -> Frecuencia de muestreo
-# 4 -> Intensidad de ruido
-# 5 -> Peso vecindad geometrica (0 => solo IN ; 1 => solo Geometricas)
-
-## =========================== ##
-
 include("obj_lib.jl")
 include("printFunc.jl")
+
+using ArgParse
 
 # ==================================== Parametros START ==========================================
 
@@ -32,26 +24,44 @@ include("printFunc.jl")
 # r   = radio de interaccion
 # N   = numero de particulas
 
-if size(ARGS,1) != 0
+s = ArgParseSettings()
 
-    const k    = int(ARGS[1])
-    const T    = int(ARGS[2])
-    const step = int(ARGS[3])
-    const eta  = float(ARGS[4])
-    const w    = float(ARGS[5])
-    const p    = float(ARGS[6])  # Densidad
-
-else
-    const k    = 2
-    const T    = 200 #iteraciones
-    const step = 50 #se recupera informacion cada step
-    const eta  = 0.005 #Parametro de ruido
-    const w    = 0.005 # Peso relativo de vecindades : 1 => solo IN ; 0 => solo Geometricas
-    const p    = 5  # Densidad
-
+@add_arg_table s begin
+  "-m"
+      help    = "selects OS"
+      action  = :store_true
+      default = false
+  "-r"
+      help    = "replica system"
+      action  = :store_true
+      default = false
+  "k"
+      help     = "Interaction Network's Connectivity"
+      arg_type = Int64
+      default  = 2
+  "T"
+      help     = "Total iterations"
+      arg_type = Int64
+      default  = 100
+  "step"
+      help     = "Sampling Frequency"
+      arg_type = Int64
+      default  = 10
+  "eta"
+      help     = "Noise Intensity"
+      arg_type = Float64
+      default  = 0.005
+  "w"
+      help     = "Relative Weight"
+      arg_type = Float64
+      default  = 0.005
+  "p"
+      help     = "Density -> Particles"
+      arg_type = Float64
+      default  = 5.0
 end
 
-#Valores default de parametros
+params = parse_args(s)
 
 const dt   = 1.0
 const v0   = 1.0
@@ -61,37 +71,57 @@ const l    = 0.1 # Regimen de Velocidad
 r0 = v0 * dt / l
 
 const L = r0 # Tamaño caja inicial
-const N = int(L * L * p) # Numero de particulas (entero)
+const N = int(L * L * params["p"]) # Numero de particulas (entero)
 
 # ==================================== Salida de Datos ===========================================
 
-path = "/Users/martinzh/DATOS_SIMS/DatJul/data_eta$(eta)_k$(k)_w$(w)"
-# path = "/home/martin/DATOS_SIMS/DatJul/data_eta$(eta)_k$(k)_w$(w)"
+if params["m"] == true
+  path = "/Users/martinzh/DATOS_SIMS/DatJul/data_eta$(params["eta"])_k$(params["k"])_w$(params["w"])"
+else
+  path = "/home/martin/DATOS_SIMS/DatJul/data_eta$(params["eta"])_k$(params["k"])_w$(params["w"])"
+end
 
-MakeDir()
-PrintParams()
+println("Particulas   = $N")
+println("Radio        = $r0")
+println("Conectividad = $(params["k"])")
 
-trays = open("$path/trays.txt","w")
-vels = open("$path/vels.txt","w")
 
-println("Particulas = $N")
-println("Radio = $r0")
-println("Conectividad = $k")
+if params["r"] == false
+
+  MakeDir(path)
+  PrintParams(path)
+
+  trays = open("$path/trays.txt","w")
+  vels  = open("$path/vels.txt","w")
+
+else
+
+  MakeDir(path*"_rep")
+  PrintParams(path*"_rep")
+
+  trays = open("$(path)_rep/trays.txt","w")
+  vels  = open("$(path)_rep/vels.txt","w")
+
+end
 
 # ==================================== Inicializacion ============================================
 
 parts = Array(Bird,N)
 dists = zeros(Float64,N,N) #Matriz de distancias
-noise = Array(Float64, N)
 
-InitParts(parts,N,10*L,v0,k)
+if params["r"] == false
+  InitParts(parts,N,10*L,v0,params["k"])
+else
+  InitParts(path,parts)
+end
+
 PrintIntNet(parts)
 
 # ==================================== Simulacion ============================================
 
-for i = 1:T
-    # @time Evoluciona(i,step,parts,eta,w,noise,dists)
-    Evoluciona(i,step,parts,eta,w,noise,dists)
+for i = 1:params["T"]
+    @time Evoluciona(i,params["step"],parts,params["eta"],params["w"],dists)
+    Evoluciona(i,params["step"],parts,params["eta"],params["w"],dists)
 end
 
 # ==================================== Cierra ============================================
