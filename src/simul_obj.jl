@@ -43,11 +43,11 @@ if size(ARGS,1) != 0
 
 else
     const k    = 2
-    const T    = 100 #iteraciones
+    const T    = 200 #iteraciones
     const step = 50 #se recupera informacion cada step
     const eta  = 0.005 #Parametro de ruido
     const w    = 0.005 # Peso relativo de vecindades : 1 => solo IN ; 0 => solo Geometricas
-    const p    = 10  # Densidad
+    const p    = 5  # Densidad
 
 end
 
@@ -90,8 +90,8 @@ PrintIntNet(parts)
 # ==================================== Simulacion ============================================
 
 for i = 1:T
-    @time Evoluciona(i,step,parts,eta,w,noise,dists)
-    # Evoluciona(i,step,parts,eta,w,noise,dists)
+    # @time Evoluciona(i,step,parts,eta,w,noise,dists)
+    Evoluciona(i,step,parts,eta,w,noise,dists)
 end
 
 # ==================================== Cierra ============================================

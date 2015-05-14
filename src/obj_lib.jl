@@ -17,6 +17,8 @@ end
 
 nzrange(S::SparseMatrixCSC, col::Integer) = S.colptr[col]:(S.colptr[col+1]-1)
 
+rng = MersenneTwister(123)
+
 ## =========================== ## ## =========================== ##
 
 # Regresa Vector aleatorio entre -L:L
@@ -29,10 +31,11 @@ function RandNum(L::Float64)
   return -L + rand()*2.0*L
 end
 
-function setNoise(noise::Array{Float64,1})
-    for i in size(noise,1)
-        noise[i] = RandNum(1.0*pi)
-    end
+# function setNoise(noise::Array{Float64,1})
+function setNoise(N::Int64)
+  noise = convert(Array{Float64,1},[rand(rng) for i = 1:N])
+  broadcast!(x -> -1.0*pi + 2.0*x*pi, noise, noise)
+  return noise
 end
 
 ## =========================== ## ## =========================== ##
@@ -63,8 +66,8 @@ end
 
 function InitParts(parts::Array{Bird,1},N::Int64,L::Float64,v0::Float64,k::Int64)
     for i = 1:N
-    vel = RandVec(1.0)
-    parts[i] = Bird(RandVec(L) , scale!(vel,v0/norm(vel)), Inputs(k,N,i))
+      vel = RandVec(1.0)
+      parts[i] = Bird(RandVec(L) , scale!(vel,v0/norm(vel)), Inputs(k,N,i))
     end
 end
 
@@ -84,34 +87,31 @@ function UpdatePos!(parts::Array{Bird,1},dt::Float64)
 #Construye red aleatoria de conectividad k
 
 function Inputs(k::Int64,N::Int64,tag::Int64)
-    
-    ins = Array(Int64,k)
-    
-    for j = 1:k
 
-        switch = true
+  ins = Array(Int64,k)
 
-            while switch
+  for j = 1:k
 
-                # print("in ")
-                s = rand(1:N)
+    switch = true
 
-                if s != tag
-                    # println("$s,$tag")
-                    ins[j] = s
-                    switch = false
-                    # print("out ")
-                end
+    while switch
+      # print("in ")
+      s = rand(1:N)
 
-            end
-
-    end 
-    return ins
+      if s != tag
+        # println("$s,$tag")
+        ins[j] = s
+        switch = false
+        # print("out ")
+      end
+    end
+  end
+  return ins
 end
 
 ## =========================== ## ## =========================== ##
 
-function SetLR(k::Int64,N::Int64,X::SparseMatrixCSC{Float64,Int64}) 
+function SetLR(k::Int64,N::Int64,X::SparseMatrixCSC{Float64,Int64})
 
     for i = 1:size(X,1) , j = 1:k
         switch = true
@@ -140,11 +140,11 @@ function SetSR(r0::Float64,dists::Array{Float64,2},parts::Array{Bird,1})
 
     for i = 1:N , j = i+1:N
 
-        d = norm2(parts[i].pos - parts[j].pos)
+        d = norm(parts[i].pos - parts[j].pos)
 
         dists[i,j] = dists[j,i] = d
 
-        if d <= r0*r0
+        if d <= r0
             push!(I,i)
             push!(J,j)
         end
@@ -167,29 +167,27 @@ function GetAngs(parts::Array{Bird,1}, A::SparseMatrixCSC{Float64,Int64})
 
     for i = 1:size(A,2) #itera sobre las particulas con vecindad
 
-            k = 0.0 # para guardar numero de parts en la vecindad
+      k = 0.0 # para guardar numero de parts en la vecindad
 
-            # v_prom = parts[i].vel
-            v_prom = zeros(Float64,2)
+      # v_prom = parts[i].vel
+      v_prom = zeros(Float64,2)
 
-            for j = nzrange(A,i)
+      for j = nzrange(A,i)
 
-                # tal = neigh[j]
+        # tal = neigh[j]
+        # println("part : $i ; vecina : $tal")
 
-                # println("part : $i ; vecina : $tal")
+        v_prom += parts[neigh[j]].vel
 
-                v_prom += parts[neigh[j]].vel
+        k += 1.0
 
-                k += 1.0
+      end
 
-            end
-
-            # println("k = $k")
-
-        if k > 0
-            scale!(v_prom,1.0/k)
-            angs[i] = AngVecs(parts[i].vel,v_prom) #agrega el angulo al arreglo
-        end
+      # println("k = $k")
+      if k > 0
+          scale!(v_prom,1.0/k)
+          angs[i] = AngVecs(parts[i].vel,v_prom) #agrega el angulo al arreglo
+      end
 
     end
 
@@ -203,32 +201,31 @@ end
 function GetAngsIN(parts::Array{Bird,1})
 
 	k = size(parts[1].inputs,1) # conectividad
+  N = size(parts,1)
 
-    N = size(parts,1)
+  # Arreglo de angulos, 1 por particula
+  # angs = Array(Float64,N)
+  angs = zeros(Float64,N)
 
-	# Arreglo de angulos, 1 por particula
-    # angs = Array(Float64,N)
-    angs = zeros(Float64,N)
+  # println(angs)
 
-    # println(angs)
+  if k>0
 
-    if k>0
+    for i = 1:N
 
-        for i = 1:N
-            
-            # v_prom = parts[i].vel
-            v_prom = zeros(Float64,2)
+    # v_prom = parts[i].vel
+    v_prom = zeros(Float64,2)
 
-            for j = parts[i].inputs
-                v_prom += parts[j].vel
-            end
+    for j = parts[i].inputs
+      v_prom += parts[j].vel
+    end
 
-            scale!(v_prom,1.0/k)
-            angs[i] = AngVecs(parts[i].vel,v_prom) #agrega el angulo al arreglo
-            
-        end
+    scale!(v_prom,1.0/k)
+    angs[i] = AngVecs(parts[i].vel,v_prom) #agrega el angulo al arreglo
 
     end
+
+  end
 
     return angs
 end
@@ -239,11 +236,11 @@ end
 
 function RotVec!(vec::Array{Float64,1},alpha::Float64)
 
-    X = vec[1]*cos(alpha) - vec[2]*sin(alpha)
-    Y = vec[1]*sin(alpha) + vec[2]*cos(alpha)
+  X = vec[1]*cos(alpha) - vec[2]*sin(alpha)
+  Y = vec[1]*sin(alpha) + vec[2]*cos(alpha)
 
-    vec[1] = X
-    vec[2] = Y
+  vec[1] = X
+  vec[2] = Y
 end
 
 ## =========================== ## ## =========================== ##
@@ -256,6 +253,9 @@ function UpdateVel!(parts::Array{Bird,1},SR::SparseMatrixCSC{Float64,Int64},eta:
     IN = GetAngsIN(parts) #Angulos inter largo
 
     for i = 1:size(parts,1)
+
+      # ang_rand = RandNum(1.0*pi)
+      # ang_tot =  w * (IN[i]) + (1.0 - w) * (LOC[i]) + eta*ang_rand
 
       ang_tot =  w * (IN[i]) + (1.0 - w) * (LOC[i]) + eta*ruido[i]
 
@@ -270,11 +270,12 @@ end
 
 function Evoluciona(i::Int64, step::Int64, parts::Array{Bird,1},eta::Float64,w::Float64, noise::Array{Float64,1}, dists::Array{Float64,2})
 
-  setNoise(noise)
+  # setNoise(noise)
   SR = SetSR(r0,dists,parts)
   # SR = SetSR(r0,parts)
 
-  UpdateVel!(parts,SR,eta,w,noise)
+  # UpdateVel!(parts,SR,eta,w,noise)
+  UpdateVel!(parts,SR,eta,w,setNoise(size(parts,1)))
   UpdatePos!(parts,dt)
 
   if  i == 1 || i%step == 0
