@@ -65,7 +65,7 @@ end
 ## =========================== ## ## =========================== ##
 
 #Escribe Adjacencias de la Red de Interaccion
-function PrintIntNet(parts::Array{Bird,1})
+function PrintIntNet(path::ASCIIString,parts::Array{Bird,1})
     intNet = open("$path/intNet.txt","w")
 
     for i in 1:size(parts,1)
@@ -90,8 +90,11 @@ function PrintParams(path::ASCIIString)
   write(d,"peso relativo        = $(params["w"])\n");
   write(d,"regimen de velocidad = $l\n");
   write(d,"iteraciones          = $(params["T"])\n");
-  write(d,"frec muestreo        = $(params["step"])\n");
+  write(d,"frec muestreo        = $(params["s"])\n");
   write(d,"v0                   = $v0\n");
+  write(d,"part Pert            = $partPert\n");
+  write(d,"tau                  = $tau\n");
+  write(d,"turnRate             = $turnRate\n");
 
   close(d)
 
