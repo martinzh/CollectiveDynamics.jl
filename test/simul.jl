@@ -96,9 +96,9 @@ velsArray = reshape(velsArray, 2n, div(params["steps"], params["frec"])+1)
 
 simData["pos"]    = posArray'
 simData["vels"]   = velsArray'
-simData["Nij"]    = Nij
+simData["Nij"]    = flock.Nij
 simData["params"] = params
-simData["posKi"]  = poski
+simData["posKi"]  = flock.poski
 
 close(simData)
 
