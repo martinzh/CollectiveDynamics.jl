@@ -236,10 +236,10 @@ function rot_move(flock::Flock, noise::Array{Float64,1}, η::Float64)
 
     for id in 1:flock.n
 
-        prop_angle = atan2(flock.vels[2*id+1], flock.vels[2*id])
+        prop_angle = atan2(flock.vels[2id], flock.vels[2id-1])
 
-        i_vx = flock.VR[2*id]
-        i_vy = flock.VR[2*id+1]
+        i_vx = flock.VR[2id-1]
+        i_vy = flock.VR[2id]
 
         if i_vx != 0.0 || i_vy != 0.0
             loc_angle = atan2(i_vy, i_vx) - prop_angle;
@@ -247,8 +247,8 @@ function rot_move(flock::Flock, noise::Array{Float64,1}, η::Float64)
             loc_angle = 0.0;
         end
 
-        i_vx = flock.VN[2*id]
-        i_vy = flock.VN[2*id+1]
+        i_vx = flock.VN[2id-1]
+        i_vy = flock.VN[2id]
 
         if i_vx != 0.0 || i_vy != 0.0
             non_loc_angle = atan2(i_vy, i_vx) - prop_angle;
@@ -256,19 +256,19 @@ function rot_move(flock::Flock, noise::Array{Float64,1}, η::Float64)
             non_loc_angle = 0.0;
         end
 
-        total_angle = loc_angle + nonloc_angle + η * noise[id];
+        total_angle = loc_angle + non_loc_angle + η * noise[id];
 
         c = cos(total_angle)
         s = sin(total_angle)
 
-        vx = flock.vels[2*id]*c - flock.vels[2*id+1]*s;
-        vy = flock.vels[2*id]*s + flock.vels[2*id+1]*c;
+        vx = flock.vels[2id-1]*c - flock.vels[2id]*s;
+        vy = flock.vels[2id-1]*s + flock.vels[2id]*c;
 
-        flock.vels[2*id]   = vx;
-        flock.vels[2*id+1] = vy;
+        flock.vels[2id-1] = vx;
+        flock.vels[2id]   = vy;
 
-        flocdk.pos[2*id]   += vx;
-        flocdk.pos[2*id+1] += vy;
+        flock.pos[2id-1] += vx;
+        flock.pos[2id]   += vy;
 
     end
 end
