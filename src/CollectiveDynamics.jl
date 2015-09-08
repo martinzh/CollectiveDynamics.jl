@@ -191,9 +191,9 @@ function loc_vel(r0::Float64, Rij::Array{Float64,2}, flock::Flock)
 
         k = 1.0 + float64(length(loc_neigh))
 
-        for j in loc_neigh
-            vx += flock.vels[2*j]
-            vy += flock.vels[2*j+1]
+        for j in 1:length(loc_neigh)
+            vx += flock.vels[2*loc_neigh[j]]
+            vy += flock.vels[2*loc_neigh[j]+1]
         end
 
         flock.VR[2*part] = vx/k
