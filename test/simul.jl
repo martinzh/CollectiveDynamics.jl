@@ -64,8 +64,8 @@ flock.Nij, flock.poski = make_IN(n, m)
 posArray  = Float64[]
 velsArray = Float64[]
 
-posArray  = vcat(posArray, pos)
-velsArray = vcat(velsArray, vels)
+posArray  = vcat(posArray, flock.pos)
+velsArray = vcat(velsArray, flock.vels)
 
 path = "../DATA/data_n$(params["n"])_eta$(params["eta"])"
 
