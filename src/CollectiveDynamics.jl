@@ -187,7 +187,7 @@ function loc_vel(r0::Float64, Rij::Array{Float64,2}, flock::Flock)
         vx = flock.vels[2*part]
         vy = flock.vels[2*part+1]
 
-        loc_neigh = [find(x -> x <= r02 && x > 0.0), Rij[part,:]]
+        loc_neigh = [find(x -> x <= r02 && x > 0.0, Rij[part,:])]
 
         k = 1.0 + float64(length(loc_neigh))
 
