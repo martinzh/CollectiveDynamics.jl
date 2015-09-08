@@ -12,8 +12,8 @@ type Flock
     vels::Array{Float64,1}
     VN::Array{Float64,1}
     VR::Array{Float64,1}
-    Nij::Array{Float64,1}
-    poski::Array{Float64,1}
+    Nij::Array{Int64,1}
+    poski::Array{Int64,1}
 
     Flock(n::Int64,m::Int64) = new(n,zeros(Float64,2n),zeros(Float64,2n),zeros(Float64,2n),zeros(Float64,2n),zeros(Int64,n+m),zeros(Int64,n))
 end
@@ -180,24 +180,24 @@ end
 
 function loc_vel(r0::Float64, Rij::Array{Float64,2}, flock::Flock)
 
-    r02 = r0*r0
+    r02 = r0^2
 
     for part in 1:flock.n
 
-        vx = flock.vels[2*part]
-        vy = flock.vels[2*part+1]
+        vx = flock.vels[2part-1]
+        vy = flock.vels[2part]
 
         loc_neigh = [find(x -> x <= r02 && x > 0.0, Rij[part,:])]
 
         k = 1.0 + float64(length(loc_neigh))
 
         for j in 1:length(loc_neigh)
-            vx += flock.vels[2*loc_neigh[j]]
-            vy += flock.vels[2*loc_neigh[j]+1]
+            vx += flock.vels[2j-1]
+            vy += flock.vels[2j]
         end
 
-        flock.VR[2*part] = vx/k
-        flock.VR[2*part+1] = vy/k
+        flock.VR[2part-1] = vx/k
+        flock.VR[2part]   = vy/k
     end
 end
 
@@ -216,15 +216,15 @@ function non_loc_vel(flock::Flock)
         if ki > 0
 
             for j in 1:ki
-                vx += flock.vels[2 * Nij[ init + 1 + j] ];
-                vy += flock.vels[2 * Nij[ init + 1 + j] + 1 ];
+                vx += flock.vels[2 * flock.Nij[ init + j] - 1 ];
+                vy += flock.vels[2 * flock.Nij[ init + j] ];
             end
 
-            flock.VN[2*part]   = vx/float64(ki)
-            flock.VN[2*part+1] = vy/float64(ki)
+            flock.VN[2part-1] = vx/float64(ki)
+            flock.VN[2part]   = vy/float64(ki)
         else
-            flock.VN[2*part]   = 0.0
-            flock.VN[2*part+1] = 0.0
+            flock.VN[2part-1] = 0.0
+            flock.VN[2part]   = 0.0
         end
 
     end
