@@ -12,15 +12,15 @@ s = ArgParseSettings()
     "--frec"
         help     = "Sampling Frequency"
         arg_type = Int64
-        default  = 50
+        default  = 100
     "-n"
         help     = "Particles"
         arg_type = Int64
-        default  = 1000
+        default  = 2000
     "-m"
         help     = "Interaction Network's Connectivity"
         arg_type = Float64
-        default  = 0.01
+        default  = 0.0
     "--eta"
         help     = "Noise Intensity"
         arg_type = Float64
@@ -35,6 +35,7 @@ params = parse_args(s)
 const dt = 1.0
 const v0 = 1.0
 const l  = 0.1 # Regimen de Velocidad
+const ω  = 0.5 # peso relativo interacciones
 
 r0 = (v0 * dt) / l
 
@@ -44,7 +45,8 @@ params["r0"] = r0
 params["v0"] = v0
 
 const η = params["eta"]
-const m = int(params["m"]*n*(n-1))
+# const m = int(params["m"] * n * (n-1))
+const m = round(Int, params["m"] * n * (n-1))
 
 ###========================================###
 ##  CONIDICIONES INICIALES
@@ -73,11 +75,13 @@ make_dir(path)
 
 simData = jldopen("$path/m_$(params["m"]).jld","w")
 
+println("End Setup")
+
 ###========================================###
 
 for i in 1:params["steps"]
 
-    evol(flock, r0, η)
+    evol(flock, r0, η, ω, w)
 
     if i%params["frec"] == 0
 

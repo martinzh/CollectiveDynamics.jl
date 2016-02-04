@@ -187,9 +187,10 @@ function loc_vel(r0::Float64, Rij::Array{Float64,2}, flock::Flock)
         vx = flock.vels[2part-1]
         vy = flock.vels[2part]
 
-        loc_neigh = [find(x -> x <= r02 && x > 0.0, Rij[part,:])]
+        # loc_neigh = [find(x -> x <= r02 && x > 0.0, Rij[part,:])]
+        loc_neigh = collect(find(x -> x <= r02 && x > 0.0, Rij[part,:]))
 
-        k = 1.0 + float64(length(loc_neigh))
+        k = 1.0 + Float64(length(loc_neigh))
 
         for j in 1:length(loc_neigh)
             vx += flock.vels[2j-1]
@@ -232,7 +233,7 @@ end
 
 ###========================================####
 
-function rot_move(flock::Flock, noise::Array{Float64,1}, η::Float64)
+function rot_move(flock::Flock, noise::Array{Float64,1}, η::Float64, ω::Float64, w::Float64)
 
     for id in 1:flock.n
 
@@ -256,7 +257,7 @@ function rot_move(flock::Flock, noise::Array{Float64,1}, η::Float64)
             non_loc_angle = 0.0;
         end
 
-        total_angle = loc_angle + non_loc_angle + η * noise[id];
+        total_angle = ω * loc_angle + (1 - ω) * non_loc_angle + η * noise[id];
 
         c = cos(total_angle)
         s = sin(total_angle)
@@ -270,14 +271,42 @@ function rot_move(flock::Flock, noise::Array{Float64,1}, η::Float64)
         flock.pos[2id-1] += vx;
         flock.pos[2id]   += vy;
 
+        periodic_bounds(flock.pos[2id-1], flock.pos[2id], w)
+
     end
 end
 ###========================================####
 
-function evol(flock::Flock, r0::Float64, η::Float64)
+function evol(flock::Flock, r0::Float64, η::Float64, ω::Float64, w::Float64)
     loc_vel(r0, calc_Rij(flock), flock)
     non_loc_vel(flock)
-    rot_move(flock, set_noise(flock.n), η)
+    rot_move(flock, set_noise(flock.n), η, ω, w)
 end
 ###========================================####
+
+function periodic_bounds(posX::Float64, posY::Float64, w::Float64)
+
+    sc = 0.5
+
+    # for id in 1:flock.n
+
+        if posX > w * sc
+            posX -= w
+
+        elseif posX <= -w * sc
+            posX += w
+
+        elseif posY > w * sc
+            posY -= w
+
+        elseif posY <= -w * sc
+            posY += w
+
+        end
+
+    # end
+
+end
+###========================================####
+
 end
