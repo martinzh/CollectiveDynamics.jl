@@ -1,10 +1,10 @@
-<<<<<<< HEAD
 # Modelo movimiento colectivo
 # Paralelo con SharedArrays
 
 module CollectiveDynamics
 
-export Param
+export Param, Flock, make_dir, make_IN, init_pos_vel, init_vels, evol
+
 
 #///////////////////////////#
 
@@ -21,38 +21,22 @@ end
 
 #///////////////////////////#
 
-function init_pos(N::Int64, double w, double* pos, gsl_rng* r) {
-    int i;
-    double u;
-    for (i = 0; i < 2*N; i++) {
-        u = randNum(w, r);
-        pos[i] = u;
-    }
-}
+function init_vels(N::Int64, v0::Float64, vels::SharedArray)
 
-#///////////////////////////#
+    for i in 1:2:2N
+        vx = -1.0 + 2.0 * rand()
+        vy = -1.0 + 2.0 * rand()
 
-function init_vels(N::Int64, double* v, double v0, gsl_rng* r) {
-    int i;
-    float vx, vy, normV;
+        v = norm(Float64[vx,vy])
 
-    for (i = 0; i < N; i++) {
-        vx = randNum(1.0, r);
-        vy = randNum(1.0, r);
+        vels[i]     = v0 * (vx / v)
+        vels[i + 1] = v0 * (vy / v)
+    end
 
-        normV = sqrt(vx*vx + vy*vy);
-
-        v[2*i]   = v0 * (vx / normV);
-        v[2*i+1] = v0 * (vy / normV);
-    }
-}
+end
 
 
 #///////////////////////////#
-=======
-module CollectiveDynamics
-
-export Flock, make_dir, make_IN, init_pos_vel, evol
 
 ###========================================###
 ###  FLOCK TYPE DEFINITION TO MANAGE ARGS  ###
@@ -360,6 +344,5 @@ function periodic_bounds(posX::Float64, posY::Float64, w::Float64)
 
 end
 ###========================================####
->>>>>>> 8dfd560c795278cc0ef8d8065717b483e19a49fa
 
 end
