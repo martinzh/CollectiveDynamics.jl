@@ -9,14 +9,16 @@ export Param, Flock, make_dir, make_IN, init_pos_vel, init_vels, evol
 #///////////////////////////#
 
 type Param
-    m::Int64
+    M::Int64
+    N::Int64
+    v0::Float64
     r0::Float64
     eta::Float64
-    w::Float64
+    omega::Float64
     bound::Float64
 
     # Inicializa todo a ceros
-    Param() = new(0, 0.0, 0.0, 0.0, 0.0)
+    Param() = new(0, 0, 0.0, 0.0, 0.0, 0.0, 0.0)
 end
 
 #///////////////////////////#
