@@ -28,7 +28,7 @@ if length(ARGS) == 5
     m_frac    = parse(Float64, ARGS[2]);
     param.eta = parse(Float64, ARGS[3]);
     rho       = parse(Float64, ARGS[4]);
-    reps      = parse(Float64, ARGS[5]);
+    reps      = parse(Int64, ARGS[5]);
 
 elseif length(ARGS) == 0
 

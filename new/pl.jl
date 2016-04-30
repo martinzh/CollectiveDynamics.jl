@@ -148,7 +148,7 @@ end
 
     @inbounds for i in id_range
 
-        prop_angle = atan2(vel[2i], vel[2i - 1])
+        # prop_angle = atan2(vel[2i], vel[2i - 1])
 
         # i_vx = v_r[2i - 1]
         # i_vy = v_r[2i]
@@ -174,12 +174,14 @@ end
 
         # i_vx != 0.0 || i_vy != 0.0 ? nonloc_angle = atan2(i_vy, i_vx) - prop_angle : nonloc_angle = 0.0
 
-        loc_angle    = atan2(v_r[2i - 1], v_r[2i])
-        nonloc_angle = atan2(v_r[2i - 1], v_r[2i])
+        # loc_angle    = atan2(v_r[2i - 1], v_r[2i]) - prop_angle
+        # nonloc_angle = atan2(v_n[2i - 1], v_n[2i]) - prop_angle
 
         # tot_angle = omega * loc_angle + (1.0 - omega) * nonloc_angle + (noise[i] * 2.0 * pi - pi) * eta
 
-        tot_angle = omega * loc_angle + (1.0 - omega) * nonloc_angle + (rand() * 2.0 * pi - pi) * eta
+        # tot_angle = omega * loc_angle + (1.0 - omega) * nonloc_angle + (rand() * 2.0 * pi - pi) * eta
+
+        tot_angle = omega * (atan2(v_r[2i - 1], v_r[2i]) - atan2(vel[2i], vel[2i - 1])) + (1.0 - omega) * (atan2(v_n[2i - 1], v_n[2i]) - atan2(vel[2i - 1], vel[2i])) + (rand() * 2.0 * pi - pi) * eta
 
         vx = vel[2i - 1]*cos(tot_angle) - vel[2i]*sin(tot_angle)
         vy = vel[2i - 1]*sin(tot_angle) + vel[2i]*cos(tot_angle)
