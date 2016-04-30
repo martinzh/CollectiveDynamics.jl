@@ -506,14 +506,17 @@ function evol_step_range(flock::Flock, param::Param, dt::Float64, range::Array{U
 
     @sync begin
         for p in procs(flock.pos)
-            @async remotecall_wait(p, calc_Rij_chunk_id, flock.pos, flock.rij, flock.rij_ids, param.r0, rij_range[p-1])
+            # @async remotecall_wait(p, calc_Rij_chunk_id, flock.pos, flock.rij, flock.rij_ids, param.r0, rij_range[p-1])
+            @async spawnat(p, calc_Rij_chunk_id, flock.pos, flock.rij, flock.rij_ids, param.r0, rij_range[p-1])
         end
     end
 
     @sync begin
         for p in procs(flock.pos)
-            @async remotecall_wait(p, loc_vels_chunk, flock.vel, flock.v_r, flock.rij, param.N, range[p-1])
-            @async remotecall_wait(p, non_loc_vels_chunk, flock.vel, flock.v_n, flock.nij, flock.poski, range[p-1])
+            # @async remotecall_wait(p, loc_vels_chunk, flock.vel, flock.v_r, flock.rij, param.N, range[p-1])
+            # @async remotecall_wait(p, non_loc_vels_chunk, flock.vel, flock.v_n, flock.nij, flock.poski, range[p-1])
+            @async spawnat(p, loc_vels_chunk, flock.vel, flock.v_r, flock.rij, param.N, range[p-1])
+            @async spawnat(p, non_loc_vels_chunk, flock.vel, flock.v_n, flock.nij, flock.poski, range[p-1])
         end
     end
 
@@ -522,7 +525,8 @@ function evol_step_range(flock::Flock, param::Param, dt::Float64, range::Array{U
     @sync begin
         for p in procs(flock.pos)
             # @async remotecall_wait(p, rot_move_chunk, flock.pos, flock.vel, flock.v_r, flock.v_n, flock.noise, dt, param.omega, param.eta, range[p-1])
-            @async remotecall_wait(p, rot_move_chunk, flock.pos, flock.vel, flock.v_r, flock.v_n, dt, param.omega, param.eta, range[p-1])
+            # @async remotecall_wait(p, rot_move_chunk, flock.pos, flock.vel, flock.v_r, flock.v_n, dt, param.omega, param.eta, range[p-1])
+            @async spawnat(p, rot_move_chunk, flock.pos, flock.vel, flock.v_r, flock.v_n, dt, param.omega, param.eta, range[p-1])
         end
     end
 
