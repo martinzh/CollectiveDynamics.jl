@@ -73,6 +73,9 @@ poski_file = open(path * "/poski.csv", "w")
 vx = zeros(Float64, length(procs()[2:end]))
 vy = zeros(Float64, length(procs()[2:end]))
 
+# vx_nl = zeros(Float64, length(procs()[2:end]))
+# vy_nl = zeros(Float64, length(procs()[2:end]))
+
 ###========================================####
 
 times    = [(1 + 10^i):(10^(i+1)) for i in 0:2]
