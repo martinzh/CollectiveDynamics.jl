@@ -67,8 +67,8 @@ T = 1000
 
 out_pos = zeros(Float64, 2 * param.N, T)
 
-nets_file  = open(path * "nets.csv", "w")
-poski_file = open(path * "poski.csv", "w")
+nets_file  = open(path * "/nets.csv", "w")
+poski_file = open(path * "/poski.csv", "w")
 
 ###========================================####
 
@@ -77,8 +77,8 @@ times[1] = 1:10
 
 for rep in 1:reps
 
-    pos_file = open(path * "pos$(rep).csv", "w")
-    vel_file = open(path * "vel$(rep).csv", "w")
+    pos_file = open(path * "/pos$(rep).csv", "w")
+    vel_file = open(path * "/vel$(rep).csv", "w")
 
     init_system(flock, param)
 
