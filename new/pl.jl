@@ -62,6 +62,37 @@ function init_vels(N::Int64, v0::Float64, vels::SharedArray)
 
 end
 
+function init_system(flock::Flock, param::Param)
+
+    # posiciones iniciales
+    # particulas se inicializan en una caja de tamanio w
+    flock.pos = Float64[ -param.bound + rand() * 2.0 * param.bound for i in 1:(2 * param.N) ]
+
+    # velocidades
+    # velocidad inicial con direccion aleatoria y norma v0
+    init_vels(param.N, param.v0, flock.vel)
+
+    #inicializa red de interaccion no local
+    nij, poski  = make_IN(param.N, param.M)
+    flock.nij   = convert(SharedArray, nij)
+    flock.poski = convert(SharedArray, poski)
+
+    ranges     = calc_ranges(param.N)
+    rij_ranges = calc_ranges(size(flock.rij_ids, 1))
+
+    assign_ids(flock.rij_ids, param.N)
+
+end
+###========================================###
+
+function make_dir(path::ASCIIString)
+    try
+        run(`mkdir $path`)
+    catch y
+        println(typeof(y))
+    end
+end
+
 ####========================================####
 
 # Range assignation for 1D sh array

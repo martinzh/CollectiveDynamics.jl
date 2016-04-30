@@ -122,3 +122,34 @@ end
 plt[:clf]()
 
 ###========================================####
+
+times = [(1 + 10^i):(10^(i+1)) for i in 0:6]
+times[1] = 1:10
+
+times
+
+times[1][1] - 1
+
+frecs = [div(length(time), frec) for time in times ]
+frecs = [div(length(times[i]), times[i][1]-1) for i in 2:length(times) ]
+
+for k in 1:length(times)
+    for t in times[k]
+
+        frec = times[k][1] - 1
+
+        if frec > 0
+
+            if t % frec == 0
+                println(t)
+            end
+
+        else
+
+            if t % 1 == 0
+                println(t)
+            end
+        end
+
+    end
+end
