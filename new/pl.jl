@@ -146,7 +146,7 @@ end
 # @everywhere function rot_move_chunk(pos::SharedArray, vel::SharedArray, v_r::SharedArray, v_n::SharedArray, noise::SharedArray, dt::Float64, omega::Float64, eta::Float64, id_range::UnitRange)
 @everywhere function rot_move_chunk(pos::SharedArray, vel::SharedArray, v_r::SharedArray, v_n::SharedArray, dt::Float64, omega::Float64, eta::Float64, id_range::UnitRange)
 
-    for i in id_range
+    @inbounds for i in id_range
 
         prop_angle = atan2(vel[2i], vel[2i - 1])
 
@@ -193,7 +193,7 @@ end
 
 @everywhere function rot_move_chunk_bound(pos::SharedArray, vel::SharedArray, v_r::SharedArray, v_n::SharedArray, noise::SharedArray, dt::Float64, omega::Float64, eta::Float64, bound::Float64, id_range::UnitRange)
 
-    for i in id_range
+    @inbounds for i in id_range
 
         prop_angle = atan2(vel[2i], vel[2i - 1])
 
@@ -254,7 +254,7 @@ end
 
     r02 = r0*r0
 
-    for i in id_range, j in (i+1):N
+    @inbounds for i in id_range, j in (i+1):N
 
         d =  (pos[2i - 1] - pos[2j - 1])^2 + (pos[2i] - pos[2j])^2
 
@@ -279,7 +279,7 @@ end
 
 @everywhere function calc_Rij_chunk_id(pos::SharedArray, rij::SharedArray, rij_ids::SharedArray, r0::Float64, id_range::UnitRange)
 
-    for k in id_range
+    @inbounds for k in id_range
 
         i = rij_ids[k, 1]
         j = rij_ids[k, 2]
@@ -324,7 +324,7 @@ end
 
 @everywhere function loc_vels_chunk(vel::SharedArray, v_r::SharedArray, rij::SharedArray, N::Int64, id_range::UnitRange)
 
-    for i in id_range
+    @inbounds for i in id_range
 
         vx = vel[2i - 1]
         vy = vel[2i]
@@ -360,7 +360,7 @@ end
 ####===============================####
 @everywhere function non_loc_vels_chunk(vel::SharedArray, v_n::SharedArray, nij::SharedArray, poski::SharedArray, id_range::UnitRange)
 
-    for i in id_range
+    @inbounds for i in id_range
 
         vx = 0.0
         vy = 0.0
@@ -506,17 +506,14 @@ function evol_step_range(flock::Flock, param::Param, dt::Float64, range::Array{U
 
     @sync begin
         for p in procs(flock.pos)
-            # @async remotecall_wait(p, calc_Rij_chunk_id, flock.pos, flock.rij, flock.rij_ids, param.r0, rij_range[p-1])
-            @async spawnat(p, calc_Rij_chunk_id, flock.pos, flock.rij, flock.rij_ids, param.r0, rij_range[p-1])
+            @async remotecall_wait(p, calc_Rij_chunk_id, flock.pos, flock.rij, flock.rij_ids, param.r0, rij_range[p-1])
         end
     end
 
     @sync begin
         for p in procs(flock.pos)
-            # @async remotecall_wait(p, loc_vels_chunk, flock.vel, flock.v_r, flock.rij, param.N, range[p-1])
-            # @async remotecall_wait(p, non_loc_vels_chunk, flock.vel, flock.v_n, flock.nij, flock.poski, range[p-1])
-            @async spawnat(p, loc_vels_chunk, flock.vel, flock.v_r, flock.rij, param.N, range[p-1])
-            @async spawnat(p, non_loc_vels_chunk, flock.vel, flock.v_n, flock.nij, flock.poski, range[p-1])
+            @async remotecall_wait(p, loc_vels_chunk, flock.vel, flock.v_r, flock.rij, param.N, range[p-1])
+            @async remotecall_wait(p, non_loc_vels_chunk, flock.vel, flock.v_n, flock.nij, flock.poski, range[p-1])
         end
     end
 
@@ -525,8 +522,7 @@ function evol_step_range(flock::Flock, param::Param, dt::Float64, range::Array{U
     @sync begin
         for p in procs(flock.pos)
             # @async remotecall_wait(p, rot_move_chunk, flock.pos, flock.vel, flock.v_r, flock.v_n, flock.noise, dt, param.omega, param.eta, range[p-1])
-            # @async remotecall_wait(p, rot_move_chunk, flock.pos, flock.vel, flock.v_r, flock.v_n, dt, param.omega, param.eta, range[p-1])
-            @async spawnat(p, rot_move_chunk, flock.pos, flock.vel, flock.v_r, flock.v_n, dt, param.omega, param.eta, range[p-1])
+            @async remotecall_wait(p, rot_move_chunk, flock.pos, flock.vel, flock.v_r, flock.v_n, dt, param.omega, param.eta, range[p-1])
         end
     end
 
