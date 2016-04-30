@@ -150,8 +150,8 @@ end
 
         prop_angle = atan2(vel[2i], vel[2i - 1])
 
-        i_vx = v_r[2i - 1]
-        i_vy = v_r[2i]
+        # i_vx = v_r[2i - 1]
+        # i_vy = v_r[2i]
 
         # if i_vx != 0.0 || i_vy != 0.0
         #     loc_angle = atan2(i_vy, i_vx) - prop_angle
@@ -159,12 +159,12 @@ end
         #     loc_angle = 0.0
         # end
 
-        i_vx != 0.0 || i_vy != 0.0 ? loc_angle = atan2(i_vy, i_vx) - prop_angle : loc_angle = 0.0
+        # i_vx != 0.0 || i_vy != 0.0 ? loc_angle = atan2(i_vy, i_vx) - prop_angle : loc_angle = 0.0
 
         # tot_angle = omega * loc_angle + (noise[i] * 2.0 * pi - pi) * eta
 
-        i_vx = v_n[2i - 1]
-        i_vy = v_n[2i]
+        # i_vx = v_n[2i - 1]
+        # i_vy = v_n[2i]
 
         # if i_vx != 0.0 || i_vy != 0.0
         #     nonloc_angle = atan2(i_vy, i_vx) - prop_angle
@@ -172,7 +172,10 @@ end
         #     nonloc_angle = 0.0
         # end
 
-        i_vx != 0.0 || i_vy != 0.0 ? nonloc_angle = atan2(i_vy, i_vx) - prop_angle : nonloc_angle = 0.0
+        # i_vx != 0.0 || i_vy != 0.0 ? nonloc_angle = atan2(i_vy, i_vx) - prop_angle : nonloc_angle = 0.0
+
+        loc_angle    = atan2(v_r[2i - 1], v_r[2i])
+        nonloc_angle = atan2(v_r[2i - 1], v_r[2i])
 
         # tot_angle = omega * loc_angle + (1.0 - omega) * nonloc_angle + (noise[i] * 2.0 * pi - pi) * eta
 
