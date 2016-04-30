@@ -121,8 +121,8 @@ for rep in 1:reps
                     # println(vel_file,t)
                     # println(pos_file, flock.pos.s)
                     # println(vel_file, flock.vel.s)
-                    hcat(out_pos, flock.pos.s)
-                    hcat(out_vel, flock.vel.s)
+                    out_pos = hcat(out_pos, flock.pos.s)
+                    out_vel = hcat(out_vel, flock.vel.s)
                 end
 
             else
@@ -133,8 +133,8 @@ for rep in 1:reps
                     # println(vel_file,t)
                     # println(pos_file, flock.pos.s)
                     # println(vel_file, flock.vel.s)
-                    hcat(out_pos, flock.pos.s)
-                    hcat(out_vel, flock.vel.s)
+                    out_pos = hcat(out_pos, flock.pos.s)
+                    out_vel = hcat(out_vel, flock.vel.s)
                 end
             end
         end
