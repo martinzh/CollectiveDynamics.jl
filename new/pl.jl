@@ -530,7 +530,7 @@ function evol_step_range(flock::Flock, param::Param, dt::Float64, range::Array{U
     @sync begin
         for p in procs(flock.pos)
             # @async remotecall_wait(p, loc_vels_chunk, flock.vel, flock.v_r, flock.rij, param.N, range[p-1])
-            @async remotecall_wait(p, loc_vels_chunk, flock.vel, flock.v_r, flock.rij, param.N, range[p-1], vx[p-1]. vy[p-1])
+            @async remotecall_wait(p, loc_vels_chunk, flock.vel, flock.v_r, flock.rij, param.N, range[p-1], vx[p-1], vy[p-1])
             @async remotecall_wait(p, non_loc_vels_chunk, flock.vel, flock.v_n, flock.nij, flock.poski, range[p-1])
         end
     end
