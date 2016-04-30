@@ -93,7 +93,7 @@ for rep in 1:reps
 
         for t in times[k]
 
-            evol__step_range(flock, param, dt, ranges, rij_ranges)
+            evol_step_range(flock, param, dt, ranges, rij_ranges)
 
             if frec > 0
 
