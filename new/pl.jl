@@ -143,7 +143,8 @@ end
 
 ####===============================####
 
-@everywhere function rot_move_chunk(pos::SharedArray, vel::SharedArray, v_r::SharedArray, v_n::SharedArray, noise::SharedArray, dt::Float64, omega::Float64, eta::Float64, id_range::UnitRange)
+# @everywhere function rot_move_chunk(pos::SharedArray, vel::SharedArray, v_r::SharedArray, v_n::SharedArray, noise::SharedArray, dt::Float64, omega::Float64, eta::Float64, id_range::UnitRange)
+@everywhere function rot_move_chunk(pos::SharedArray, vel::SharedArray, v_r::SharedArray, v_n::SharedArray, dt::Float64, omega::Float64, eta::Float64, id_range::UnitRange)
 
     for i in id_range
 
@@ -169,7 +170,9 @@ end
             nonloc_angle = 0.0
         end
 
-        tot_angle = omega * loc_angle + (1.0 - omega) * nonloc_angle + (noise[i] * 2.0 * pi - pi) * eta
+        # tot_angle = omega * loc_angle + (1.0 - omega) * nonloc_angle + (noise[i] * 2.0 * pi - pi) * eta
+
+        tot_angle = omega * loc_angle + (1.0 - omega) * nonloc_angle + (rand() * 2.0 * pi - pi) * eta
 
         vx = vel[2i - 1]*cos(tot_angle) - vel[2i]*sin(tot_angle)
         vy = vel[2i - 1]*sin(tot_angle) + vel[2i]*cos(tot_angle)
@@ -214,6 +217,7 @@ end
             nonloc_angle = 0.0
         end
 
+        tot_angle = omega * loc_angle + (1.0 - omega) * nonloc_angle + (noise[i] * 2.0 * pi - pi) * eta
         tot_angle = omega * loc_angle + (1.0 - omega) * nonloc_angle + (noise[i] * 2.0 * pi - pi) * eta
 
         vx = vel[2i - 1]*cos(tot_angle) - vel[2i]*sin(tot_angle)
@@ -513,11 +517,12 @@ function evol_step_range(flock::Flock, param::Param, dt::Float64, range::Array{U
         end
     end
 
-    flock.noise = rand(param.N)
+    # flock.noise = rand(param.N)
 
     @sync begin
         for p in procs(flock.pos)
-            @async remotecall_wait(p, rot_move_chunk, flock.pos, flock.vel, flock.v_r, flock.v_n, flock.noise, dt, param.omega, param.eta, range[p-1])
+            # @async remotecall_wait(p, rot_move_chunk, flock.pos, flock.vel, flock.v_r, flock.v_n, flock.noise, dt, param.omega, param.eta, range[p-1])
+            @async remotecall_wait(p, rot_move_chunk, flock.pos, flock.vel, flock.v_r, flock.v_n, dt, param.omega, param.eta, range[p-1])
         end
     end
 
