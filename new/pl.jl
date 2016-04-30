@@ -308,9 +308,9 @@ end
 
         # (pos[2i - 1] - pos[2j - 1])^2 + (pos[2i] - pos[2j])^2 <= r0*r0 ? rij[j,i] = rij[i,j] = 1.0 : rij[j,i] = rij[i,j] = 0.0
 
-        # (pos[2*rij_ids[k, 1] - 1] - pos[2*rij_ids[k, 2] - 1])^2 + (pos[2*rij_ids[k, 1]] - pos[2*rij_ids[k, 2]])^2 <= r0*r0 ? rij[rij_ids[k, 2], rij_ids[k, 1]] = rij[rij_ids[k, 1], rij_ids[k, 2]] = 1.0 : rij[rij_ids[k, 2], rij_ids[k, 1]] = rij[rij_ids[k, 1], rij_ids[k, 2]] = 0.0
+        (pos[2*rij_ids[k, 1] - 1] - pos[2*rij_ids[k, 2] - 1])^2 + (pos[2*rij_ids[k, 1]] - pos[2*rij_ids[k, 2]])^2 <= r0*r0 ? rij[rij_ids[k, 2], rij_ids[k, 1]] = rij[rij_ids[k, 1], rij_ids[k, 2]] = 1.0 : rij[rij_ids[k, 2], rij_ids[k, 1]] = rij[rij_ids[k, 1], rij_ids[k, 2]] = 0.0
 
-        (pos[2*rij_ids[k, 1] - 1] - pos[2*rij_ids[k, 2] - 1])^2 + (pos[2*rij_ids[k, 1]] - pos[2*rij_ids[k, 2]])^2 <= r0*r0 ? rij[rij_ids[k, 2], rij_ids[k, 1]] = 1.0 : rij[rij_ids[k, 2], rij_ids[k, 1]] = 0.0
+        # (pos[2*rij_ids[k, 1] - 1] - pos[2*rij_ids[k, 2] - 1])^2 + (pos[2*rij_ids[k, 1]] - pos[2*rij_ids[k, 2]])^2 <= r0*r0 ? rij[rij_ids[k, 2], rij_ids[k, 1]] = 1.0 : rij[rij_ids[k, 2], rij_ids[k, 1]] = 0.0
 
         # rij[j,i] = 666.0
     end
@@ -350,23 +350,23 @@ end
 
         ki = 1.0 + sum(rij[: ,i])
 
-        # for j in 1:N
-        #
-        #     adj = rij[ j, i ]
-        #
-        #     vx += vel[2j - 1] * adj
-        #     vy += vel[2j]     * adj
-        #
-        #     # vx += vel[2j - 1] * rij[ j, i ]
-        #     # vy += vel[2j]     * rij[ j, i ]
-        # end
+        for j in 1:N
 
-        for j in findn(rij[:, i])
+            # adj = rij[ j, i ]
+            #
+            # vx += vel[2j - 1] * adj
+            # vy += vel[2j]     * adj
 
-            vx += vel[2j - 1]
-            vy += vel[2j]
-
+            vx += vel[2j - 1] * rij[ j, i ]
+            vy += vel[2j]     * rij[ j, i ]
         end
+
+        # for j in findn(rij[:, i])
+        #
+        #     vx += vel[2j - 1]
+        #     vy += vel[2j]
+        #
+        # end
 
         v_r[2i - 1] = vx / ki
         v_r[2i]     = vy / ki
