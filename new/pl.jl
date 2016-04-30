@@ -338,8 +338,8 @@ end
 
 ####===============================####
 
-# @everywhere function loc_vels_chunk(vel::SharedArray, v_r::SharedArray, rij::SharedArray, N::Int64, id_range::UnitRange)
-@everywhere function loc_vels_chunk(vel::SharedArray, v_r::SharedArray, rij::SharedArray, N::Int64, id_range::UnitRange, vx::Float64, vy::Float64)
+@everywhere function loc_vels_chunk(vel::SharedArray, v_r::SharedArray, rij::SharedArray, N::Int64, id_range::UnitRange)
+# @everywhere function loc_vels_chunk(vel::SharedArray, v_r::SharedArray, rij::SharedArray, N::Int64, id_range::UnitRange, vx::Float64, vy::Float64)
 
     @inbounds for i in id_range
 
@@ -529,8 +529,8 @@ function evol_step_range(flock::Flock, param::Param, dt::Float64, range::Array{U
 
     @sync begin
         for p in procs(flock.pos)
-            # @async remotecall_wait(p, loc_vels_chunk, flock.vel, flock.v_r, flock.rij, param.N, range[p-1])
-            @async remotecall_wait(p, loc_vels_chunk, flock.vel, flock.v_r, flock.rij, param.N, range[p-1], vx[p-1], vy[p-1])
+            @async remotecall_wait(p, loc_vels_chunk, flock.vel, flock.v_r, flock.rij, param.N, range[p-1])
+            # @async remotecall_wait(p, loc_vels_chunk, flock.vel, flock.v_r, flock.rij, param.N, range[p-1], vx[p-1], vy[p-1])
             @async remotecall_wait(p, non_loc_vels_chunk, flock.vel, flock.v_n, flock.nij, flock.poski, range[p-1])
         end
     end
