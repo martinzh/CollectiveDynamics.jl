@@ -81,17 +81,29 @@ vy = zeros(Float64, length(procs()[2:end]))
 times    = [(1 + 10^i):(10^(i+1)) for i in 0:2]
 times[1] = 1:10
 
+rand(2,4)
+length(times)
+
+hcat(zeros(Float64, 3, 1), ones(Float64, 3, 1))
+
+
 for rep in 1:reps
 
     println("rep: ", rep)
 
-    pos_file = open(path * "/pos$(rep).csv", "w")
-    vel_file = open(path * "/vel$(rep).csv", "w")
+    # pos_file = open(path * "/pos$(rep).csv", "w")
+    # vel_file = open(path * "/vel$(rep).csv", "w")
+
+    out_pos = zeros(Float64, 2*param.N, 1)
+    out_vel = zeros(Float64, 2*param.N, 1)
 
     init_system(flock, param)
 
     println(nets_file, flock.nij)
     println(poski_file, flock.poski)
+
+    out_pos = flock.pos.s
+    out_vel = flock.vel.s
 
     for k in 1:length(times)
 
@@ -107,8 +119,10 @@ for rep in 1:reps
                     println(t)
                     # println(pos_file,t)
                     # println(vel_file,t)
-                    println(pos_file, flock.pos.s)
-                    println(vel_file, flock.vel.s)
+                    # println(pos_file, flock.pos.s)
+                    # println(vel_file, flock.vel.s)
+                    hcat(out_pos, flock.pos.s)
+                    hcat(out_vel, flock.vel.s)
                 end
 
             else
@@ -117,16 +131,19 @@ for rep in 1:reps
                     println(t)
                     # println(pos_file,t)
                     # println(vel_file,t)
-                    println(pos_file, flock.pos.s)
-                    println(vel_file, flock.vel.s)
+                    # println(pos_file, flock.pos.s)
+                    # println(vel_file, flock.vel.s)
+                    hcat(out_pos, flock.pos.s)
+                    hcat(out_vel, flock.vel.s)
                 end
             end
-
         end
     end
 
-    close(pos_file)
-    close(vel_file)
+    # close(pos_file)
+    # close(vel_file)
+    writecsv(path * "/pos$(rep).csv", out_pos)
+    writecsv(path * "/vel$(rep).csv", out_vel)
 
 end
 
