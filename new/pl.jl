@@ -308,7 +308,9 @@ end
 
         # (pos[2i - 1] - pos[2j - 1])^2 + (pos[2i] - pos[2j])^2 <= r0*r0 ? rij[j,i] = rij[i,j] = 1.0 : rij[j,i] = rij[i,j] = 0.0
 
-        (pos[2*rij_ids[k, 1] - 1] - pos[2*rij_ids[k, 2] - 1])^2 + (pos[2*rij_ids[k, 1]] - pos[2*rij_ids[k, 2]])^2 <= r0*r0 ? rij[rij_ids[k, 2], rij_ids[k, 1]] = rij[rij_ids[k, 1], rij_ids[k, 2]] = 1.0 : rij[rij_ids[k, 2], rij_ids[k, 1]] = rij[rij_ids[k, 1], rij_ids[k, 2]] = 0.0
+        # (pos[2*rij_ids[k, 1] - 1] - pos[2*rij_ids[k, 2] - 1])^2 + (pos[2*rij_ids[k, 1]] - pos[2*rij_ids[k, 2]])^2 <= r0*r0 ? rij[rij_ids[k, 2], rij_ids[k, 1]] = rij[rij_ids[k, 1], rij_ids[k, 2]] = 1.0 : rij[rij_ids[k, 2], rij_ids[k, 1]] = rij[rij_ids[k, 1], rij_ids[k, 2]] = 0.0
+
+        (pos[2*rij_ids[k, 1] - 1] - pos[2*rij_ids[k, 2] - 1])^2 + (pos[2*rij_ids[k, 1]] - pos[2*rij_ids[k, 2]])^2 <= r0*r0 ? rij[rij_ids[k, 2], rij_ids[k, 1]] = 1.0 : rij[rij_ids[k, 2], rij_ids[k, 1]] = 0.0
 
         # rij[j,i] = 666.0
     end
