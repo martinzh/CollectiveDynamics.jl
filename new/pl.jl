@@ -54,7 +54,8 @@ function init_vels(N::Int64, v0::Float64, vels::SharedArray)
         vx = -1.0 + 2.0 * rand()
         vy = -1.0 + 2.0 * rand()
 
-        v = norm(Float64[vx,vy])
+        # v = norm(Float64[vx,vy])
+        v = sqrt(vx^2 + vy^2)
 
         vels[i]     = v0 * (vx / v)
         vels[i + 1] = v0 * (vy / v)
@@ -261,21 +262,23 @@ end
 
 @everywhere function calc_Rij_chunk(pos::SharedArray, rij::SharedArray, N::Int64, r0::Float64, id_range::UnitRange)
 
-    r02 = r0*r0
+    # r02 = r0*r0
 
     @inbounds for i in id_range, j in (i+1):N
 
-        d =  (pos[2i - 1] - pos[2j - 1])^2 + (pos[2i] - pos[2j])^2
+        # d =  (pos[2i - 1] - pos[2j - 1])^2 + (pos[2i] - pos[2j])^2
 
-        if d <= r02
-            # rij[j,i] = 1.0
-            rij[j,i] = rij[i,j] = 1.0
-        else
-            # rij[j,i] = 0.0
-            rij[j,i] = rij[i,j] = 0.0
-        end
+        # if d <= r0*r0
+        #     # rij[j,i] = 1.0
+        #     rij[j,i] = rij[i,j] = 1.0
+        # else
+        #     # rij[j,i] = 0.0
+        #     rij[j,i] = rij[i,j] = 0.0
+        # end
 
         # rij[j, i] = rij[i, j] = 666.0
+
+        (pos[2i - 1] - pos[2j - 1])^2 + (pos[2i] - pos[2j])^2 <= r0*r0 ? rij[j,i] = rij[i,j] = 1.0 : rij[j,i] = rij[i,j] = 0.0
 
     end
 
@@ -293,15 +296,17 @@ end
         i = rij_ids[k, 1]
         j = rij_ids[k, 2]
 
-        d =  (pos[2i - 1] - pos[2j - 1])^2 + (pos[2i] - pos[2j])^2
+        # d =  (pos[2i - 1] - pos[2j - 1])^2 + (pos[2i] - pos[2j])^2
+        #
+        # if d <= r0 * r0
+        #     # rij[j,i] = 1.0
+        #     rij[j,i] = rij[i,j] = 1.0
+        # else
+        #     # rij[j,i] = 0.0
+        #     rij[j,i] = rij[i,j] = 0.0
+        # end
 
-        if d <= r0 * r0
-            # rij[j,i] = 1.0
-            rij[j,i] = rij[i,j] = 1.0
-        else
-            # rij[j,i] = 0.0
-            rij[j,i] = rij[i,j] = 0.0
-        end
+        (pos[2i - 1] - pos[2j - 1])^2 + (pos[2i] - pos[2j])^2 <= r0*r0 ? rij[j,i] = rij[i,j] = 1.0 : rij[j,i] = rij[i,j] = 0.0
 
         # rij[j,i] = 666.0
     end
