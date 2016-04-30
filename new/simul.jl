@@ -70,8 +70,8 @@ rij_ranges = calc_ranges(size(flock.rij_ids, 1))
 nets_file  = open(path * "/nets.csv", "w")
 poski_file = open(path * "/poski.csv", "w")
 
-vx = zeros(Float64, procs()[2:end])
-vy = zeros(Float64, procs()[2:end])
+vx = zeros(Float64, length(procs()[2:end]))
+vy = zeros(Float64, length(procs()[2:end]))
 
 ###========================================####
 
