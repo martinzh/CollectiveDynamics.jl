@@ -352,13 +352,12 @@ end
 
         for j in 1:N
 
-            # adj = rij[ j, i ]
-            #
-            # vx += vel[2j - 1] * adj
-            # vy += vel[2j]     * adj
+            adj = rij[ j, i ]
+            vx += vel[2j - 1] * adj
+            vy += vel[2j]     * adj
 
-            vx += vel[2j - 1] * rij[ j, i ]
-            vy += vel[2j]     * rij[ j, i ]
+            # vx += vel[2j - 1] * rij[ j, i ]
+            # vy += vel[2j]     * rij[ j, i ]
         end
 
         # for j in findn(rij[:, i])
