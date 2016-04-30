@@ -144,7 +144,7 @@ end
 ####===============================####
 
 # @everywhere function rot_move_chunk(pos::SharedArray, vel::SharedArray, v_r::SharedArray, v_n::SharedArray, noise::SharedArray, dt::Float64, omega::Float64, eta::Float64, id_range::UnitRange)
-@everywhere function rot_move_chunk(pos::SharedArray, vel::SharedArray, v_r::SharedArray, v_n::SharedArray, dt::Float64, omega::Float64, eta::Float64, id_range::UnitRange)
+@everywhere function rot_move_chunk(pos::SharedArray, vel::SharedArray, v_r::SharedArray, v_n::SharedArray, dt::Float64, omega::Float64, eta::Float64, id_range::UnitRange, vx::Float64, vy::Float64)
 
     @inbounds for i in id_range
 
@@ -511,7 +511,7 @@ end
 
 ####===============================####
 
-function evol_step_range(flock::Flock, param::Param, dt::Float64, range::Array{UnitRange}, rij_range::Array{UnitRange})
+function evol_step_range(flock::Flock, param::Param, dt::Float64, range::Array{UnitRange}, rij_range::Array{UnitRange}, vx::Array{Float64,1}, vy::Array{Float64,1})
 
     @sync begin
         for p in procs(flock.pos)
@@ -531,7 +531,7 @@ function evol_step_range(flock::Flock, param::Param, dt::Float64, range::Array{U
     @sync begin
         for p in procs(flock.pos)
             # @async remotecall_wait(p, rot_move_chunk, flock.pos, flock.vel, flock.v_r, flock.v_n, flock.noise, dt, param.omega, param.eta, range[p-1])
-            @async remotecall_wait(p, rot_move_chunk, flock.pos, flock.vel, flock.v_r, flock.v_n, dt, param.omega, param.eta, range[p-1])
+            @async remotecall_wait(p, rot_move_chunk, flock.pos, flock.vel, flock.v_r, flock.v_n, dt, param.omega, param.eta, range[p-1], vx[p-1], vy[p-1])
         end
     end
 

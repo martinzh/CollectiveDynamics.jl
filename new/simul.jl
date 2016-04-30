@@ -70,6 +70,9 @@ rij_ranges = calc_ranges(size(flock.rij_ids, 1))
 nets_file  = open(path * "/nets.csv", "w")
 poski_file = open(path * "/poski.csv", "w")
 
+vx = zeros(Float64, procs()[2:end])
+vy = zeros(Float64, procs()[2:end])
+
 ###========================================####
 
 times    = [(1 + 10^i):(10^(i+1)) for i in 0:2]
@@ -93,7 +96,7 @@ for rep in 1:reps
 
         for t in times[k]
 
-            evol_step_range(flock, param, dt, ranges, rij_ranges)
+            evol_step_range(flock, param, dt, ranges, rij_ranges, vx, vy)
 
             if frec > 0
 
