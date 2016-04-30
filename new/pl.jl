@@ -77,9 +77,6 @@ function init_system(flock::Flock, param::Param)
     flock.nij   = convert(SharedArray, nij)
     flock.poski = convert(SharedArray, poski)
 
-    ranges     = calc_ranges(param.N)
-    rij_ranges = calc_ranges(size(flock.rij_ids, 1))
-
     assign_ids(flock.rij_ids, param.N)
 
 end
@@ -497,6 +494,33 @@ function evol_range(flock::Flock, param::Param, vals::Array{Float64,2}, T::Int64
 
         vals[:,t] = flock.pos.s
     end
+end
+
+####===============================####
+
+function evol_step_range(flock::Flock, param::Param, dt::Float64, range::Array{UnitRange}, rij_range::Array{UnitRange})
+
+    @sync begin
+        for p in procs(flock.pos)
+            @async remotecall_wait(p, calc_Rij_chunk_id, flock.pos, flock.rij, flock.rij_ids, param.r0, rij_range[p-1])
+        end
+    end
+
+    @sync begin
+        for p in procs(flock.pos)
+            @async remotecall_wait(p, loc_vels_chunk, flock.vel, flock.v_r, flock.rij, param.N, range[p-1])
+            @async remotecall_wait(p, non_loc_vels_chunk, flock.vel, flock.v_n, flock.nij, flock.poski, range[p-1])
+        end
+    end
+
+    flock.noise = rand(param.N)
+
+    @sync begin
+        for p in procs(flock.pos)
+            @async remotecall_wait(p, rot_move_chunk, flock.pos, flock.vel, flock.v_r, flock.v_n, flock.noise, dt, param.omega, param.eta, range[p-1])
+        end
+    end
+
 end
 
 ####===============================####

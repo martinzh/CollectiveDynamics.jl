@@ -63,9 +63,9 @@ make_dir(path)
 
 flock = Flock(param.N, param.M)
 
-T = 1000
-
-out_pos = zeros(Float64, 2 * param.N, T)
+# out_pos = zeros(Float64, 2 * param.N, T)
+ranges     = calc_ranges(param.N)
+rij_ranges = calc_ranges(size(flock.rij_ids, 1))
 
 nets_file  = open(path * "/nets.csv", "w")
 poski_file = open(path * "/poski.csv", "w")
@@ -76,6 +76,8 @@ times    = [(1 + 10^i):(10^(i+1)) for i in 0:2]
 times[1] = 1:10
 
 for rep in 1:reps
+
+    println("rep: ", rep)
 
     pos_file = open(path * "/pos$(rep).csv", "w")
     vel_file = open(path * "/vel$(rep).csv", "w")
@@ -88,32 +90,29 @@ for rep in 1:reps
     for k in 1:length(times)
 
         frec = times[k][1] - 1
-        println(k)
 
         for t in times[k]
 
-            # evol_bound(flock, param, out_pos, 100, dt)
-            # evol(flock, param, out_pos, T, dt)
-            # evol_range(flock, param, out_pos, T, dt, ranges, rij_ranges)
+            evol__step_range(flock, param, dt, ranges, rij_ranges)
 
             if frec > 0
 
                 if t % frec == 0
                     println(t)
-                    println(pos_file,t)
-                    println(vel_file,t)
-                    # println(pos_file, flock.pos)
-                    # println(vel_file, flock.vel)
+                    # println(pos_file,t)
+                    # println(vel_file,t)
+                    println(pos_file, flock.pos.s)
+                    println(vel_file, flock.vel.s)
                 end
 
             else
 
                 if t % 1 == 0
                     println(t)
-                    println(pos_file,t)
-                    println(vel_file,t)
-                    # println(pos_file, flock.pos)
-                    # println(vel_file, flock.vel)
+                    # println(pos_file,t)
+                    # println(vel_file,t)
+                    println(pos_file, flock.pos.s)
+                    println(vel_file, flock.vel.s)
                 end
             end
 
