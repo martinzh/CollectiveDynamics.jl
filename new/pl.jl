@@ -293,8 +293,8 @@ end
 
     @inbounds for k in id_range
 
-        i = rij_ids[k, 1]
-        j = rij_ids[k, 2]
+        # i = rij_ids[k, 1]
+        # j = rij_ids[k, 2]
 
         # d =  (pos[2i - 1] - pos[2j - 1])^2 + (pos[2i] - pos[2j])^2
         #
