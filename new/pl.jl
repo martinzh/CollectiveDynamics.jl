@@ -291,7 +291,7 @@ end
 
 @everywhere function calc_Rij_chunk_id(pos::SharedArray, rij::SharedArray, rij_ids::SharedArray, r0::Float64, id_range::UnitRange)
 
-    @inbounds for k in id_range
+    @inbounds @simd for k in id_range
 
         # i = rij_ids[k, 1]
         # j = rij_ids[k, 2]
