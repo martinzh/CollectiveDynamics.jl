@@ -39,7 +39,7 @@ type Flock
         convert( SharedArray, zeros(N) ),  # noise
         convert( SharedArray, zeros(N + M) ), # poski
         convert( SharedArray, zeros(M) ), # nij
-        convert(SharedArray, Array{Int64}(div(N * (N-1), 2), 2)) #rij id's
+        convert( SharedArray, Array{Int64}(div(N * (N-1), 2), 2)) #rij id's
     )
 
 end
@@ -373,6 +373,37 @@ end
 
 end
 
+@everywhere function loc_vels_chunk_rij(vel::SharedArray, pos::SharedArray, v_r::SharedArray, N::Int64, r0::Float64, id_range::UnitRange)
+
+    for i in id_range
+
+        # vx = vel[2i - 1]
+        # vy = vel[2i]
+
+        vx = 0.0
+        vy = 0.0
+
+        x = pos[2i - 1]
+        y = pos[2i]
+
+        ki = 0.0
+
+        for j in 1:N
+
+            if (x - pos[2j -1])^2 + (y - pos[2j])^2 <= r0*r0
+                vx += vel[2j - 1]
+                vy += vel[2j]
+                ki += 1.0
+            end
+
+        end
+
+        v_r[2i - 1] = vx / ki
+        v_r[2i]     = vy / ki
+    end
+
+end
+
 @everywhere loc_vels(vel::SharedArray, v_r::SharedArray, rij::SharedArray, N::Int64) = loc_vels_chunk(vel, v_r, rij, N, my_rij_range(N))
 
 ####===============================####
@@ -431,16 +462,37 @@ end
 function evol(flock::Flock, param::Param, vals::Array{Float64,2}, T::Int64, dt::Float64)
     for t in 1:T
 
+        # @sync begin
+        #     for p in procs(flock.pos)
+        #         @async remotecall_wait(p, calc_Rij, flock.pos, flock.rij, param.N, param.r0)
+        #     end
+        # end
+
+        # @sync begin
+        #     for p in procs(flock.pos)
+        #         @async remotecall_wait(p, loc_vels, flock.vel, flock.v_r, flock.rij, param.N)
+        #         @async remotecall_wait(p, non_loc_vels, flock.vel, flock.v_n, flock.nij, flock.poski, param.N)
+        #     end
+        # end
+
+        # flock.noise = rand(param.N)
+
+        # @sync begin
+        #     for p in procs(flock.pos)
+        #         @async remotecall_wait(p, rot_move, flock.pos, flock.vel, flock.v_r, flock.v_n, flock.noise, dt, param.omega, param.eta, param.N)
+        #     end
+        # end
+
         @sync begin
             for p in procs(flock.pos)
-                @async remotecall_wait(p, calc_Rij, flock.pos, flock.rij, param.N, param.r0)
+                @async remotecall(p, calc_Rij, flock.pos, flock.rij, param.N, param.r0)
             end
         end
 
         @sync begin
             for p in procs(flock.pos)
-                @async remotecall_wait(p, loc_vels, flock.vel, flock.v_r, flock.rij, param.N)
-                @async remotecall_wait(p, non_loc_vels, flock.vel, flock.v_n, flock.nij, flock.poski, param.N)
+                @async remotecall(p, loc_vels, flock.vel, flock.v_r, flock.rij, param.N)
+                @async remotecall(p, non_loc_vels, flock.vel, flock.v_n, flock.nij, flock.poski, param.N)
             end
         end
 
@@ -449,7 +501,7 @@ function evol(flock::Flock, param::Param, vals::Array{Float64,2}, T::Int64, dt::
 
         @sync begin
             for p in procs(flock.pos)
-                @async remotecall_wait(p, rot_move, flock.pos, flock.vel, flock.v_r, flock.v_n, flock.noise, dt, param.omega, param.eta, param.N)
+                @async remotecall(p, rot_move, flock.pos, flock.vel, flock.v_r, flock.v_n, flock.noise, dt, param.omega, param.eta, param.N)
             end
         end
 
@@ -492,25 +544,48 @@ end
 function evol_range(flock::Flock, param::Param, vals::Array{Float64,2}, T::Int64, dt::Float64, range::Array{UnitRange}, rij_range::Array{UnitRange})
     for t in 1:T
 
-        @sync begin
-            for p in procs(flock.pos)
-                # @async remotecall_wait(p, calc_Rij_chunk, flock.pos, flock.rij, param.N, param.r0, range[p-1])
-                @async remotecall_wait(p, calc_Rij_chunk_id, flock.pos, flock.rij, flock.rij_ids, param.r0, rij_range[p-1])
-            end
-        end
+        # @sync begin
+        #     for p in procs(flock.pos)
+        #         # @async remotecall_wait(p, calc_Rij_chunk, flock.pos, flock.rij, param.N, param.r0, range[p-1])
+        #         @async remotecall_wait(p, calc_Rij_chunk_id, flock.pos, flock.rij, flock.rij_ids, param.r0, rij_range[p-1])
+        #     end
+        # end
+        #
+        # @sync begin
+        #     for p in procs(flock.pos)
+        #         @async remotecall_wait(p, loc_vels_chunk, flock.vel, flock.v_r, flock.rij, param.N, range[p-1])
+        #         @async remotecall_wait(p, non_loc_vels_chunk, flock.vel, flock.v_n, flock.nij, flock.poski, range[p-1])
+        #     end
+        # end
+        #
+        # flock.noise = rand(param.N)
+        #
+        # @sync begin
+        #     for p in procs(flock.pos)
+        #         @async remotecall_wait(p, rot_move_chunk, flock.pos, flock.vel, flock.v_r, flock.v_n, flock.noise, dt, param.omega, param.eta, range[p-1])
+        #     end
+        # end
+
+        # @sync begin
+        #     for p in procs(flock.pos)
+        #         # @async remotecall(p, calc_Rij_chunk, flock.pos, flock.rij, param.N, param.r0, range[p-1])
+        #         @async remotecall(p, calc_Rij_chunk_id, flock.pos, flock.rij, flock.rij_ids, param.r0, rij_range[p-1])
+        #     end
+        # end
 
         @sync begin
             for p in procs(flock.pos)
-                @async remotecall_wait(p, loc_vels_chunk, flock.vel, flock.v_r, flock.rij, param.N, range[p-1])
-                @async remotecall_wait(p, non_loc_vels_chunk, flock.vel, flock.v_n, flock.nij, flock.poski, range[p-1])
+                # @async remotecall(p, loc_vels_chunk, flock.vel, flock.v_r, flock.rij, param.N, range[p-1])
+                @async remotecall(p, loc_vels_chunk_rij, flock.vel, flock.pos, flock.v_r, param.N, param.r0, range[p-1])
+                @async remotecall(p, non_loc_vels_chunk, flock.vel, flock.v_n, flock.nij, flock.poski, range[p-1])
             end
         end
-
+∫
         flock.noise = rand(param.N)
 
         @sync begin
             for p in procs(flock.pos)
-                @async remotecall_wait(p, rot_move_chunk, flock.pos, flock.vel, flock.v_r, flock.v_n, flock.noise, dt, param.omega, param.eta, range[p-1])
+                @async remotecall(p, rot_move_chunk, flock.pos, flock.vel, flock.v_r, flock.v_n, flock.noise, dt, param.omega, param.eta, range[p-1])
             end
         end
 
