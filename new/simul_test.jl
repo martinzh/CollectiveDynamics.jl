@@ -6,6 +6,8 @@ addprocs(4)
 
 @everywhere include("/Users/martinC3/GitRepos/CollectiveDynamics.jl/new/pl.jl")
 
+using ProfileView
+
 using PyPlot
 
 ####========================================####
@@ -104,9 +106,31 @@ param.eta = 0.0
 @time dists(flock, param)
 @time dists_id(flock, param, rij_ranges)
 
+p = 2
+@profile remotecall(p, loc_vels_chunk_rij, flock.vel, flock.pos, flock.v_r, param.N, param.r0, ranges[p-1])
+
+@sync begin
+    for p in procs(flock.pos)
+        # @async remotecall(p, loc_vels_chunk, flock.vel, flock.v_r, flock.rij, param.N, range[p-1])
+        @async remotecall(p, loc_vels_chunk_rij, flock.vel, flock.pos, flock.v_r, param.N, param.r0, range[p-1])
+        @async remotecall(p, non_loc_vels_chunk, flock.vel, flock.v_n, flock.nij, flock.poski, range[p-1])
+    end
+end
+
+@sync begin
+    for p in procs(flock.pos)
+        @async remotecall(p, rot_move_chunk, flock.pos, flock.vel, flock.v_r, flock.v_n, flock.noise, dt, param.omega, param.eta, range[p-1])
+    end
+end
+
+
 # @time evol_bound(flock, param, out_pos, 100, dt)
 @time evol(flock, param, out_pos, T, dt)
 @time evol_range(flock, param, out_pos, T, dt, ranges, rij_ranges)
+
+@profile evol_range(flock, param, out_pos, 1, dt, ranges, rij_ranges)
+
+ProfileView.view()
 
 typeof(ranges[1])
 

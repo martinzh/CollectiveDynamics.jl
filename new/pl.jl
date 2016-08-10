@@ -580,8 +580,8 @@ function evol_range(flock::Flock, param::Param, vals::Array{Float64,2}, T::Int64
                 @async remotecall(p, non_loc_vels_chunk, flock.vel, flock.v_n, flock.nij, flock.poski, range[p-1])
             end
         end
-∫
-        flock.noise = rand(param.N)
+
+        # flock.noise = rand(param.N)
 
         @sync begin
             for p in procs(flock.pos)
