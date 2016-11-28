@@ -5,7 +5,7 @@
 ## 14 / 11 / 2016
 ### ============== ### ============== ### ============== ###
 
-using CollectiveDynamics
+# using CollectiveDynamics
 
 ### ============== ### ============== ### ============== ###
 ### PARAMETERS ##
@@ -32,10 +32,7 @@ end
 ### SPIN UPDATE
 ### ============== ### ============== ### ============== ###
 
-function local_int(pos, vel, v_r, rij, v_n, pars)
-
-    # # matrix of relative distances between particles
-    # nij = zeros(pars.N,pars.N)
+function calc_interactions(pos, vel, v_r, rij, v_n, Nij, pars)
 
     # compute nij entries
     for i in 1:pars.N, j = i:pars.N
@@ -43,17 +40,58 @@ function local_int(pos, vel, v_r, rij, v_n, pars)
         rij[j,i] = rij[i,j]
     end
 
-    # compute local metric interaction
+    # compute local and non local interaction
     for i in 1:pars.N
         v_r[i] = mean([vel[i] for i in find(x -> x <= pars.r0 && x > 0.0, rij[:,i])])
-    end
 
-    # compute non local topological interaction
+        if length(findn(Nij[:,i])) != 0
+            v_n[i] = mean([vel[i] for i in findn(Nij[:,i])])
+        else
+            v_n[i] = zeros(2)
+        end
+
+    end
+end
+
+function rot_move(pos, vel, v_r, v_n, pars)
+
     for i in 1:pars.N
-        v_n[i] = mean([vel[i] for i in find(x -> x <= pars.r0 && x > 0.0, rij[:,i])])
+
+        prop_angle = atan2(vel[i][2], vel[i][1])
+
+        i_vx = v_r[i][1]
+        i_vy = v_r[i][2]
+
+        if i_vx != 0.0 || i_vy != 0.0
+            loc_angle = atan2(i_vy, i_vx) - prop_angle;
+        else
+            loc_angle = 0.0;
+        end
+
+        i_vx = v_n[i][1]
+        i_vy = v_n[i][2]
+
+        if i_vx != 0.0 || i_vy != 0.0
+            non_loc_angle = atan2(i_vy, i_vx) - prop_angle;
+        else
+            non_loc_angle = 0.0;
+        end
+
+        total_angle = pars.ω * loc_angle + (1 - pars.ω) * non_loc_angle + pars.η * (2*rand()*pi - pi);
+
+        c = cos(total_angle)
+        s = sin(total_angle)
+
+        vx = vel[i][1]*c - vel[i][2]*s;
+        vy = vel[i][1]*s + vel[i][2]*c;
+
+        vel[i][1] = vx;
+        vel[i][2] = vy;
+
+        pos[i][1] += vx;
+        pos[i][2] += vy;
+
     end
-
-
 
 end
 
@@ -61,16 +99,10 @@ end
 ### SYSTEM EVOLUTION
 ### ============== ### ============== ### ============== ###
 
-function evolve(pos, vel, vn, spin, pars, σ)
+function evolve(pos, vel, v_r, v_n, rij, Nij, pars)
 
-    ### VELOCITY UPDATE
-    map!((x,y) -> y + (1/pars.χ)*cross(x,y), vel, spin, vel)
-
-    ### SPIN UPDATE
-    spin_update(pos, vel, v_n, spin, pars)
-
-    ### POSITION UPDATE
-    map!( (x,y) -> x + y*pars.dt, pos, pos, vel )
+    calc_interactions(pos, vel, v_r, rij, v_n, Nij, pars)
+    rot_move(pos, vel, v_r, v_n, pars)
 
 end
 
@@ -79,7 +111,7 @@ end
 ### DEFINITION OF INITIAL PARAMETERS
 ### =============== ### =============== ### =============== ###
 
-N  = 512 # number of particles
+N  = 1024 # number of particles
 κ = 7 # average non-local interactions
 η = 0.15 # noise intensity
 ρ  = 0.3 # density
@@ -89,7 +121,7 @@ l = 0.1 # Regimen de velocidad
 dt = 1.0 # Time integration step
 
 v0 = 1.0 # particle's speed
-T  = 100 # integration time steps
+T  = 10 # integration time steps
 
 r0 = (v0 * dt) / l
 
@@ -129,7 +161,7 @@ end
 ### SYSTEM EVOLUTION
 ### ============== ### ============== ### ============== ###
 
-for t in 1:τ
+for t in 1:T
     println(t, "\t", pos[1])
-    evolve(pos, vel, v_n, spin, pars, σ)
+    evolve(pos, vel, v_r, v_n, rij, Nij, pars)
 end
