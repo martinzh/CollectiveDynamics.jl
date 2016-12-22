@@ -3,7 +3,7 @@ using StatPlots
 N = 1024
 κ = 5
 
-folder_path = "DATA/data_N_$(N)_kappa_$(κ)"
+folder_path = "DATA/data_N_$(N)_k_$(κ)"
 
 r = 5
 

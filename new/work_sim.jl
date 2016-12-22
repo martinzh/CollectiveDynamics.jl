@@ -133,7 +133,7 @@ times = [convert(Int, exp10(i)) for i in 0:T]
 ### OUTPUT
 ### ============== ### ============== ### ============== ###
 
-folder_path = "../DATA/data_N_$(N)_kappa_$(κ)"
+folder_path = "../DATA/data_N_$(N)_k_$(κ)"
 
 try
     mkdir(folder_path)
