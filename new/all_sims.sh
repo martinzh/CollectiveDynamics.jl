@@ -1,8 +1,9 @@
 #!/bin/bash
 
 N="$1"
+T="$2"
 
-for i in 0 2 7 10
-do
-   bash reps.sh $N $i
-done
+bash reps.sh $N 0 $T
+bash reps.sh $N 2 $T
+bash reps.sh $N 5 $T
+bash reps.sh $N 7 $T
