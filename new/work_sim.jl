@@ -109,7 +109,9 @@ N = parse(Int, ARGS[1]) # number of particles
 κ = parse(Int, ARGS[2]) # average non-local interactions
 # κ = 2
 
-rep = parse(Int, ARGS[3])
+T = parse(Int, ARGS[3]) # integration time steps
+
+rep = parse(Int, ARGS[4])
 
 # η = 0.15 # noise intensity
 
@@ -120,13 +122,12 @@ l = 0.1 # Regimen de velocidad
 dt = 1.0 # Time integration step
 
 v0 = 1.0 # particle's speed
-T  = 10 # integration time steps
 
 r0 = (v0 * dt) / l
 
 p = κ / (N-1)
 
-times = [convert(Int, exp10(i)) for i in 0:2]
+times = [convert(Int, exp10(i)) for i in 0:T]
 
 ### ============== ### ============== ### ============== ###
 ### OUTPUT
