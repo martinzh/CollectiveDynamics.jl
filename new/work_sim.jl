@@ -106,7 +106,7 @@ N = parse(Int, ARGS[1]) # number of particles
 # N  = 1024
 # N  = 512
 
-κ = parse(Int, ARGS[2]) # average non-local interactions
+κ = parse(Float64, ARGS[2]) # average non-local interactions
 # κ = 2
 
 T = parse(Int, ARGS[3]) # integration time steps
@@ -133,10 +133,18 @@ times = [convert(Int, exp10(i)) for i in 0:T]
 ### OUTPUT
 ### ============== ### ============== ### ============== ###
 
-folder_path = "../DATA/data_N_$(N)_k_$(κ)"
+folder_path = "../DATA/data_N_$(N)"
+
+reps_path = folder_path * "/data_N_$(N)_k_$(κ)"
 
 try
     mkdir(folder_path)
+catch error
+    println("Folder already exists, not created")
+end
+
+try
+    mkdir(reps_path)
 catch error
     println("Folder already exists, not created")
 end
@@ -180,9 +188,9 @@ sp_Nij = sparse(Nij)
 
 # println("Ended Init")
 
-pos_file = open(folder_path * "/pos_$(rep).dat", "w+")
-vel_file = open(folder_path * "/vel_$(rep).dat", "w+")
-net_file = open(folder_path * "/net_$(rep).dat", "w+")
+pos_file = open(reps_path * "/pos_$(rep).dat", "w+")
+vel_file = open(reps_path * "/vel_$(rep).dat", "w+")
+net_file = open(reps_path * "/net_$(rep).dat", "w+")
 
 write(net_file, Nij)
 close(net_file)
