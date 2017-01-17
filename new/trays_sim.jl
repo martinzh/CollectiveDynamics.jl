@@ -106,7 +106,7 @@ N = parse(Int, ARGS[1]) # number of particles
 # N  = 1024
 # N  = 512
 
-κ = parse(Float64, ARGS[2]) # average non-local interactions
+κ = parse(Int, ARGS[2]) # average non-local interactions
 # κ = 2
 
 T = parse(Int, ARGS[3]) # integration time steps
@@ -127,24 +127,15 @@ r0 = (v0 * dt) / l
 
 p = κ / (N-1)
 
-times = [convert(Int, exp10(i)) for i in 0:T]
+# times = [convert(Int, exp10(i)) for i in 0:T]
 
 ### ============== ### ============== ### ============== ###
 ### OUTPUT
 ### ============== ### ============== ### ============== ###
 
-folder_path = "../DATA/data_N_$(N)"
-
-reps_path = folder_path * "/data_N_$(N)_k_$(κ)"
-
+folder_path = "../DATA/data_N_$(N)_k_$(κ)_trays"
 try
     mkdir(folder_path)
-catch error
-    println("Folder already exists, not created")
-end
-
-try
-    mkdir(reps_path)
 catch error
     println("Folder already exists, not created")
 end
@@ -188,9 +179,9 @@ sp_Nij = sparse(Nij)
 
 # println("Ended Init")
 
-pos_file = open(reps_path * "/pos_$(rep).dat", "w+")
-vel_file = open(reps_path * "/vel_$(rep).dat", "w+")
-net_file = open(reps_path * "/net_$(rep).dat", "w+")
+pos_file = open(folder_path * "/pos_$(rep).dat", "w+")
+vel_file = open(folder_path * "/vel_$(rep).dat", "w+")
+net_file = open(folder_path * "/net_$(rep).dat", "w+")
 
 write(net_file, Nij)
 close(net_file)
@@ -199,41 +190,16 @@ close(net_file)
 ### SYSTEM EVOLUTION
 ### ============== ### ============== ### ============== ###
 
-for i in 1:(length(times) - 1)
+for t in 1:Int(exp10(T))
 
-    if i > 1
+    write(pos_file, vcat(pos...))
+    write(vel_file, vcat(vel...))
 
-        for t in (times[i]+1):times[i+1]
-
-            evolve(pos, vel, v_r, v_n, sp_Nij, r0)
-
-            if t % times[i] == 0 || t % times[i-1] == 0
-                # println("//////// ", t)
-                write(pos_file, vcat(pos...))
-                write(vel_file, vcat(vel...))
-            end
-        end
-
-    else
-
-        for t in (times[i]+1):times[i+1]
-
-            evolve(pos, vel, v_r, v_n, sp_Nij, r0)
-
-            if t % times[i] == 0
-                # println("//////// ", t)
-                write(pos_file, vcat(pos...))
-                write(vel_file, vcat(vel...))
-            end
-        end
-
-    end
+    evolve(pos, vel, v_r, v_n, sp_Nij, r0)
 
 end
 
 close(pos_file)
 close(vel_file)
-
-# end
 
 println("Done all")
