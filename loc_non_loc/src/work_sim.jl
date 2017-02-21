@@ -1,8 +1,8 @@
 ### ============== ### ============== ### ============== ###
-## Numerical simulations of the Discretized version of the
-## inertial spin model Reference: Cavagna...
+## Numerical simulations of the local and non local
+## collective motion model in open space
 ## Martin Zumaya Hernandez
-## 14 / 11 / 2016
+## 21 / 02 / 2017
 ### ============== ### ============== ### ============== ###
 
 ### ============== ### ============== ### ============== ###
@@ -11,12 +11,13 @@
 
 function calc_rij(pos, r0)
 
-    rij = zeros(length(pos), length(pos))
+    rij = zeros(Float64, length(pos), length(pos))
 
     # compute rij entries
     for i in 1:size(rij,1), j in (i+1):size(rij,1)
 
-        d = sqrt((pos[i][1] - pos[j][1])^2 + (pos[i][2] - pos[j][2])^2)
+        # d = sqrt((pos[i][1] - pos[j][1])^2 + (pos[i][2] - pos[j][2])^2)
+        d = norm(pos[i] - pos[j])
 
         d < r0 && d > zero(Float64) ? rij[j,i] = one(Float64) : rij[j,i] = zero(Float64)
 
@@ -26,6 +27,8 @@ function calc_rij(pos, r0)
     return rij
 end
 
+### ============== ### ============== ### ============== ###
+
 function set_Nij(p, Nij)
 
     N = size(Nij, 1)
@@ -34,6 +37,8 @@ function set_Nij(p, Nij)
         rand() < p ? Nij[j, i] = one(Float64) : Nij[j, i] = zero(Float64)
     end
 end
+
+### ============== ### ============== ### ============== ###
 
 function calc_interactions(vel, v_n, sp_Nij)
 
@@ -48,6 +53,8 @@ function calc_interactions(vel, v_n, sp_Nij)
     end
 
 end
+
+### ============== ### ============== ### ============== ###
 
 function rot_move_part(pos, vel, v_r, v_n)
 
@@ -90,8 +97,8 @@ end
 
 function evolve(pos, vel, v_r, v_n, sp_Nij, r0)
 
-    calc_interactions(vel, v_r, sparse(calc_rij(pos, r0)) )
-    calc_interactions(vel, v_n, sp_Nij)
+    calc_interactions(vel, v_r, sparse(calc_rij(pos, r0)) ) # local
+    calc_interactions(vel, v_n, sp_Nij) # non_local
 
     map(rot_move_part, pos, vel, v_r, v_n)
 
@@ -133,20 +140,28 @@ times = [convert(Int, exp10(i)) for i in 0:T]
 ### OUTPUT
 ### ============== ### ============== ### ============== ###
 
-folder_path = "../DATA/data_N_$(N)"
+parent_folder_path = "../NLOC_DATA"
+
+folder_path = parent_folder_path * "/DATA/data_N_$(N)"
 
 reps_path = folder_path * "/data_N_$(N)_k_$(κ)"
 
 try
+    mkdir(parent_folder_path)
+catch error
+    println("Parent folder already exists")
+end
+
+try
     mkdir(folder_path)
 catch error
-    println("Folder already exists, not created")
+    println("Folder already exists")
 end
 
 try
     mkdir(reps_path)
 catch error
-    println("Folder already exists, not created")
+    println("Parameter folder already exists")
 end
 
 # @time evolve(pos, vel, v_r, v_n, sp_Nij, r0)
@@ -159,8 +174,6 @@ end
 #
 # @time pmap(rot_move_part, pos, vel, v_r, v_n; distributed=false)
 # @time pmap(rot_move_part, pos, vel, v_r, v_n)
-
-# for r in 1:reps
 
 println("rep: $(rep)")
 
@@ -181,7 +194,7 @@ v_r = [zeros(2) for i in 1:N]
 v_n = [zeros(2) for i in 1:N]
 
 # non-local interaction network definition
-Nij = zeros(N, N)
+Nij = zeros(Float64, N, N)
 set_Nij(p, Nij)
 
 sp_Nij = sparse(Nij)
@@ -233,7 +246,5 @@ end
 
 close(pos_file)
 close(vel_file)
-
-# end
 
 println("Done all")
