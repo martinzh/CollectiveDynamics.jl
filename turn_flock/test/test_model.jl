@@ -88,7 +88,7 @@ function part_spin_update(vel, v_n, spin, pars, σ)
         # spin[i][1] = u_spin[1]
         # spin[i][2] = u_spin[2]
         # spin[i][3] = u_spin[3]
-        spin[i] = u_spin
+        spin[i] = normalize(u_spin)
     end
 end
 
@@ -124,7 +124,7 @@ end
 # τ   = parse(Int, ARGS[3]) # number of iterations
 # rep = parse(Int, ARGS[4])
 
-N   = 10
+N   = 64
 # η   = 0.1
 η   = 60
 τ   = 5
@@ -161,8 +161,8 @@ pos = [ [2*rand()*L - L, 2*rand()*L - L, 2*rand()*L - L] for i in 1:pars.N ]
 # pos = [ [2*rand()*L - L, 2*rand()*L - L, 0.0] for i in 1:pars.N ]
 
 # array of particles' velocities
-# vel = pars.v0 * [ normalize([2*rand() - 1, 2*rand() - 1, 2*rand() - 1]) for i in 1:pars.N ]
-vel = pars.v0 * [ [1.0 - 0.05*rand(), 0.0, 0.0] for i in 1:pars.N ]
+vel = pars.v0 * [ normalize([2*rand() - 1, 2*rand() - 1, 2*rand() - 1]) for i in 1:pars.N ]
+# vel = pars.v0 * [ [1.0, 0.05 * rand(), 0.0] for i in 1:pars.N ]
 
 # vel = pars.v0 * [ normalize([2*rand() - 1, 2*rand() - 1, 0.0]) for i in 1:pars.N ]
 
@@ -215,12 +215,12 @@ spin_file  = open(reps_path * "/spin_$(rep).dat", "w")
 ### SYSTEM EVOLUTION
 ### ============== ### ============== ### ============== ###
 
-println("pos: ",pos[1]," vel: ", vel[1]," spin: ", spin[1])
-
-for i in 1:20
-    evolve(pos, vel, v_n, spin, nij, pars, σ)
-    println("pos: ",pos[1]," vel: ", vel[1]," spin: ", spin[1])
-end
+# println("pos: ",pos[1]," vel: ", vel[1]," spin: ", spin[1])
+#
+# for i in 1:20
+#     evolve(pos, vel, v_n, spin, nij, pars, σ)
+#     println("pos: ",pos[1]," vel: ", vel[1]," spin: ", spin[1])
+# end
 
 for i in 1:(length(times) - 1)
 
