@@ -25,7 +25,7 @@ immutable parameters
     parameters() = new(1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 10, 5, 3.0, 1.0)
 
     # full constructor
-    parameters(χ, J, η, dt, ρ, v0, N, T, n_c) = new(χ, J, η, dt, ρ, v0, N, T, 2.0, n_c)
+    parameters(χ, J, η, dt, ρ, v0, N, T, n_c) = new(χ, J, η, dt, ρ, v0, N, T, 3.0, n_c)
 end
 
 ### ============== ### ============== ### ============== ###
@@ -51,7 +51,7 @@ function calc_interactions(v_n, nij, n_c)
 
     # compute local topological interaction
     for i in 1:size(nij,1)
-        # v_n[i] = mean([vel[i] for i in findin(nij[:,i], sort(nij[:,i])[2:n_c+1])])
+        # v_n[i] = mean( [vel[j] for j in findin(nij[:,i], sort(nij[:,i])[2:n_c+1])] )
         v_n[i] = sum( [ vel[j] for j in findin(nij[:,i], sort(nij[:,i])[2:n_c+1]) ] )
     end
 
@@ -64,12 +64,11 @@ end
 function part_vel_update(vel, spin, pars)
 
     for i in 1:length(vel)
-        u_vel = vel[i] + (pars.dt/pars.χ) * cross(spin[i], vel[i])
+        # u_vel = vel[i] + (pars.dt/pars.χ) * cross(spin[i], vel[i])
+        u_vel = (pars.dt/pars.χ) * cross(spin[i], vel[i])
 
-        # vel[i][1] = u_vel[1]
-        # vel[i][2] = u_vel[2]
-        # vel[i][3] = u_vel[3]
-        vel[i] = u_vel
+        println(u_vel)
+        vel[i] += u_vel
     end
 
 end
@@ -81,14 +80,21 @@ end
 function part_spin_update(vel, v_n, spin, pars, σ)
 
     for i in 1:length(vel)
+
         noise = normalize(randn(3) * σ)
+        # noise = randn(3) * σ
 
-        u_spin = vel[i] + (pars.J * pars.dt / pars.v0^2) * cross(vel[i], v_n[1]) - (pars.η * pars.dt/ pars.χ) * spin[i] + (sqrt(pars.dt) / pars.v0) * cross(vel[i], noise)
+        u_vel = (pars.dt/pars.χ) * cross(spin[i], vel[i])
 
-        # spin[i][1] = u_spin[1]
-        # spin[i][2] = u_spin[2]
-        # spin[i][3] = u_spin[3]
-        spin[i] = normalize(u_spin)
+        # u_spin = vel[i] + (pars.J * pars.dt / pars.v0^2) * cross(vel[i], v_n[i]) - (pars.η * pars.dt/ pars.χ) * spin[i] + (sqrt(pars.dt) / pars.v0) * cross(vel[i], noise)
+        u_spin = (pars.J * pars.dt / pars.v0^2) * cross(vel[i], v_n[i]) - (pars.η * pars.dt/ pars.χ) * spin[i] + (sqrt(pars.dt) / pars.v0) * cross(vel[i], noise)
+
+        # println(u_spin)
+
+        # spin[i] = normalize(u_spin)
+        spin[i] += u_spin
+        vel[i] += u_vel
+
     end
 end
 
@@ -106,7 +112,7 @@ function evolve(pos, vel, vn, spin, nij, pars, σ)
 
     ### VELOCITY UPDATE
     # map(part_vel_update, vel, spin, pars)
-    part_vel_update(vel, spin, pars)
+    # part_vel_update(vel, spin, pars)
 
     ### SPIN UPDATE
     # map(part_spin_update, vel, v_n, spin, pars, σ)
@@ -117,6 +123,9 @@ function evolve(pos, vel, vn, spin, nij, pars, σ)
 
 end
 
+# [norm(vel[i]) for i in 1:length(vel)]
+# [norm(spin[i]) for i in 1:length(spin)]
+
 ### ============== ### ============== ### ============== ###
 
 # N   = parse(Int, ARGS[1])
@@ -126,7 +135,10 @@ end
 
 N   = 64
 # η   = 0.1
-η   = 60
+
+# explota para η = 32
+
+η   = 15.0
 τ   = 4
 rep = 1
 
@@ -134,6 +146,8 @@ J = 0.8
 χ = 1.25
 
 v0 = 0.1
+
+δ = 0.35
 
 # times = [convert(Int, exp10(i)) for i in 0:τ]
 
@@ -162,9 +176,8 @@ pos = [ [2*rand()*L - L, 2*rand()*L - L, 2*rand()*L - L] for i in 1:pars.N ]
 
 # array of particles' velocities
 vel = pars.v0 * [ normalize([2*rand() - 1, 2*rand() - 1, 2*rand() - 1]) for i in 1:pars.N ]
-# vel = pars.v0 * [ [1.0, 0.05 * rand(), 0.0] for i in 1:pars.N ]
-
 # vel = pars.v0 * [ normalize([2*rand() - 1, 2*rand() - 1, 0.0]) for i in 1:pars.N ]
+# vel = pars.v0 * [normalize([1.0, 0.0, 0.0] - [2*δ*rand() - δ, 2*δ*rand() - δ, 2*δ*rand() - δ]) for i in 1:N]
 
 # local topological interactions
 v_n = [zeros(Float64, 3) for i in 1:pars.N]
@@ -215,11 +228,14 @@ spin_file  = open(reps_path * "/spin_$(rep).dat", "w")
 ### SYSTEM EVOLUTION
 ### ============== ### ============== ### ============== ###
 
-# println("pos: ",pos[1]," vel: ", vel[1]," spin: ", spin[1])
-#
-# for i in 1:20
+# println("pos: ",pos[1]," vel: ", vel[1]," spin: ", spin[1], " v0 = ", norm(vel[1]))
+# println("pos: ",pos[1]," vel: ", vel[1]," dot: ", dot(vel[1], spin[1]), " v0 = ", norm(vel[1]))
+
+# for i in 1:100
 #     evolve(pos, vel, v_n, spin, nij, pars, σ)
-#     println("pos: ",pos[1]," vel: ", vel[1]," spin: ", spin[1])
+#     # println("pos: ",pos[1]," vel: ", vel[1]," spin: ", spin[1], " v0 = ", norm(vel[1]))
+#     println("pos: ",pos[1]," vel: ", vel[1]," dot: ", dot(vel[1], spin[1]), " v0 = ", norm(vel[1]))
+#
 # end
 
 # for i in 1:(length(times) - 1)
