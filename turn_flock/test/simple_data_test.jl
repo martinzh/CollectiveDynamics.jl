@@ -114,16 +114,17 @@ psi   = Array{Float64}[]
 r = 1
 raw_data = reinterpret(Float64, read(folder_path * "/pos_$(r).dat"))
 pos_data = transpose(reshape(raw_data, 3N, div(length(raw_data), 3N)))
+# pos_data = reshape(raw_data, 3N, div(length(raw_data), 3N))
 
 raw_data = reinterpret(Float64, read(folder_path * "/vel_$(r).dat"))
 vel_data = transpose(reshape(raw_data, 3N, div(length(raw_data), 3N)))
+# vel_data = reshape(raw_data, 3N, div(length(raw_data), 3N))
 
 raw_data = reinterpret(Float64, read(folder_path * "/spin_$(r).dat"))
 spin_data = transpose(reshape(raw_data, 3N, div(length(raw_data), 3N)))
+# spin_data = reshape(raw_data, 3N, div(length(raw_data), 3N))
 
-
-
-find(x -> isnan(x), pos_data[:, 1])[1]
+find(x -> isnan(x), pos_data[:, 1])
 find(x -> isnan(x), vel_data[:, 1])
 find(x -> isnan(x), spin_data[:, 1])
 
@@ -134,30 +135,24 @@ z = view(pos_data, :, 3:3:3N)
 gui()
 plot(x, y, z, leg = false)
 
-# for r in unique([match(r"^\w+_(\d+).dat", f).captures[1] for f in readdir(folder_path)])
-#
-#     println(r)
-#
-#     raw_data = reinterpret(Float64, read(folder_path * "/pos_$(r).dat"))
-#     pos_data = transpose(reshape(raw_data, 3N, div(length(raw_data), 3N)))
-#
-#     # o_pos_data = deepcopy(pos_data)
-#
-#     pos_data[:, 1:3:3N] = pos_data[:, 1:3:3N] .- mean(pos_data[:, 1:3:3N], 2)
-#     pos_data[:, 2:3:3N] = pos_data[:, 2:3:3N] .- mean(pos_data[:, 2:3:3N], 2)
-#     pos_data[:, 3:3:3N] = pos_data[:, 3:3:3N] .- mean(pos_data[:, 3:3:3N], 2)
-#
-#     tr_pos_data = transpose(pos_data)
-#
-#     push!(means, [mean(calc_rij_vect(tr_pos_data[:, i])) for i in 1:size(tr_pos_data,2)])
-#
-#     raw_data = reinterpret(Float64,read(folder_path * "/vel_$(r).dat"))
-#
-#     vel_data = reshape(raw_data, 3N, div(length(raw_data), 3N))
-#
-#     push!(psi, [norm(mean([[vel_data[i, j], vel_data[i+1, j]] for i in 1:2:2N])) for j in 1:size(vel_data, 2)])
-#
-# end
-### ================================== ###
+x_mean = mean(pos_data[:, 1:3:3N], 2)
 
-### ================================== ###
+pos_data[:, 1:3:3N] = pos_data[:, 1:3:3N] .- mean(pos_data[:, 1:3:3N], 2)
+pos_data[:, 2:3:3N] = pos_data[:, 2:3:3N] .- mean(pos_data[:, 2:3:3N], 2)
+pos_data[:, 3:3:3N] = pos_data[:, 3:3:3N] .- mean(pos_data[:, 3:3:3N], 2)
+
+tr_pos_data = transpose(pos_data)
+
+means = [mean(calc_rij_vect(tr_pos_data[:, i])) for i in 1:size(tr_pos_data,2)]
+
+tr_vel_data = transpose(vel_data)
+
+psi = [norm(mean([ [tr_vel_data[i, j], tr_vel_data[i+1, j], tr_vel_data[i+2, j] ] for i in 1:3:3N])) for j in 1:size(tr_vel_data, 2)]
+
+psi = [norm(mean([[tr_vel_data[i, j], tr_vel_data[i+1, j], tr_vel_data[i+2, j]] for i in 1:3:3N])) for j in 1:size(tr_vel_data, 2)]
+
+size(psi)
+println(j)
+
+plot(collect(1:convert(Int, exp10(4))), means, xscale = :log10, yscale = :log10, marker = :o, markersize = 0.5)
+plot(collect(1:convert(Int, exp10(4))), psi, xscale = :log10, marker = :o)

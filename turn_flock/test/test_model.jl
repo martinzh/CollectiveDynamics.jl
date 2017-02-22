@@ -52,7 +52,7 @@ function calc_interactions(v_n, nij, n_c)
     # compute local topological interaction
     for i in 1:size(nij,1)
         # v_n[i] = mean([vel[i] for i in findin(nij[:,i], sort(nij[:,i])[2:n_c+1])])
-        v_n[i] = mean( [ vel[j] for j in findin(nij[:,i], sort(nij[:,i])[2:n_c+1]) ] )
+        v_n[i] = sum( [ vel[j] for j in findin(nij[:,i], sort(nij[:,i])[2:n_c+1]) ] )
     end
 
 end
@@ -127,7 +127,7 @@ end
 N   = 64
 # η   = 0.1
 η   = 60
-τ   = 5
+τ   = 4
 rep = 1
 
 J = 0.8
@@ -135,7 +135,7 @@ J = 0.8
 
 v0 = 0.1
 
-times = [convert(Int, exp10(i)) for i in 0:τ]
+# times = [convert(Int, exp10(i)) for i in 0:τ]
 
 #      parameters(χ, J, η   ,dt             ,ρ  ,v0  ,N   ,T          ,n_c)
 # pars = parameters(χ, J, 60.0, 0.1*sqrt(J/χ), 0.3, 0.1, 512, 8*exp10(-5), 6)
@@ -222,38 +222,48 @@ spin_file  = open(reps_path * "/spin_$(rep).dat", "w")
 #     println("pos: ",pos[1]," vel: ", vel[1]," spin: ", spin[1])
 # end
 
-for i in 1:(length(times) - 1)
+# for i in 1:(length(times) - 1)
+#
+#     if i > 1
+#
+#         for t in (times[i]+1):times[i+1]
+#
+#             evolve(pos, vel, v_n, spin, nij, pars, σ)
+#
+#             if t % times[i] == 0 || t % times[i-1] == 0
+#                 println("//////// ", t)
+#                 write(pos_file, vcat(pos...))
+#                 write(vel_file, vcat(vel...))
+#                 write(spin_file, vcat(spin...))
+#             end
+#         end
+#
+#     else
+#
+#         for t in (times[i]+1):times[i+1]
+#
+#             evolve(pos, vel, v_n, spin, nij, pars, σ)
+#
+#             if t % times[i] == 0
+#                 println("//////// ", t)
+#                 write(pos_file, vcat(pos...))
+#                 write(vel_file, vcat(vel...))
+#                 write(spin_file, vcat(spin...))
+#             end
+#         end
+#
+#     end
+#
+# end
 
-    if i > 1
+for t in 1:convert(Int, exp10(τ))
+    evolve(pos, vel, v_n, spin, nij, pars, σ)
 
-        for t in (times[i]+1):times[i+1]
+    println("//////// ", t)
 
-            evolve(pos, vel, v_n, spin, nij, pars, σ)
-
-            if t % times[i] == 0 || t % times[i-1] == 0
-                println("//////// ", t)
-                write(pos_file, vcat(pos...))
-                write(vel_file, vcat(vel...))
-                write(spin_file, vcat(spin...))
-            end
-        end
-
-    else
-
-        for t in (times[i]+1):times[i+1]
-
-            evolve(pos, vel, v_n, spin, nij, pars, σ)
-
-            if t % times[i] == 0
-                println("//////// ", t)
-                write(pos_file, vcat(pos...))
-                write(vel_file, vcat(vel...))
-                write(spin_file, vcat(spin...))
-            end
-        end
-
-    end
-
+    write(pos_file, vcat(pos...))
+    write(vel_file, vcat(vel...))
+    write(spin_file, vcat(spin...))
 end
 
 close(pos_file)
