@@ -117,9 +117,14 @@ end
 # num_reps = length(filter(x -> ismatch(r"pos_\d+.\w+", x), readdir(data_folder_path * "/" * folders[f])))
 #
 # raw_data = reinterpret(Float64, read(output_folder_path * "/exp_k_0.0.dat"))
-#
 # data = reshape(raw_data, length(times), num_reps)
+#
+# raw_data = reinterpret(Float64, read(output_folder_path * "/order_k_0.0.dat"))
+# order = reshape(raw_data, length(times), num_reps)
 #
 # gui()
 #
 # plot(times, mean(data, 2), leg = false, xscale = :log10, yscale = :log10)
+# plot(times, mean(order, 2), leg = false, xscale = :log10)
+#
+# plot(times, order, leg = false, xscale = :log10)
