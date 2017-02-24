@@ -56,7 +56,7 @@ end
 
 ### ============== ### ============== ### ============== ###
 
-function rot_move_part(pos, vel, v_r, v_n)
+function rot_move_part(pos, vel, v_r, v_n, η, ω)
 
     prop_angle = atan2(vel[2], vel[1])
 
@@ -73,9 +73,7 @@ function rot_move_part(pos, vel, v_r, v_n)
 
     i_vx != 0.0 || i_vy != 0.0 ? non_loc_angle = atan2(i_vy, i_vx) - prop_angle : non_loc_angle = 0.0
 
-    # total_angle = pars.ω * loc_angle + (1 - pars.ω) * non_loc_angle + pars.η * (2*rand()*pi - pi);
-
-    total_angle = 0.5 * (loc_angle + non_loc_angle) + 0.15 * (2 * rand() * pi - pi);
+    total_angle = ω * loc_angle + (1.0 - ω) * non_loc_angle + 0.15 * (2.0 * rand() * pi - pi);
 
     c = cos(total_angle)
     s = sin(total_angle)
@@ -95,12 +93,12 @@ end
 ###                 SYSTEM EVOLUTION
 ### ============== ### ============== ### ============== ###
 
-function evolve(pos, vel, v_r, v_n, sp_Nij, r0)
+function evolve(pos, vel, v_r, v_n, sp_Nij, r0, η, ω)
 
     calc_interactions(vel, v_r, sparse(calc_rij(pos, r0)) ) # local
     calc_interactions(vel, v_n, sp_Nij) # non_local
 
-    map(rot_move_part, pos, vel, v_r, v_n)
+    map( (p, v, vr, vn) -> rot_move_part(p, v, vr, vn, η, ω), pos, vel, v_r, v_n )
 
 end
 
@@ -108,31 +106,30 @@ end
 ### DEFINITION OF INITIAL PARAMETERS
 ### =============== ### =============== ### =============== ###
 
+N   = parse(Int, ARGS[1]) # number of particles
+κ   = parse(Float64, ARGS[2]) # average non-local interactions
+ω   = parse(Float64, ARGS[3]) # average non-local interactions
+T   = parse(Int, ARGS[4]) # integration time steps
+rep = parse(Int, ARGS[5])
 
-N = parse(Int, ARGS[1]) # number of particles
 # N  = 1024
 # N  = 512
-
-κ = parse(Float64, ARGS[2]) # average non-local interactions
 # κ = 2
+# ω = 0.5
 
-T = parse(Int, ARGS[3]) # integration time steps
-
-rep = parse(Int, ARGS[4])
-
-# η = 0.15 # noise intensity
+η = 0.15 # noise intensity
 
 ρ  = 0.3 # density
 L  = sqrt(N / ρ) # size of box
 
 l = 0.1 # Regimen de velocidad
-dt = 1.0 # Time integration step
 
+dt = 1.0 # Time integration step
 v0 = 1.0 # particle's speed
 
 r0 = (v0 * dt) / l
 
-p = κ / (N-1)
+p = κ / (N-1) # link probability
 
 times = [convert(Int, exp10(i)) for i in 0:T]
 
@@ -140,14 +137,18 @@ times = [convert(Int, exp10(i)) for i in 0:T]
 ### OUTPUT
 ### ============== ### ============== ### ============== ###
 
-parent_folder_path = "../NLOC_DATA"
-
-folder_path = parent_folder_path * "/DATA/data_N_$(N)"
-
-reps_path = folder_path * "/data_N_$(N)_k_$(κ)"
+parent_folder_path = "$(homedir())/art_DATA/NLOC_DATA"
+folder_path        = parent_folder_path * "/DATA/data_N_$(N)"
+reps_path          = folder_path * "/data_N_$(N)_k_$(κ)_w_$(ω)"
 
 try
     mkdir(parent_folder_path)
+catch error
+    println("Parent folder already exists")
+end
+
+try
+    mkdir(parent_folder_path * "/DATA")
 catch error
     println("Parent folder already exists")
 end
@@ -195,8 +196,8 @@ v_n = [zeros(2) for i in 1:N]
 
 # non-local interaction network definition
 Nij = zeros(Float64, N, N)
-set_Nij(p, Nij)
 
+set_Nij(p, Nij)
 sp_Nij = sparse(Nij)
 
 # println("Ended Init")
@@ -218,7 +219,7 @@ for i in 1:(length(times) - 1)
 
         for t in (times[i]+1):times[i+1]
 
-            evolve(pos, vel, v_r, v_n, sp_Nij, r0)
+            evolve(pos, vel, v_r, v_n, sp_Nij, r0, η, ω)
 
             if t % times[i] == 0 || t % times[i-1] == 0
                 # println("//////// ", t)
@@ -231,7 +232,7 @@ for i in 1:(length(times) - 1)
 
         for t in (times[i]+1):times[i+1]
 
-            evolve(pos, vel, v_r, v_n, sp_Nij, r0)
+            evolve(pos, vel, v_r, v_n, sp_Nij, r0, η, ω)
 
             if t % times[i] == 0
                 # println("//////// ", t)

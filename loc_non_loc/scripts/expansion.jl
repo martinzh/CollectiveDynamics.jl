@@ -40,13 +40,13 @@ end
 
 N = parse(Int, ARGS[1])
 
-N = 100
-N = 1024
+# N = 100
+# N = 1024
 
 ### ================================== ###
 
-data_folder_path   = "$(homedir())/art_DATA/data_N_$(N)"
-output_folder_path = "$(homedir())/art_DATA/exp_data_N_$(N)"
+data_folder_path   = "$(homedir())/art_DATA/NLOC_DATA/DATA/data_N_$(N)"
+output_folder_path = "$(homedir())/art_DATA/NLOC_DATA/EXP"
 
 folders = readdir(data_folder_path)
 
@@ -59,11 +59,13 @@ catch error
     println("Parent folder already exists")
 end
 
+try
+    mkdir(output_folder_path * "/exp_data_N_$(N)")
+catch error
+    println("Output folder already exists")
+end
+
 ### ================================== ###
-x_cm
-
-
-
 
 ### ================================== ###
 
@@ -73,8 +75,8 @@ for f in 1:length(folders)
     psi   = Array{Float64}[]
     means = Array{Float64}[]
 
-    exp_file   = open(output_folder_path * "/exp" * params[f] * ".dat", "w+")
-    order_file = open(output_folder_path * "/order" * params[f] * ".dat", "w+")
+    exp_file   = open(output_folder_path * "/exp_data_N_$(N)" * "/exp" * params[f] * ".dat", "w+")
+    order_file = open(output_folder_path * "/exp_data_N_$(N)" * "/order" * params[f] * ".dat", "w+")
 
     ### ================================== ###
 

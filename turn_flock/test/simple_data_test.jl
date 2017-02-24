@@ -87,19 +87,25 @@ N = 512
 N = 128
 N = 64
 
-T = 4
+T = 6
 
+η = "0.01"
 η = "0.1"
+η = "0.3"
+η = "0.5"
+η = "1.0"
+η = "1.5"
+η = "2.0"
+η = "5.0"
 η = "15.0"
+η = "30.0"
+η = "32.0"
 η = "60.0"
 
 tau = get_times(T)
 ### ================================== ###
 
-folder_path = "$(homedir())/Code/art_DATA/cvgn_data/data_N_$(N)/data_N_$(N)_eta_$(η)"
-# folder_path = "$(homedir())/Code/art_DATA/cvgn_data/data_N_$(N)/data_N_$(N)_eta_$(η)"
-
-folder_path = "$(homedir())/GitRepos/CollectiveDynamics.jl/turn_flock/TFLOCK_DATA/data_N_$(N)/data_N_$(N)_eta_$(η)"
+folder_path = "$(homedir())/art_DATA/TFLOCK_DATA/DATA/data_N_$(N)/data_N_$(N)_eta_$(η)"
 
 # files = filter(x -> match(r"._(\d+.\d+).dat", x).captures[1] == η , readdir(folder_path))
 files = readdir(folder_path)

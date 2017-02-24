@@ -58,44 +58,21 @@ function calc_interactions(v_n, nij, n_c)
 end
 
 ### ============== ### ============== ### ============== ###
-### VELOCITY UPDATE
-### ============== ### ============== ### ============== ###
-
-function part_vel_update(vel, spin, pars)
-
-    for i in 1:length(vel)
-        # u_vel = vel[i] + (pars.dt/pars.χ) * cross(spin[i], vel[i])
-        u_vel = (pars.dt/pars.χ) * cross(spin[i], vel[i])
-
-        println(u_vel)
-        vel[i] += u_vel
-    end
-
-end
-
-### ============== ### ============== ### ============== ###
 ### SPIN UPDATE
 ### ============== ### ============== ### ============== ###
 
-function part_spin_update(vel, v_n, spin, pars, σ)
+function part_vel_spin_update(vel, v_n, spin, pars, σ)
 
-    for i in 1:length(vel)
+    # noise = normalize(randn(3)) * σ
+    noise = randn(3) * σ
 
-        noise = normalize(randn(3) * σ)
-        # noise = randn(3) * σ
+    u_vel = vel + (pars.dt/pars.χ) * cross(spin, vel)
 
-        u_vel = (pars.dt/pars.χ) * cross(spin[i], vel[i])
+    u_spin =  ( 1.0 - pars.η * pars.dt / pars.χ ) * spin + (pars.J * pars.dt / pars.v0^2) * cross(vel, v_n) + (pars.dt/ pars.v0) * cross(vel, noise)
 
-        # u_spin = vel[i] + (pars.J * pars.dt / pars.v0^2) * cross(vel[i], v_n[i]) - (pars.η * pars.dt/ pars.χ) * spin[i] + (sqrt(pars.dt) / pars.v0) * cross(vel[i], noise)
-        u_spin = (pars.J * pars.dt / pars.v0^2) * cross(vel[i], v_n[i]) - (pars.η * pars.dt/ pars.χ) * spin[i] + (sqrt(pars.dt) / pars.v0) * cross(vel[i], noise)
+    spin = u_spin
+    vel  = pars.v0  * normalize(u_vel) # codition of constant speed
 
-        # println(u_spin)
-
-        # spin[i] = normalize(u_spin)
-        spin[i] += u_spin
-        vel[i] += u_vel
-
-    end
 end
 
 ### ============== ### ============== ### ============== ###
@@ -110,65 +87,51 @@ function evolve(pos, vel, vn, spin, nij, pars, σ)
     ### COMPUTE INTERACTIONS
     calc_interactions(v_n, nij, pars.n_c)
 
-    ### VELOCITY UPDATE
-    # map(part_vel_update, vel, spin, pars)
-    # part_vel_update(vel, spin, pars)
-
     ### SPIN UPDATE
-    # map(part_spin_update, vel, v_n, spin, pars, σ)
-    part_spin_update(vel, v_n, spin, pars, σ)
+    map( (v, vn, s) -> part_vel_spin_update(v, vn, s, pars, σ), vel, v_n, spin )
 
     ### POSITION UPDATE
-    map!( (x,v) -> x + pars.dt*v, pos, pos, vel )
+    map!( (p,v) -> p + pars.dt * v, pos, pos, vel )
 
 end
 
-# [norm(vel[i]) for i in 1:length(vel)]
-# [norm(spin[i]) for i in 1:length(spin)]
-
 ### ============== ### ============== ### ============== ###
 
-# N   = parse(Int, ARGS[1])
-# η   = parse(Float64, ARGS[2])
-# τ   = parse(Int, ARGS[3]) # number of iterations
-# rep = parse(Int, ARGS[4])
-
-N   = 64
-# η   = 0.1
+N   = parse(Int, ARGS[1])
+η   = parse(Float64, ARGS[2])
+τ   = parse(Int, ARGS[3]) # number of iterations
+rep = parse(Int, ARGS[4])
 
 # explota para η = 32
 
-η   = 15.0
-τ   = 4
-rep = 1
+# N   = 128
+# η   = 1.0
+# τ   = 6
+# rep = 1
 
-J = 0.8
-χ = 1.25
+T   = 8*exp10(-5)
 
-v0 = 0.1
+ρ   = 0.3
+J   = 0.8
+χ   = 1.25
+v0  = 0.1
+δ   = 0.35
+n_c = 6
 
-δ = 0.35
+times = [convert(Int, exp10(i)) for i in 0:τ]
 
-# times = [convert(Int, exp10(i)) for i in 0:τ]
+pars = parameters(χ, J, η, v0*sqrt(J/χ), ρ, v0, N, T, n_c)
 
-#      parameters(χ, J, η   ,dt             ,ρ  ,v0  ,N   ,T          ,n_c)
-# pars = parameters(χ, J, 60.0, 0.1*sqrt(J/χ), 0.3, 0.1, 512, 8*exp10(-5), 6)
-# pars = parameters(χ, J, 15.0, 0.1*sqrt(J/χ), 0.3, 0.1, 512, 8*exp10(-5), 6)
-pars = parameters(χ, J, η, v0*sqrt(J/χ), 0.3, v0, N, 8*exp10(-5), 6)
-
-σ = sqrt((2pars.d)*pars.η*pars.T) # noise std deviation ( square root of variance )
+σ = sqrt((2pars.d) * η * T) # noise std deviation ( square root of variance )
 
 # L = sqrt(pars.N / pars.ρ) # 2D
 L = cbrt(pars.N / pars.ρ) # 3D
 
-# pos = [ 2*rand()*L - L for i in 1:3N ] # array of random initial particles' postitions
-# vel = v0 * vcat([ normalize([2*rand() - 1, 2*rand() - 1, 2*rand() - 1]) for i in 1:N ]...) # array of  particles' velocities
-# spin = v0 * vcat([ normalize([2*rand() - 1, 2*rand() - 1, 2*rand() - 1]) for i in 1:N ]...) # array of  particles' velocities
-# vcat([ cross([spin[i], spin[i+1], spin[i+2]], [vel[i], vel[i+1], vel[i+2]]) for i in 1:3:3N ] )
-
 ### ============== ### ============== ### ============== ###
 ### SYSTEM INITIALIZATION
 ### ============== ### ============== ### ============== ###
+
+nij = zeros(Float64, N, N)
 
 # array of random initial particles' postitions
 pos = [ [2*rand()*L - L, 2*rand()*L - L, 2*rand()*L - L] for i in 1:pars.N ]
@@ -176,34 +139,37 @@ pos = [ [2*rand()*L - L, 2*rand()*L - L, 2*rand()*L - L] for i in 1:pars.N ]
 
 # array of particles' velocities
 vel = pars.v0 * [ normalize([2*rand() - 1, 2*rand() - 1, 2*rand() - 1]) for i in 1:pars.N ]
-# vel = pars.v0 * [ normalize([2*rand() - 1, 2*rand() - 1, 0.0]) for i in 1:pars.N ]
 # vel = pars.v0 * [normalize([1.0, 0.0, 0.0] - [2*δ*rand() - δ, 2*δ*rand() - δ, 2*δ*rand() - δ]) for i in 1:N]
 
 # local topological interactions
 v_n = [zeros(Float64, 3) for i in 1:pars.N]
 
 # initialize spins as zero vectors\
-spin = [zeros(Float64, 3) for i in 1:pars.N]
-
-nij = zeros(Float64, N, N)
+# spin = [zeros(Float64, 3) for i in 1:pars.N]
 
 # array of  particles' spin (initial random directions)
-# spin = pars.v0 * [ normalize([2*rand() - 1, 2*rand() - 1, 2*rand() - 1]) for i in 1:pars.N ]
+spin = [ normalize([2*rand() - 1, 2*rand() - 1, 2*rand() - 1]) for i in 1:pars.N ]
 # # cross product because dot(si, vi) must = 0, then normalize
-# map!((x,y) -> normalize(cross(x,y)), spin, spin, vel)
+map!((x,y) -> normalize(cross(x,y)), spin, spin, vel)
 
 ### ============== ### ============== ### ============== ###
 ### SET UP OUTPUT DATA STRUCTURE
 ### ============== ### ============== ### ============== ###
 
-parent_folder_path = "../TFLOCK_DATA"
-folder_path = parent_folder_path * "/data_N_$(pars.N)"
-# reps_path = folder_path * "/data_N_$(pars.N)_eta_$(ARGS[2])"
+parent_folder_path = "$(homedir())/art_DATA/TFLOCK_DATA"
+folder_path        = parent_folder_path * "/DATA/data_N_$(N)"
 
+# reps_path = folder_path * "/data_N_$(pars.N)_eta_$(ARGS[2])"
 reps_path = folder_path * "/data_N_$(pars.N)_eta_$(pars.η)"
 
 try
     mkdir(parent_folder_path)
+catch error
+    println("Parent folder already exists")
+end
+
+try
+    mkdir(parent_folder_path * "/DATA")
 catch error
     println("Parent folder already exists")
 end
@@ -228,62 +194,56 @@ spin_file  = open(reps_path * "/spin_$(rep).dat", "w")
 ### SYSTEM EVOLUTION
 ### ============== ### ============== ### ============== ###
 
+# for t in 1:convert(Int, 5*exp10(τ))
+# for t in 1:convert(Int, 2exp10(τ))
+#     evolve(pos, vel, v_n, spin, nij, pars, σ)
+#
+#     println("//////// ", t)
+#
+#     write(pos_file, vcat(pos...))
+#     write(vel_file, vcat(vel...))
+#     write(spin_file, vcat(spin...))
+# end
+
 # println("pos: ",pos[1]," vel: ", vel[1]," spin: ", spin[1], " v0 = ", norm(vel[1]))
 # println("pos: ",pos[1]," vel: ", vel[1]," dot: ", dot(vel[1], spin[1]), " v0 = ", norm(vel[1]))
 
-# for i in 1:100
-#     evolve(pos, vel, v_n, spin, nij, pars, σ)
-#     # println("pos: ",pos[1]," vel: ", vel[1]," spin: ", spin[1], " v0 = ", norm(vel[1]))
-#     println("pos: ",pos[1]," vel: ", vel[1]," dot: ", dot(vel[1], spin[1]), " v0 = ", norm(vel[1]))
-#
-# end
+for i in 1:(length(times) - 1)
 
-# for i in 1:(length(times) - 1)
-#
-#     if i > 1
-#
-#         for t in (times[i]+1):times[i+1]
-#
-#             evolve(pos, vel, v_n, spin, nij, pars, σ)
-#
-#             if t % times[i] == 0 || t % times[i-1] == 0
-#                 println("//////// ", t)
-#                 write(pos_file, vcat(pos...))
-#                 write(vel_file, vcat(vel...))
-#                 write(spin_file, vcat(spin...))
-#             end
-#         end
-#
-#     else
-#
-#         for t in (times[i]+1):times[i+1]
-#
-#             evolve(pos, vel, v_n, spin, nij, pars, σ)
-#
-#             if t % times[i] == 0
-#                 println("//////// ", t)
-#                 write(pos_file, vcat(pos...))
-#                 write(vel_file, vcat(vel...))
-#                 write(spin_file, vcat(spin...))
-#             end
-#         end
-#
-#     end
-#
-# end
+    if i > 1
 
-for t in 1:convert(Int, exp10(τ))
-    evolve(pos, vel, v_n, spin, nij, pars, σ)
+        for t in (times[i]+1):times[i+1]
 
-    println("//////// ", t)
+            evolve(pos, vel, v_n, spin, nij, pars, σ)
 
-    write(pos_file, vcat(pos...))
-    write(vel_file, vcat(vel...))
-    write(spin_file, vcat(spin...))
+            if t % times[i] == 0 || t % times[i-1] == 0
+                println("//////// ", t)
+                write(pos_file, vcat(pos...))
+                write(vel_file, vcat(vel...))
+                write(spin_file, vcat(spin...))
+            end
+        end
+
+    else
+
+        for t in (times[i]+1):times[i+1]
+
+            evolve(pos, vel, v_n, spin, nij, pars, σ)
+
+            if t % times[i] == 0
+                println("//////// ", t)
+                write(pos_file, vcat(pos...))
+                write(vel_file, vcat(vel...))
+                write(spin_file, vcat(spin...))
+            end
+        end
+
+    end
+
 end
 
 close(pos_file)
 close(vel_file)
 close(spin_file)
 
-println("Done !")
+println("Done")
