@@ -160,7 +160,7 @@ parent_folder_path = "$(homedir())/art_DATA/TFLOCK_DATA"
 folder_path        = parent_folder_path * "/DATA/data_N_$(N)"
 
 # reps_path = folder_path * "/data_N_$(pars.N)_eta_$(ARGS[2])"
-reps_path = folder_path * "/data_N_$(pars.N)_eta_$(pars.η)_T_$(ARGS[4])"
+reps_path = folder_path * "/data_N_$(pars.N)_eta_$(pars.η)_T_$(ARGS[3])"
 
 try
     mkdir(parent_folder_path)
