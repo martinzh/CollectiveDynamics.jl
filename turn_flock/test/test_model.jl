@@ -99,8 +99,8 @@ end
 
 N   = parse(Int, ARGS[1])
 η   = parse(Float64, ARGS[2])
-τ   = parse(Int, ARGS[3]) # number of iterations
-T   = parse(Float64, ARGS[4]) # number of iterations
+T   = parse(Float64, ARGS[3]) # temperature, noise
+τ   = parse(Int, ARGS[4]) # number of iterations
 rep = parse(Int, ARGS[5])
 
 # explota para η = 32
