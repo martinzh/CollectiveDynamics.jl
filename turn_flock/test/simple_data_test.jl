@@ -105,42 +105,51 @@ T = 6
 tau = get_times(T)
 ### ================================== ###
 
-folder_path = "$(homedir())/art_DATA/TFLOCK_DATA/DATA/data_N_$(N)/data_N_$(N)_eta_$(η)"
+folder_path = "$(homedir())/art_DATA/TFLOCK_DATA/DATA/data_N_$(N)/"
+folder_path = "$(homedir())/art_DATA/TFLOCK_DATA/L_DATA/data_N_$(N)/"
 
 # files = filter(x -> match(r"._(\d+.\d+).dat", x).captures[1] == η , readdir(folder_path))
-files = readdir(folder_path)
+folders = readdir(folder_path)
 
-### ================================== ###
-
-# psi   = Array{Float64}[]
+η_vals = [match(r"\w+\d+\w+(\d+\.\d+)", f).captures[1] for f in folders]
 
 all_means = Dict()
+### ================================== ###
+
+f = 9
+data_path = folder_path * "/" * folders[f]
+
+reps = [match(r"\w+(\d+).\w+", x).captures[1]  for x in filter(x -> ismatch(r"^pos_", x), readdir(data_path))]
+
+r = 1
+# for r in reps
+
 means = Array{Float64}[]
 psi   = Array{Float64}[]
 
-r = 1
-raw_data = reinterpret(Float64, read(folder_path * "/pos_$(r).dat"))
+raw_data = reinterpret(Float64, read(data_path * "/pos_$(r).dat"))
 pos_data = transpose(reshape(raw_data, 3N, div(length(raw_data), 3N)))
 # pos_data = reshape(raw_data, 3N, div(length(raw_data), 3N))
-
-raw_data = reinterpret(Float64, read(folder_path * "/vel_$(r).dat"))
-vel_data = transpose(reshape(raw_data, 3N, div(length(raw_data), 3N)))
-# vel_data = reshape(raw_data, 3N, div(length(raw_data), 3N))
-
-raw_data = reinterpret(Float64, read(folder_path * "/spin_$(r).dat"))
-spin_data = transpose(reshape(raw_data, 3N, div(length(raw_data), 3N)))
-# spin_data = reshape(raw_data, 3N, div(length(raw_data), 3N))
-
-find(x -> isnan(x), pos_data[:, 1])
-find(x -> isnan(x), vel_data[:, 1])
-find(x -> isnan(x), spin_data[:, 1])
 
 x = view(pos_data, :, 1:3:3N)
 y = view(pos_data, :, 2:3:3N)
 z = view(pos_data, :, 3:3:3N)
 
-gui()
 plot(x, y, z, leg = false)
+gui()
+
+raw_data = reinterpret(Float64, read(data_path * "/vel_$(r).dat"))
+vel_data = transpose(reshape(raw_data, 3N, div(length(raw_data), 3N)))
+# vel_data = reshape(raw_data, 3N, div(length(raw_data), 3N))
+
+raw_data = reinterpret(Float64, read(data_path * "/spin_$(r).dat"))
+spin_data = transpose(reshape(raw_data, 3N, div(length(raw_data), 3N)))
+# spin_data = reshape(raw_data, 3N, div(length(raw_data), 3N))
+
+# find(x -> isnan(x), pos_data[:, 1])
+# find(x -> isnan(x), vel_data[:, 1])
+# find(x -> isnan(x), spin_data[:, 1])
+
 
 x_mean = mean(pos_data[:, 1:3:3N], 2)
 
