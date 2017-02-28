@@ -100,7 +100,8 @@ end
 N   = parse(Int, ARGS[1])
 η   = parse(Float64, ARGS[2])
 τ   = parse(Int, ARGS[3]) # number of iterations
-rep = parse(Int, ARGS[4])
+T   = parse(Float64, ARGS[4]) # number of iterations
+rep = parse(Int, ARGS[5])
 
 # explota para η = 32
 
@@ -108,8 +109,7 @@ rep = parse(Int, ARGS[4])
 # η   = 1.0
 # τ   = 6
 # rep = 1
-
-T   = 8*exp10(-5)
+# T   = 8*exp10(-5)
 
 ρ   = 0.3
 J   = 0.8
@@ -160,7 +160,7 @@ parent_folder_path = "$(homedir())/art_DATA/TFLOCK_DATA"
 folder_path        = parent_folder_path * "/DATA/data_N_$(N)"
 
 # reps_path = folder_path * "/data_N_$(pars.N)_eta_$(ARGS[2])"
-reps_path = folder_path * "/data_N_$(pars.N)_eta_$(pars.η)"
+reps_path = folder_path * "/data_N_$(pars.N)_eta_$(pars.η)_T_$(ARGS[4])"
 
 try
     mkdir(parent_folder_path)
