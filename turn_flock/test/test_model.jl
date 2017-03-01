@@ -75,6 +75,21 @@ function part_vel_spin_update(vel, v_n, spin, pars, σ)
 
 end
 
+function vel_spin_update(vel, v_n, spin, pars, σ)
+
+    for i in 1:length(vel)
+        # noise = normalize(randn(3)) * σ
+        noise = randn(3) * σ
+
+        u_vel = vel[i] + (pars.dt/pars.χ) * cross(spin[i], vel[i])
+
+        u_spin =  ( 1.0 - pars.η * pars.dt / pars.χ ) * spin[i] + (pars.J * pars.dt / pars.v0^2) * cross(vel[i], v_n[i]) + (pars.dt/ pars.v0) * cross(vel[i], noise)
+
+        spin[i] = u_spin
+        vel[i]  = pars.v0  * normalize(u_vel) # codition of constant speed
+    end
+end
+
 ### ============== ### ============== ### ============== ###
 ### SYSTEM EVOLUTION
 ### ============== ### ============== ### ============== ###
@@ -88,7 +103,8 @@ function evolve(pos, vel, vn, spin, nij, pars, σ)
     calc_interactions(v_n, nij, pars.n_c)
 
     ### SPIN UPDATE
-    map( (v, vn, s) -> part_vel_spin_update(v, vn, s, pars, σ), vel, v_n, spin )
+    # map( (v, vn, s) -> part_vel_spin_update(v, vn, s, pars, σ), vel, v_n, spin )
+    vel_spin_update(vel, v_n, spin, pars, σ)
 
     ### POSITION UPDATE
     map!( (p,v) -> p + pars.dt * v, pos, pos, vel )
@@ -99,8 +115,9 @@ end
 
 N   = parse(Int, ARGS[1])
 η   = parse(Float64, ARGS[2])
-τ   = parse(Int, ARGS[3]) # number of iterations
-rep = parse(Int, ARGS[4])
+T   = parse(Float64, ARGS[3]) # temperature, noise
+τ   = parse(Int, ARGS[4]) # number of iterations
+rep = parse(Int, ARGS[5])
 
 # explota para η = 32
 
@@ -108,8 +125,7 @@ rep = parse(Int, ARGS[4])
 # η   = 1.0
 # τ   = 6
 # rep = 1
-
-T   = 8*exp10(-5)
+# T   = 8*exp10(-5)
 
 ρ   = 0.3
 J   = 0.8
@@ -160,7 +176,8 @@ parent_folder_path = "$(homedir())/art_DATA/TFLOCK_DATA"
 folder_path        = parent_folder_path * "/DATA/data_N_$(N)"
 
 # reps_path = folder_path * "/data_N_$(pars.N)_eta_$(ARGS[2])"
-reps_path = folder_path * "/data_N_$(pars.N)_eta_$(pars.η)"
+# reps_path = folder_path * "/data_N_$(pars.N)_eta_$(pars.η)_T_$(ARGS[3])"
+reps_path = folder_path * "/eta_$(pars.η)_T_$(ARGS[3])"
 
 try
     mkdir(parent_folder_path)
