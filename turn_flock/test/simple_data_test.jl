@@ -1,5 +1,7 @@
 using Plots; gr()
 
+pyplot()
+
 ### ================================== ###
 
 function calc_rij_vect(vect)
@@ -84,10 +86,11 @@ end
 
 N = 1024
 N = 512
+N = 256
 N = 128
 N = 64
 
-T = 6
+T = 5
 
 η = "0.01"
 η = "0.1"
@@ -103,10 +106,12 @@ T = 6
 η = "60.0"
 
 tau = get_times(T)
+
+v0 = 0.1
 ### ================================== ###
 
-folder_path = "$(homedir())/art_DATA/TFLOCK_DATA/DATA/data_N_$(N)/"
-folder_path = "$(homedir())/art_DATA/TFLOCK_DATA/L_DATA/data_N_$(N)/"
+folder_path = "$(homedir())/art_DATA/TFLOCK_DATA/DATA/data_N_$(N)"
+folder_path = "$(homedir())/art_DATA/TFLOCK_DATA/L_DATA/data_N_$(N)"
 
 # files = filter(x -> match(r"._(\d+.\d+).dat", x).captures[1] == η , readdir(folder_path))
 folders = readdir(folder_path)
@@ -116,7 +121,7 @@ folders = readdir(folder_path)
 all_means = Dict()
 ### ================================== ###
 
-f = 9
+f = 23
 data_path = folder_path * "/" * folders[f]
 
 reps = [match(r"\w+(\d+).\w+", x).captures[1]  for x in filter(x -> ismatch(r"^pos_", x), readdir(data_path))]
@@ -135,7 +140,7 @@ x = view(pos_data, :, 1:3:3N)
 y = view(pos_data, :, 2:3:3N)
 z = view(pos_data, :, 3:3:3N)
 
-plot(x, y, z, leg = false)
+trays = plot(x, y, z, leg = false)
 gui()
 
 raw_data = reinterpret(Float64, read(data_path * "/vel_$(r).dat"))
@@ -150,7 +155,6 @@ spin_data = transpose(reshape(raw_data, 3N, div(length(raw_data), 3N)))
 # find(x -> isnan(x), vel_data[:, 1])
 # find(x -> isnan(x), spin_data[:, 1])
 
-
 x_mean = mean(pos_data[:, 1:3:3N], 2)
 
 pos_data[:, 1:3:3N] = pos_data[:, 1:3:3N] .- mean(pos_data[:, 1:3:3N], 2)
@@ -163,12 +167,23 @@ means = [mean(calc_rij_vect(tr_pos_data[:, i])) for i in 1:size(tr_pos_data,2)]
 
 tr_vel_data = transpose(vel_data)
 
-psi = [norm(mean([ [tr_vel_data[i, j], tr_vel_data[i+1, j], tr_vel_data[i+2, j] ] for i in 1:3:3N])) for j in 1:size(tr_vel_data, 2)]
+psi = (1. / v0) * [norm(mean([ [tr_vel_data[i, j], tr_vel_data[i+1, j], tr_vel_data[i+2, j] ] for i in 1:3:3N])) for j in 1:size(tr_vel_data, 2)]
 
-psi = [norm(mean([[tr_vel_data[i, j], tr_vel_data[i+1, j], tr_vel_data[i+2, j]] for i in 1:3:3N])) for j in 1:size(tr_vel_data, 2)]
+# psi = [norm(mean([[tr_vel_data[i, j], tr_vel_data[i+1, j], tr_vel_data[i+2, j]] for i in 1:3:3N])) for j in 1:size(tr_vel_data, 2)]
 
-size(psi)
-println(j)
+# size(psi)
+# println(j)
 
-plot(collect(1:convert(Int, exp10(4))), means, xscale = :log10, yscale = :log10, marker = :o, markersize = 0.5)
-plot(collect(1:convert(Int, exp10(4))), psi, xscale = :log10, marker = :o)
+# plot(collect(1:convert(Int, exp10(4))), means, xscale = :log10, yscale = :log10, marker = :o, markersize = 0.5)
+# plot(collect(1:convert(Int, exp10(4))), psi, xscale = :log10, marker = :o)
+
+# expansion = plot(tau, means, xscale = :log10, yscale = :log10, marker = :o, markersize = 2.0, leg = false, title = "expansion", titlefont = font(10))
+
+expansion = plot(tau, means, xscale = :log10, marker = :o, markersize = 2.0, leg = false, title = "expansion", titlefont = font(10))
+
+order = plot(tau, psi, xscale = :log10, marker = :o, markersize = 2.0, leg = false, title = "orden", titlefont = font(10))
+
+l = @layout [  a{0.5w} [b
+    c]]
+
+plot( trays, expansion, order, layout = l )
