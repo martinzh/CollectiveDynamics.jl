@@ -177,7 +177,7 @@ folder_path        = parent_folder_path * "/DATA/data_N_$(N)"
 
 # reps_path = folder_path * "/data_N_$(pars.N)_eta_$(ARGS[2])"
 # reps_path = folder_path * "/data_N_$(pars.N)_eta_$(pars.η)_T_$(ARGS[3])"
-reps_path = folder_path * "/eta_$(pars.η)_T_$(ARGS[3])"
+reps_path = folder_path * "/eta_$(ARGS[2])/eta_$(pars.η)_T_$(ARGS[3])"
 
 try
     mkdir(parent_folder_path)
@@ -198,6 +198,12 @@ catch error
 end
 
 try
+    mkdir(folder_path * "/eta_$(ARGS[2])")
+catch error
+    println("Parent folder already exists")
+end
+
+try
     mkdir(reps_path)
 catch error
     println("Parameter folder already exists")
@@ -210,20 +216,6 @@ spin_file  = open(reps_path * "/spin_$(rep).dat", "w")
 ### ============== ### ============== ### ============== ###
 ### SYSTEM EVOLUTION
 ### ============== ### ============== ### ============== ###
-
-# for t in 1:convert(Int, 5*exp10(τ))
-# for t in 1:convert(Int, 2exp10(τ))
-#     evolve(pos, vel, v_n, spin, nij, pars, σ)
-#
-#     println("//////// ", t)
-#
-#     write(pos_file, vcat(pos...))
-#     write(vel_file, vcat(vel...))
-#     write(spin_file, vcat(spin...))
-# end
-
-# println("pos: ",pos[1]," vel: ", vel[1]," spin: ", spin[1], " v0 = ", norm(vel[1]))
-# println("pos: ",pos[1]," vel: ", vel[1]," dot: ", dot(vel[1], spin[1]), " v0 = ", norm(vel[1]))
 
 for i in 1:(length(times) - 1)
 
