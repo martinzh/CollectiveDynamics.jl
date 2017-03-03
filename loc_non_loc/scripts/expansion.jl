@@ -23,18 +23,18 @@ end
 
 ### ================================== ###
 
-function calc_vect_cm(vals)
-
-    N = size(vals, 1)
-
-    x_cm = mean(vals[1:2:N, :], 1)
-    y_cm = mean(vals[2:2:N, :], 1)
-
-    for i in 1:size(vals,2)
-        vals[1:2:N, i] -= x_cm[i]
-        vals[2:2:N, i] -= y_cm[i]
-    end
-end
+# function calc_vect_cm(vals)
+#
+#     N = size(vals, 1)
+#
+#     x_cm = mean(vals[1:2:N, :], 1)
+#     y_cm = mean(vals[2:2:N, :], 1)
+#
+#     for i in 1:size(vals,2)
+#         vals[1:2:N, i] -= x_cm[i]
+#         vals[2:2:N, i] -= y_cm[i]
+#     end
+# end
 
 ### ================================== ###
 
@@ -89,9 +89,10 @@ for f in 1:length(folders)
 
         raw_data = reinterpret(Float64,read(data_folder_path * "/" * folders[f] * "/pos_$(r).dat"))
 
-        pos_data = reshape(raw_data, 2N, div(length(raw_data), 2N))
+        pos_data = (reshape(raw_data, 2N, div(length(raw_data), 2N)))
 
-        calc_vect_cm(pos_data)
+        pos_data[1:2:2N, :] = pos_data[1:2:2N, :] .- mean(pos_data[1:2:2N, :], 1)
+        pos_data[2:2:2N, :] = pos_data[2:2:2N, :] .- mean(pos_data[2:2:2N, :], 1)
 
         push!(means, [mean(calc_rij_vect(pos_data[:, i])) for i in 1:size(pos_data,2)])
 
