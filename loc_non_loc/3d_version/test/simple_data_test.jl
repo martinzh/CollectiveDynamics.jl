@@ -109,7 +109,7 @@ folders = readdir(folder_path)
 # all_means = Dict()
 ### ================================== ###
 
-f = 11
+f = 1
 data_path = folder_path * "/" * folders[f]
 
 reps = [match(r"\w+(\d+).\w+", x).captures[1]  for x in filter(x -> ismatch(r"^pos_", x), readdir(data_path))]
