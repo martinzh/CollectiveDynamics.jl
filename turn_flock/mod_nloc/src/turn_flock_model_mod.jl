@@ -125,11 +125,12 @@ end
 
 ### ============== ### ============== ### ============== ###
 
-N   = parse(Int, ARGS[1])
-η   = parse(Float64, ARGS[2])
-T   = parse(Float64, ARGS[3]) # temperature, noise
-τ   = parse(Int, ARGS[4]) # number of iterations
-rep = parse(Int, ARGS[5])
+N    = parse(Int, ARGS[1])
+η    = parse(Float64, ARGS[2])
+T    = parse(Float64, ARGS[3]) # temperature, noise
+n_nl = parse(Int, ARGS[4]) # number of iterations
+τ    = parse(Int, ARGS[5]) # number of iterations
+rep  = parse(Int, ARGS[6])
 
 # explota para η = 32
 
@@ -145,7 +146,7 @@ J   = 0.8
 v0  = 0.1
 δ   = 0.35
 n_t = 6
-n_nl = 3
+# n_nl = 3
 
 times = [convert(Int, exp10(i)) for i in 0:τ]
 

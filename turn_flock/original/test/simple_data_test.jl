@@ -123,12 +123,12 @@ folders = readdir(folder_path)
 all_means = Dict()
 ### ================================== ###
 
-f = 1
+f = 2
 data_path = folder_path * "/" * folders[f] * "/" * "eta_$(η)_T_$(T)"
 
 reps = [match(r"\w+(\d+).\w+", x).captures[1]  for x in filter(x -> ismatch(r"^pos_", x), readdir(data_path))]
 
-r = 3
+r = 4
 # for r in reps
 
 means = Array{Float64}[]
