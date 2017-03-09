@@ -48,4 +48,6 @@ end
 
 limit = sqrt(J*n_c*χ)* mean(a) / L
 
+println(limit)
+
 plot(rand(100), leg = :topleft)
