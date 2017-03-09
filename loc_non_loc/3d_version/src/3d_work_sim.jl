@@ -58,37 +58,83 @@ end
 
 function rot_move_part(pos, vel, v_r, v_n, η, ω)
 
-    loc_angle = 0.0
-    non_loc_angle = 0.0
-
-    if norm(v_r) != zero(Float64)
-        loc_angle = acos( dot(vel, v_r) / (norm(vel) * norm(v_r)) )
-    end
-
-    if norm(v_n) != zero(Float64)
-        non_loc_angle = acos( dot(vel, v_n) / (norm(vel) * norm(v_n)) )
-    end
-
-    # Quaternion associated to particle's velocity
-    q_i = Quaternion(vel)
+    q_r = Quaternion(vel)
 
     #local rotation
-    # q_r = qrotation(cross(vel, v_r), 2 * (ω * loc_angle)) * q_i
-    q_r = qrotation(cross(vel, v_r), 2.0 * (ω * loc_angle + 0.15 * (2.0 * rand() * pi - pi))) * q_i
+    if norm(v_r) != zero(Float64)
+        loc_angle = acos(dot(vel, v_r))
+        q_r *= qrotation(cross(vel, v_r), ω * loc_angle + η * (2.0 * rand() * pi - pi))
+    else
+        q_r *= qrotation(cross(vel, [2*rand() - 1, 2*rand() - 1, 2*rand() - 1]), η * (2.0 * rand() * pi - pi))
+    end
 
     #non-local rotation
-    # q_r = qrotation(cross(vel, v_n), 2 * ((1.0 - ω) * non_loc_angle)) * q_r
-    q_r = qrotation(cross([q_r.v1, q_r.v2, q_r.v3], v_n), 2.0 * ((1.0 - ω) * non_loc_angle + 0.15 * (2.0 * rand() * pi - pi))) * q_r
+    if norm(v_n) != zero(Float64)
+        non_loc_angle = acos(dot(vel, v_n))
+        q_r *= qrotation(cross([q_r.v1, q_r.v2, q_r.v3], v_n), (1.0 - ω) * non_loc_angle + η * (2.0 * rand() * pi - pi))
+    else
+        q_r *= qrotation(cross([q_r.v1, q_r.v2, q_r.v3], [2*rand() - 1, 2*rand() - 1, 2*rand() - 1]), η * (2.0 * rand() * pi - pi))
+    end
 
-    # total_angle = ω * loc_angle + (1.0 - ω) * non_loc_angle + 0.15 * (2.0 * rand() * pi - pi)
+    u_vel = normalize([q_r.v1, q_r.v2, q_r.v3])
 
-    vel[1] = q_r.v1
-    vel[2] = q_r.v2
-    vel[3] = q_r.v3
+    vel[1] = u_vel[1]
+    vel[2] = u_vel[2]
+    vel[3] = u_vel[3]
 
-    pos[1] += q_r.v1
-    pos[2] += q_r.v2
-    pos[3] += q_r.v3
+    pos[1] += u_vel[1]
+    pos[2] += u_vel[2]
+    pos[3] += u_vel[3]
+
+end
+
+function test_rot_move_part(pos, vel, v_r, v_n, η, ω)
+
+    loc_angle     = acos(dot(vel, v_r))
+    non_loc_angle = acos(dot(vel, v_n))
+
+    #local rotation
+    q_r = qrotation(cross(vel, v_r), ω * loc_angle + η * (2.0 * rand() * pi - pi)) * Quaternion(vel)
+
+    u_vel = [q_r.v1, q_r.v2, q_r.v3]
+
+    #non-local rotation
+    q_r = qrotation(cross(u_vel, v_n), (1.0 - ω) * non_loc_angle + η * (2.0 * rand() * pi - pi)) * q_r
+
+    u_vel = normalize([q_r.v1, q_r.v2, q_r.v3])
+
+    vel[1] = u_vel[1]
+    vel[2] = u_vel[2]
+    vel[3] = u_vel[3]
+
+    pos[1] += u_vel[1]
+    pos[2] += u_vel[2]
+    pos[3] += u_vel[3]
+
+end
+
+function test1_rot_move_part(pos, vel, v_r, v_n, η, ω)
+
+    signal = sum([ω * v_r, (1.0 - ω) * v_n])
+    angle = acos(dot(vel, signal))
+
+    q_r = Quaternion(vel)
+
+    if norm(signal) != zero(Float64)
+        q_r *= qrotation(cross(vel, signal), angle + η * (2.0 * rand() * pi - pi))
+    else
+        q_r *= qrotation(cross(vel, [2*rand() - 1, 2*rand() - 1, 2*rand() - 1]), η * (2.0 * rand() * pi - pi))
+    end
+
+    u_vel = normalize([q_r.v1, q_r.v2, q_r.v3])
+
+    vel[1] = u_vel[1]
+    vel[2] = u_vel[2]
+    vel[3] = u_vel[3]
+
+    pos[1] += u_vel[1]
+    pos[2] += u_vel[2]
+    pos[3] += u_vel[3]
 
 end
 
@@ -101,7 +147,9 @@ function evolve(pos, vel, v_r, v_n, sp_Nij, r0, η, ω)
     calc_interactions(vel, v_r, sparse(calc_rij(pos, r0)) ) # local
     calc_interactions(vel, v_n, sp_Nij) # non_local
 
-    map( (p, v, vr, vn) -> rot_move_part(p, v, vr, vn, η, ω), pos, vel, v_r, v_n )
+    # map( (p, v, vr, vn) -> rot_move_part(p, v, vr, vn, η, ω), pos, vel, v_r, v_n )
+    # map( (p, v, vr, vn) -> test_rot_move_part(p, v, vr, vn, η, ω), pos, vel, v_r, v_n )
+    map( (p, v, vr, vn) -> test1_rot_move_part(p, v, vr, vn, η, ω), pos, vel, v_r, v_n )
 
 end
 
@@ -122,8 +170,8 @@ rep = parse(Int, ARGS[5])
 
 η = 0.15 # noise intensity
 
-ρ  = 1.0 # density
-# ρ  = 0.3 # density
+# ρ  = 1.0 # density
+ρ  = 0.3 # density
 L  = cbrt(N / ρ) # size of box
 
 l = 0.1 # Regimen de velocidad
@@ -215,7 +263,7 @@ for i in 1:(length(times) - 1)
             evolve(pos, vel, v_r, v_n, sp_Nij, r0, η, ω)
 
             if t % times[i] == 0 || t % times[i-1] == 0
-                # println("//////// ", t)
+                println("//////// ", t)
                 write(pos_file, vcat(pos...))
                 write(vel_file, vcat(vel...))
             end
@@ -228,7 +276,7 @@ for i in 1:(length(times) - 1)
             evolve(pos, vel, v_r, v_n, sp_Nij, r0, η, ω)
 
             if t % times[i] == 0
-                # println("//////// ", t)
+                println("//////// ", t)
                 write(pos_file, vcat(pos...))
                 write(vel_file, vcat(vel...))
             end
