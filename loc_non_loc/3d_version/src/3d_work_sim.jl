@@ -55,7 +55,7 @@ function calc_interactions(vel, v_n, sp_Nij)
 end
 
 ### ============== ### ============== ### ============== ###
-
+# demasiado ruido
 function rot_move_part(pos, vel, v_r, v_n, η, ω)
 
     q_r = Quaternion(vel)
@@ -88,18 +88,21 @@ function rot_move_part(pos, vel, v_r, v_n, η, ω)
 
 end
 
+# esta version si funciona pero las particulas siguen en linea recta si no interaccionan
 function test_rot_move_part(pos, vel, v_r, v_n, η, ω)
 
-    loc_angle     = acos(dot(vel, v_r))
-    non_loc_angle = acos(dot(vel, v_n))
+    loc_angle     = ω * cos(dot(vel, v_r))
+    non_loc_angle = (1.0 - ω) * acos(dot(vel, v_n))
+
+    # q_r = Quaternion(vel)
 
     #local rotation
-    q_r = qrotation(cross(vel, v_r), ω * loc_angle + η * (2.0 * rand() * pi - pi)) * Quaternion(vel)
+    q_r = qrotation(cross(vel, v_r), loc_angle + η * (2.0 * rand() * pi - pi)) * Quaternion(vel)
 
     u_vel = [q_r.v1, q_r.v2, q_r.v3]
 
     #non-local rotation
-    q_r = qrotation(cross(u_vel, v_n), (1.0 - ω) * non_loc_angle + η * (2.0 * rand() * pi - pi)) * q_r
+    q_r = qrotation(cross(u_vel, v_n), non_loc_angle + η * (2.0 * rand() * pi - pi)) * q_r
 
     u_vel = normalize([q_r.v1, q_r.v2, q_r.v3])
 
@@ -115,16 +118,21 @@ end
 
 function test1_rot_move_part(pos, vel, v_r, v_n, η, ω)
 
-    signal = sum([ω * v_r, (1.0 - ω) * v_n])
-    angle = acos(dot(vel, signal))
+    loc_angle     = ω * acos(dot(vel, v_r))
+    non_loc_angle = (1.0 - ω) * acos(dot(vel, v_n))
 
-    q_r = Quaternion(vel)
+    noise = randn(3)
+    noise_angle = acos(dot(normalize(noise), vel))
 
-    if norm(signal) != zero(Float64)
-        q_r *= qrotation(cross(vel, signal), angle + η * (2.0 * rand() * pi - pi))
-    else
-        q_r *= qrotation(cross(vel, [2*rand() - 1, 2*rand() - 1, 2*rand() - 1]), η * (2.0 * rand() * pi - pi))
-    end
+    q_r = qrotation(cross(vel, v_r), loc_angle + η * noise_angle) * Quaternion(vel)
+
+    u_vel = [q_r.v1, q_r.v2, q_r.v3]
+
+    q_r = qrotation(cross(u_vel, v_n), non_loc_angle + η * noise_angle) * q_r
+
+    u_vel = [q_r.v1, q_r.v2, q_r.v3]
+
+    q_r = qrotation(cross(u_vel, noise), η * noise_angle) * q_r
 
     u_vel = normalize([q_r.v1, q_r.v2, q_r.v3])
 

@@ -93,9 +93,9 @@ N = 256
 N = 128
 N = 64
 
-T = 5
+τ = 5
 
-tau = get_times(T)
+tau = get_times(τ)
 
 v0 = 1.0
 ### ================================== ###
@@ -109,12 +109,12 @@ folders = readdir(folder_path)
 # all_means = Dict()
 ### ================================== ###
 
-f = 1
+f = 4
 data_path = folder_path * "/" * folders[f]
 
 reps = [match(r"\w+(\d+).\w+", x).captures[1]  for x in filter(x -> ismatch(r"^pos_", x), readdir(data_path))]
 
-r = 1
+r = 2
 # for r in reps
 
 means = Array{Float64}[]
