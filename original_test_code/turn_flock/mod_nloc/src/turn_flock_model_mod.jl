@@ -63,8 +63,11 @@ function calc_interactions_mod(v_t, v_nl, nij, n_t, n_nl)
     # compute local topological interaction
     for i in 1:size(nij,1)
         # v_n[i] = mean( [vel[j] for j in findin(nij[:,i], sort(nij[:,i])[2:n_t+1])] )
+
         v_t[i]  = sum( [ vel[j] for j in findin(nij[:,i], sort(nij[:,i])[2:n_t+1]) ] )
-        n_nl != zero(Int) ? v_nl[i] = sum( [ vel[j] for j in rand(findin(nij[:,i], sort(nij[:,i])[n_t+2:end]), n_nl) ] ) : v_nl = zeros(3)
+        v_nl[i] = sum( [ vel[j] for j in rand(findin(nij[:,i], sort(nij[:,i])[n_t+2:end]), n_nl) ] ) # more efficient already knowing n_nl != 0
+
+        # n_nl != zero(Int) ? v_nl[i] = sum( [ vel[j] for j in rand(findin(nij[:,i], sort(nij[:,i])[n_t+2:end]), n_nl) ] ) : v_nl = zeros(3)
     end
 
 end
