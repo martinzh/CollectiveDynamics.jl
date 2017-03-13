@@ -33,80 +33,13 @@ immutable LocNonLocParameters
     ρ ::Float64 # Initial local density
     l ::Float64 # Speed regime
     v0 ::Float64 # Particle's speed
+    dt ::Float64 # Integration step
 
     # default constructor
-    LocNonLoclParameters() = new(128, 6.0, 0.5, 0.15, 0.3, 0.1, 1.0)
+    LocNonLocParameters() = new(128, 6.0, 0.5, 0.15, 0.3, 0.1, 1.0, 1.0)
 
     # full constructor
-    LocNonLoclParametersParameters(N, κ, ω, η) = new(N, κ, ω, η, 0.3, 0.1, 1.0)
-end
-
-### ============== ### ============== ### ============== ###
-##                    2D SYSTEM SET UP                    ##
-### ============== ### ============== ### ============== ###
-"""
-    set_up_system_2D!(N, L, v0, p)
-Dynamical rules for velocity and position update.
-# Arguments
-* N -> number of particles
-* L -> size of box
-* v0 -> particles speed
-* p -> non-local interaction probability
-"""
-function set_up_loc_nonLoc_system_2D!(N, L, v0, p)
-    # array of random initial particles' postitions within a box of size L
-    pos = [ [2*rand()*L - L, 2*rand()*L - L] for i in 1:N ]
-
-    # array of particles' velocities
-    vel = v0 * [ normalize([2*rand() - 1, 2*rand() - 1]) for i in 1:N ]
-
-    # local metric interactions
-    v_r = [zeros(2) for i in 1:N]
-
-    # non local topological interactions
-    v_n = [zeros(2) for i in 1:N]
-
-    # non-local interaction network definition
-    Nij = zeros(Float64, N, N)
-
-    set_Nij(p, Nij)
-    sp_Nij = sparse(Nij)
-
-    return pos, vel, v_r, v_n, Nij, sp_Nij
-end
-
-### ============== ### ============== ### ============== ###
-##                    3D SYSTEM SET UP                    ##
-### ============== ### ============== ### ============== ###
-"""
-    set_up_system_3D!(N, L, v0, p)
-Dynamical rules for velocity and position update.
-# Arguments
-* N -> number of particles
-* L -> size of box
-* v0 -> particles speed
-* p -> non-local interaction probability
-"""
-function set_up_loc_nonLoc_system_3D!(N, L, v0, p)
-    # array of random initial particles' postitions
-    pos = [ [2*rand()*L - L, 2*rand()*L - L, 2*rand()*L - L] for i in 1:N ]
-
-    # array of particles' velocities
-    vel = v0 * [ normalize([2*rand() - 1, 2*rand() - 1, 2*rand() - 1]) for i in 1:N ]
-
-    # local metric interactions
-    v_r = [zeros(3) for i in 1:N]
-
-    # non local topological interactions
-    v_n = [zeros(3) for i in 1:N]
-
-    # non-local interaction network definition
-    Nij = zeros(Float64, N, N)
-
-    set_Nij(p, Nij)
-    sp_Nij = sparse(Nij)
-
-    return pos, vel, v_r, v_n, Nij, sp_Nij
+    LocNonLocParameters(N, κ, ω, η) = new(N, κ, ω, η, 0.3, 0.1, 1.0, 1.0)
 end
 
 ### ============== ### ============== ### ============== ###
@@ -148,6 +81,74 @@ function set_Nij!(p, Nij)
     for i in 1:N, j in union(1:i-1, i+1:N)
         rand() < p ? Nij[j, i] = one(Float64) : Nij[j, i] = zero(Float64)
     end
+end
+
+### ============== ### ============== ### ============== ###
+##                    2D SYSTEM SET UP                    ##
+### ============== ### ============== ### ============== ###
+"""
+    set_up_system_2D!(N, L, v0, p)
+Dynamical rules for velocity and position update.
+# Arguments
+* N -> number of particles
+* L -> size of box
+* v0 -> particles speed
+* p -> non-local interaction probability
+"""
+function set_up_loc_nonLoc_system_2D!(N, L, v0, p)
+    # array of random initial particles' postitions within a box of size L
+    pos = [ [2*rand()*L - L, 2*rand()*L - L] for i in 1:N ]
+
+    # array of particles' velocities
+    vel = v0 * [ normalize([2*rand() - 1, 2*rand() - 1]) for i in 1:N ]
+
+    # local metric interactions
+    v_r = [zeros(2) for i in 1:N]
+
+    # non local topological interactions
+    v_n = [zeros(2) for i in 1:N]
+
+    # non-local interaction network definition
+    Nij = zeros(Float64, N, N)
+
+    set_Nij!(p, Nij)
+    sp_Nij = sparse(Nij)
+
+    return pos, vel, v_r, v_n, Nij, sp_Nij
+end
+
+### ============== ### ============== ### ============== ###
+##                    3D SYSTEM SET UP                    ##
+### ============== ### ============== ### ============== ###
+"""
+    set_up_system_3D!(N, L, v0, p)
+Dynamical rules for velocity and position update.
+# Arguments
+* N -> number of particles
+* L -> size of box
+* v0 -> particles speed
+* p -> non-local interaction probability
+"""
+function set_up_loc_nonLoc_system_3D!(N, L, v0, p)
+    # array of random initial particles' postitions
+    pos = [ [2*rand()*L - L, 2*rand()*L - L, 2*rand()*L - L] for i in 1:N ]
+
+    # array of particles' velocities
+    vel = v0 * [ normalize([2*rand() - 1, 2*rand() - 1, 2*rand() - 1]) for i in 1:N ]
+
+    # local metric interactions
+    v_r = [zeros(3) for i in 1:N]
+
+    # non local topological interactions
+    v_n = [zeros(3) for i in 1:N]
+
+    # non-local interaction network definition
+    Nij = zeros(Float64, N, N)
+
+    set_Nij!(p, Nij)
+    sp_Nij = sparse(Nij)
+
+    return pos, vel, v_r, v_n, Nij, sp_Nij
 end
 
 ### ============== ### ============== ### ============== ###
@@ -234,7 +235,7 @@ Dynamical rules for velocity and position update.
 * η -> noise intensity
 * ω -> interactions relative weight
 """
-function rot_move_part3D!(pos, vel, v_r, v_n, η, ω)
+function rot_move_part_3D!(pos, vel, v_r, v_n, η, ω)
 
     loc_angle     = ω * acos(dot(vel, v_r))
     non_loc_angle = (1.0 - ω) * acos(dot(vel, v_n))
@@ -285,7 +286,7 @@ function evolve_2D!(pos, vel, v_r, v_n, sp_Nij, r0, η, ω)
     calc_interactions!(vel, v_r, sparse(calc_Rij(pos, r0)), 2 ) # local
     calc_interactions!(vel, v_n, sp_Nij, 2) # non_local
 
-    map( (p, v, vr, vn) -> rot_move_part2D!(p, v, vr, vn, η, ω), pos, vel, v_r, v_n )
+    map( (p, v, vr, vn) -> rot_move_part_2D!(p, v, vr, vn, η, ω), pos, vel, v_r, v_n )
 
 end
 
@@ -365,6 +366,7 @@ function set_output_data_structure_2D(N, κ, ω)
 end
 
 ### ============== ### ============== ### ============== ###
+
 """
     set_output_data_structure_2D(N, κ, ω)
 Set up folders for output data
@@ -410,4 +412,91 @@ function set_output_data_structure_3D(N, κ, ω)
     end
 
     return reps_path
+end
+
+### ============== ### ============== ### ============== ###
+##                   WHOLE TIME EVOLUTION                 ##
+### ============== ### ============== ### ============== ###
+"""
+    full_time_evolution_2D(pos_file, vel_file, times, pos, vel, v_r, v_n, sp_Nij, r0, η, ω)
+System time evolution wrapper
+"""
+function full_time_evolution_2D(pos_file, vel_file, T, pos, vel, v_r, v_n, sp_Nij, r0, η, ω)
+
+    times = [convert(Int, exp10(i)) for i in 0:T]
+
+    for i in 1:(length(times) - 1)
+
+        if i > 1
+
+            for t in (times[i]+1):times[i+1]
+
+                evolve_2D!(pos, vel, v_r, v_n, sp_Nij, r0, η, ω)
+
+                if t % times[i] == 0 || t % times[i-1] == 0
+                    println("//////// ", t)
+                    write(pos_file, vcat(pos...))
+                    write(vel_file, vcat(vel...))
+                end
+            end
+
+        else
+
+            for t in (times[i]+1):times[i+1]
+
+                evolve_2D!(pos, vel, v_r, v_n, sp_Nij, r0, η, ω)
+
+                if t % times[i] == 0
+                    println("//////// ", t)
+                    write(pos_file, vcat(pos...))
+                    write(vel_file, vcat(vel...))
+                end
+            end
+
+        end
+
+    end
+end
+
+### ============== ### ============== ### ============== ###
+
+"""
+    full_time_evolution_3D(pos_file, vel_file, times, pos, vel, v_r, v_n, sp_Nij, r0, η, ω) η, ω)
+System time evolution wrapper
+"""
+function full_time_evolution_3D(pos_file, vel_file, T, pos, vel, v_r, v_n, sp_Nij, r0, η, ω)
+
+    times = [convert(Int, exp10(i)) for i in 0:T]
+
+    for i in 1:(length(times) - 1)
+
+        if i > 1
+
+            for t in (times[i]+1):times[i+1]
+
+                evolve_3D!(pos, vel, v_r, v_n, sp_Nij, r0, η, ω)
+
+                if t % times[i] == 0 || t % times[i-1] == 0
+                    println("//////// ", t)
+                    write(pos_file, vcat(pos...))
+                    write(vel_file, vcat(vel...))
+                end
+            end
+
+        else
+
+            for t in (times[i]+1):times[i+1]
+
+                evolve_3D!(pos, vel, v_r, v_n, sp_Nij, r0, η, ω)
+
+                if t % times[i] == 0
+                    println("//////// ", t)
+                    write(pos_file, vcat(pos...))
+                    write(vel_file, vcat(vel...))
+                end
+            end
+
+        end
+
+    end
 end

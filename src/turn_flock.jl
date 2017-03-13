@@ -55,7 +55,7 @@ Dynamical rules for velocity and position update.
 * v0 -> particles speed
 * p -> non-local interaction probability
 """
-function set_up_intertial_system!(N, L, v0, p)
+function set_up_intertial_system!(N, L, v0)
 
     Nij = zeros(Float64, N, N)
 
@@ -408,4 +408,93 @@ function set_output_data_structure_inertial_nonLocal(N, η, T, n_nl)
     end
 
     return reps_path
+end
+
+### ============== ### ============== ### ============== ###
+##                   WHOLE TIME EVOLUTION                 ##
+### ============== ### ============== ### ============== ###
+"""
+    whole_time_evolution_inertial_system(pos_file, vel_file, times, pos, vel, v_r, v_n, sp_Nij, r0, η, ω)
+System time evolution wrapper
+"""
+function full_time_evolution_inertial_system(pos_file, vel_file, spin_file, T, pos, vel, v_r, v_n, sp_Nij, r0, η, ω)
+
+    times = [convert(Int, exp10(i)) for i in 0:T]
+
+    for i in 1:(length(times) - 1)
+
+        if i > 1
+
+            for t in (times[i]+1):times[i+1]
+
+                evolve_mod(pos, vel, v_t, v_nl, spin, nij, pars, σ)
+
+                if t % times[i] == 0 || t % times[i-1] == 0
+                    println("//////// ", t)
+                    write(pos_file, vcat(pos...))
+                    write(vel_file, vcat(vel...))
+                    write(spin_file, vcat(spin...))
+                end
+            end
+
+        else
+
+            for t in (times[i]+1):times[i+1]
+
+                evolve_mod(pos, vel, v_t, v_nl, spin, nij, pars, σ)
+
+                if t % times[i] == 0
+                    println("//////// ", t)
+                    write(pos_file, vcat(pos...))
+                    write(vel_file, vcat(vel...))
+                    write(spin_file, vcat(spin...))
+                end
+            end
+
+        end
+
+    end
+end
+
+### ============== ### ============== ### ============== ###
+
+"""
+    whole_time_evolution_3D(pos_file, vel_file, times, pos, vel, v_r, v_n, sp_Nij, r0, η, ω) η, ω)
+System time evolution wrapper
+"""
+function full_time_evolution_nonLocal_inertial_system(pos_file, vel_file, spin_file, T, pos, vel, v_r, v_n, sp_Nij, r0, η, ω)
+
+    times = [convert(Int, exp10(i)) for i in 0:T]
+
+    for i in 1:(length(times) - 1)
+
+        if i > 1
+
+            for t in (times[i]+1):times[i+1]
+
+                evolve_3D!(pos, vel, v_r, v_n, sp_Nij, r0, η, ω)
+
+                if t % times[i] == 0 || t % times[i-1] == 0
+                    println("//////// ", t)
+                    write(pos_file, vcat(pos...))
+                    write(vel_file, vcat(vel...))
+                end
+            end
+
+        else
+
+            for t in (times[i]+1):times[i+1]
+
+                evolve_3D!(pos, vel, v_r, v_n, sp_Nij, r0, η, ω)
+
+                if t % times[i] == 0
+                    println("//////// ", t)
+                    write(pos_file, vcat(pos...))
+                    write(vel_file, vcat(vel...))
+                end
+            end
+
+        end
+
+    end
 end
