@@ -4,7 +4,7 @@ Julia implementation of different **collective motion** models
 
 ## Local and Non-local alignment interactions model
 
-A collective motion model based in local and non local interactions model in open space
+A collective motion model based in **local and non-local alignment interactions** in open space
 
 ## Inertial Spin Model
 
