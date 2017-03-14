@@ -22,7 +22,10 @@ N   = parse(Int, ARGS[1]) # number of particles
 T   = parse(Int, ARGS[4]) # integration time steps
 rep = parse(Int, ARGS[5])
 
-pars = LocNonLocParameters(N, κ, ω, 0.15) # system's parameters
+ρ = 0.3
+η = 0.15
+
+pars = LocNonLocParameters(N, κ, ω, ρ, η) # system's parameters
 
 L  = cbrt(N / pars.ρ) # size of box
 r0 = (pars.v0 * pars.dt) / pars.l # local interaction range
@@ -32,7 +35,7 @@ p  = pars.κ / (N-1) # non-local link probability
 ### SET UP SYSTEM AND OUTPUT STRUCTURE  ###
 ### =============== ### =============== ###
 
-pos, vel, v_r, v_n, Nij, sp_Nij = set_up_loc_nonLoc_system_3D!(N, L, pars.v0, p)
+flock = LocNonLocFlock(N, L, pars.v0, p, 3)
 
 output_path = set_output_data_structure_3D(N, κ, ω)
 
@@ -40,14 +43,14 @@ pos_file = open(output_path * "/pos_$(rep).dat", "w+")
 vel_file = open(output_path * "/vel_$(rep).dat", "w+")
 net_file = open(output_path * "/net_$(rep).dat", "w+")
 
-write(net_file, Nij)
+write(net_file, flock.Nij)
 close(net_file)
 
 ### ============== ### ============== ###
 ###          SYSTEM EVOLUTION         ###
 ### ============== ### ============== ###
 
-full_time_evolution_3D(pos_file, vel_file, T, pos, vel, v_r, v_n, sp_Nij, r0, pars.η, ω)
+full_time_evolution_3D(pos_file, vel_file, T, flock, r0, pars.η, ω)
 
 close(pos_file)
 close(vel_file)

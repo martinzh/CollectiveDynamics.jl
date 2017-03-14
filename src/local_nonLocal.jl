@@ -12,6 +12,81 @@
 using Quaternions # Needed for 3D space rotations
 
 ### ============== ### ============== ### ============== ###
+##                       FLOCK TYPE                       ##
+### ============== ### ============== ### ============== ###
+
+"""
+    LocNonLocFlock(N, L, v0, p, d)
+Inertial Flock type
+# Constructor Arguments
+* N -> number of particles
+* L -> size of box
+* v0 -> particles speed
+* p -> non-local link probability
+* d -> spatial dimension
+
+# Fields
+* pos  -> particles positions
+* vel  -> particles velocities
+* v_r  -> local metric ineraction
+* v_n  -> non local ineraction
+* Nij  -> ineraction network
+* sp_Nij  -> sparse ineraction network
+"""
+type LocNonLocFlock
+    pos ::Array{Array{Float64,1},1}
+    vel ::Array{Array{Float64,1},1}
+    v_r ::Array{Array{Float64,1},1}
+    v_n ::Array{Array{Float64,1},1}
+    Nij ::Array{Float64,2}
+    sp_Nij ::SparseMatrixCSC{Float64,Int64}
+
+    function LocNonLocFlock(N, L, v0, p, d)
+
+        if d == 2
+            # array of random initial particles' postitions within a box of size L
+            pos = [ [2*rand()*L - L, 2*rand()*L - L] for i in 1:N ]
+
+            # array of particles' velocities
+            vel = v0 * [ normalize([2*rand() - 1, 2*rand() - 1]) for i in 1:N ]
+
+            # local metric interactions
+            v_r = [zeros(2) for i in 1:N]
+
+            # non local topological interactions
+            v_n = [zeros(2) for i in 1:N]
+
+            # non-local interaction network definition
+            Nij = zeros(Float64, N, N)
+
+            set_Nij!(p, Nij)
+            sp_Nij = sparse(Nij)
+
+        elseif d == 3
+            # array of random initial particles' postitions
+            pos = [ [2*rand()*L - L, 2*rand()*L - L, 2*rand()*L - L] for i in 1:N ]
+
+            # array of particles' velocities
+            vel = v0 * [ normalize([2*rand() - 1, 2*rand() - 1, 2*rand() - 1]) for i in 1:N ]
+
+            # local metric interactions
+            v_r = [zeros(3) for i in 1:N]
+
+            # non local topological interactions
+            v_n = [zeros(3) for i in 1:N]
+
+            # non-local interaction network definition
+            Nij = zeros(Float64, N, N)
+
+            set_Nij!(p, Nij)
+            sp_Nij = sparse(Nij)
+        end
+
+        new(pos, vel, v_r, v_n, Nij, sp_Nij)
+    end
+end
+
+### ============== ### ============== ### ============== ###
 ##                  SYSTEM'S PARAMETERS                   ##
 ### ============== ### ============== ### ============== ###
 
@@ -39,7 +114,7 @@ immutable LocNonLocParameters
     LocNonLocParameters() = new(128, 6.0, 0.5, 0.15, 0.3, 0.1, 1.0, 1.0)
 
     # full constructor
-    LocNonLocParameters(N, κ, ω, η) = new(N, κ, ω, η, 0.3, 0.1, 1.0, 1.0)
+    LocNonLocParameters(N, κ, ω, ρ, η) = new(N, κ, ω, η, ρ, 0.1, 1.0, 1.0)
 end
 
 ### ============== ### ============== ### ============== ###
@@ -418,10 +493,10 @@ end
 ##                   WHOLE TIME EVOLUTION                 ##
 ### ============== ### ============== ### ============== ###
 """
-    full_time_evolution_2D(pos_file, vel_file, times, pos, vel, v_r, v_n, sp_Nij, r0, η, ω)
+    full_time_evolution_2D(pos_file, vel_file, times, flock, r0, η, ω)
 System time evolution wrapper
 """
-function full_time_evolution_2D(pos_file, vel_file, T, pos, vel, v_r, v_n, sp_Nij, r0, η, ω)
+function full_time_evolution_2D(pos_file, vel_file, T, flock, r0, η, ω)
 
     times = [convert(Int, exp10(i)) for i in 0:T]
 
@@ -431,12 +506,12 @@ function full_time_evolution_2D(pos_file, vel_file, T, pos, vel, v_r, v_n, sp_Ni
 
             for t in (times[i]+1):times[i+1]
 
-                evolve_2D!(pos, vel, v_r, v_n, sp_Nij, r0, η, ω)
+                evolve_2D!(flock.pos, flock.vel, flock.v_r, flock.v_n, flock.sp_Nij, r0, η, ω)
 
                 if t % times[i] == 0 || t % times[i-1] == 0
                     println("//////// ", t)
-                    write(pos_file, vcat(pos...))
-                    write(vel_file, vcat(vel...))
+                    write(pos_file, vcat(flock.pos...))
+                    write(vel_file, vcat(flock.vel...))
                 end
             end
 
@@ -444,12 +519,12 @@ function full_time_evolution_2D(pos_file, vel_file, T, pos, vel, v_r, v_n, sp_Ni
 
             for t in (times[i]+1):times[i+1]
 
-                evolve_2D!(pos, vel, v_r, v_n, sp_Nij, r0, η, ω)
+                evolve_2D!(flock.pos, flock.vel, flock.v_r, flock.v_n, flock.sp_Nij, r0, η, ω)
 
                 if t % times[i] == 0
                     println("//////// ", t)
-                    write(pos_file, vcat(pos...))
-                    write(vel_file, vcat(vel...))
+                    write(pos_file, vcat(flock.pos...))
+                    write(vel_file, vcat(flock.vel...))
                 end
             end
 
@@ -461,10 +536,10 @@ end
 ### ============== ### ============== ### ============== ###
 
 """
-    full_time_evolution_3D(pos_file, vel_file, times, pos, vel, v_r, v_n, sp_Nij, r0, η, ω) η, ω)
+    full_time_evolution_3D(pos_file, vel_file, times, flock, r0, η, ω)
 System time evolution wrapper
 """
-function full_time_evolution_3D(pos_file, vel_file, T, pos, vel, v_r, v_n, sp_Nij, r0, η, ω)
+function full_time_evolution_3D(pos_file, vel_file, T, flock, r0, η, ω)
 
     times = [convert(Int, exp10(i)) for i in 0:T]
 
@@ -474,12 +549,12 @@ function full_time_evolution_3D(pos_file, vel_file, T, pos, vel, v_r, v_n, sp_Ni
 
             for t in (times[i]+1):times[i+1]
 
-                evolve_3D!(pos, vel, v_r, v_n, sp_Nij, r0, η, ω)
+                evolve_3D!(flock.pos, flock.vel, flock.v_r, flock.v_n, flock.sp_Nij, r0, η, ω)
 
                 if t % times[i] == 0 || t % times[i-1] == 0
                     println("//////// ", t)
-                    write(pos_file, vcat(pos...))
-                    write(vel_file, vcat(vel...))
+                    write(pos_file, vcat(flock.pos...))
+                    write(vel_file, vcat(flock.vel...))
                 end
             end
 
@@ -487,12 +562,12 @@ function full_time_evolution_3D(pos_file, vel_file, T, pos, vel, v_r, v_n, sp_Ni
 
             for t in (times[i]+1):times[i+1]
 
-                evolve_3D!(pos, vel, v_r, v_n, sp_Nij, r0, η, ω)
+                evolve_3D!(flock.pos, flock.vel, flock.v_r, flock.v_n, flock.sp_Nij, r0, η, ω)
 
                 if t % times[i] == 0
                     println("//////// ", t)
-                    write(pos_file, vcat(pos...))
-                    write(vel_file, vcat(vel...))
+                    write(pos_file, vcat(flock.pos...))
+                    write(vel_file, vcat(flock.vel...))
                 end
             end
 
