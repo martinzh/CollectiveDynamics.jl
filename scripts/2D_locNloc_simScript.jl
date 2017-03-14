@@ -1,5 +1,5 @@
 ### ============== ### ============== ### ============== ###
-##    3D Local and NonLocal Model Simulation Script       ##
+##    2D Local and NonLocal Model Simulation Script       ##
 ##    Martin Zumaya Hernandez                             ##
 ##    12 / 03 / 2017                                      ##
 ### ============== ### ============== ### ============== ###
