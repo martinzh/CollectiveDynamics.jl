@@ -7,5 +7,5 @@ T="$4"
 
 for i in {1..10}
 do
-    time  nohup julia 3D_locNlocl_simScript.jl $N $k $w $T $i &
+    time  nohup julia 3D_locNloc_simScript.jl $N $k $w $T $i &
 done
