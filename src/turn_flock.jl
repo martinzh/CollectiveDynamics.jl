@@ -47,15 +47,50 @@ end
 ##                      SYSTEM SET UP                     ##
 ### ============== ### ============== ### ============== ###
 """
-    set_up_inertial_system!(N, L, v0, p)
+    set_up_inertial_system!(N, L, v0)
 Dynamical rules for velocity and position update.
 # Arguments
 * N -> number of particles
 * L -> size of box
 * v0 -> particles speed
-* p -> non-local interaction probability
 """
 function set_up_intertial_system!(N, L, v0)
+
+    Nij = zeros(Float64, N, N)
+
+    # array of random initial particles' postitions
+    pos = [ [2*rand()*L - L, 2*rand()*L - L, 2*rand()*L - L] for i in 1:N ]
+    # pos = [ [2*rand()*L - L, 2*rand()*L - L, 0.0] for i in 1:N ]
+
+    # array of particles' velocities
+    vel = v0 * [ normalize([2*rand() - 1, 2*rand() - 1, 2*rand() - 1]) for i in 1:N ]
+    # vel = v0 * [normalize([1.0, 0.0, 0.0] - [2*δ*rand() - δ, 2*δ*rand() - δ, 2*δ*rand() - δ]) for i in 1:N]
+
+    # local topological interactions
+    v_t  = [zeros(Float64, 3) for i in 1:N]
+
+    # initialize spins as zero vectors\
+    # spin = [zeros(Float64, 3) for i in 1:N]
+
+    # array of  particles' spin (initial random directions)
+    spin = [ normalize([2*rand() - 1, 2*rand() - 1, 2*rand() - 1]) for i in 1:N ]
+    # # cross product because dot(si, vi) must = 0, then normalize
+    map!((x,y) -> normalize(cross(x,y)), spin, spin, vel)
+
+    return pos, vel, v_t, spin, Nij
+end
+
+### ============== ### ============== ### ============== ###
+
+"""
+    set_up_inertial_nonLoc_system!(N, L, v0)
+Dynamical rules for velocity and position update.
+# Arguments
+* N -> number of particles
+* L -> size of box
+* v0 -> particles speed
+"""
+function set_up_intertial_nonLoc_system!(N, L, v0)
 
     Nij = zeros(Float64, N, N)
 
@@ -130,7 +165,7 @@ Non-local interactions are chosen at random from the remaining N - (n_t + 1) par
 * n_t -> number of fixed local topological interactions
 * n_nl -> number of fixed non-local topological interactions
 """
-function calc_local_nonLocal_toplogical_interactions!(vel, v_t, v_n, Rij, n_t, n_nl)
+function calc_local_nonLocal_toplogical_interactions!(vel, v_t, v_nl, Rij, n_t, n_nl)
 
     # compute local topological interaction
     for i in 1:size(Rij,1)
@@ -288,7 +323,7 @@ function evolve_nonLocal_inertial_system(pos, vel, v_t, v_nl, spin, Rij, pars, �
     calc_distance_matrix!(pos, Rij)
 
     ### COMPUTE INTERACTIONS
-    calc_local_nonLocal_toplogical_interactions!(vel, v_t, Rij, pars.n_t)
+    calc_local_nonLocal_toplogical_interactions!(vel, v_t, v_nl, Rij, pars.n_t, pars.n_nl)
 
     ### SPIN UPDATE
     vel_spin_nonLocal_update!(vel, v_t, v_nl, spin, pars, σ)
@@ -414,10 +449,10 @@ end
 ##                   WHOLE TIME EVOLUTION                 ##
 ### ============== ### ============== ### ============== ###
 """
-    whole_time_evolution_inertial_system(pos_file, vel_file, times, pos, vel, v_r, v_n, sp_Nij, r0, η, ω)
+    full_time_evolution_inertial_system(pos_file, vel_file, spin_file, T, pos, vel, v_t, Rij, σ)
 System time evolution wrapper
 """
-function full_time_evolution_inertial_system(pos_file, vel_file, spin_file, T, pos, vel, v_r, v_n, sp_Nij, r0, η, ω)
+function full_time_evolution_inertial_system(pos_file, vel_file, spin_file, T, pos, vel, v_t, Rij, pars, σ)
 
     times = [convert(Int, exp10(i)) for i in 0:T]
 
@@ -427,7 +462,7 @@ function full_time_evolution_inertial_system(pos_file, vel_file, spin_file, T, p
 
             for t in (times[i]+1):times[i+1]
 
-                evolve_mod(pos, vel, v_t, v_nl, spin, nij, pars, σ)
+                evolve_intertial_system(pos, vel, v_t, spin, Rij, pars, σ)
 
                 if t % times[i] == 0 || t % times[i-1] == 0
                     println("//////// ", t)
@@ -441,7 +476,7 @@ function full_time_evolution_inertial_system(pos_file, vel_file, spin_file, T, p
 
             for t in (times[i]+1):times[i+1]
 
-                evolve_mod(pos, vel, v_t, v_nl, spin, nij, pars, σ)
+                evolve_intertial_system(pos, vel, v_t, spin, Rij, pars, σ)
 
                 if t % times[i] == 0
                     println("//////// ", t)
@@ -459,10 +494,10 @@ end
 ### ============== ### ============== ### ============== ###
 
 """
-    whole_time_evolution_3D(pos_file, vel_file, times, pos, vel, v_r, v_n, sp_Nij, r0, η, ω) η, ω)
+    full_time_evolution_nonLocal_inertial_system(pos_file, vel_file, spin_file, T, pos, vel, v_t, v_nl, Rij, σ)
 System time evolution wrapper
 """
-function full_time_evolution_nonLocal_inertial_system(pos_file, vel_file, spin_file, T, pos, vel, v_r, v_n, sp_Nij, r0, η, ω)
+function full_time_evolution_nonLocal_inertial_system(pos_file, vel_file, spin_file, T, pos, vel, v_t, v_nl, Rij, pars, σ)
 
     times = [convert(Int, exp10(i)) for i in 0:T]
 
@@ -472,7 +507,7 @@ function full_time_evolution_nonLocal_inertial_system(pos_file, vel_file, spin_f
 
             for t in (times[i]+1):times[i+1]
 
-                evolve_3D!(pos, vel, v_r, v_n, sp_Nij, r0, η, ω)
+                evolve_nonLocal_inertial_system(pos, vel, v_t, v_nl, spin, Rij, pars, σ)
 
                 if t % times[i] == 0 || t % times[i-1] == 0
                     println("//////// ", t)
@@ -485,7 +520,7 @@ function full_time_evolution_nonLocal_inertial_system(pos_file, vel_file, spin_f
 
             for t in (times[i]+1):times[i+1]
 
-                evolve_3D!(pos, vel, v_r, v_n, sp_Nij, r0, η, ω)
+                evolve_nonLocal_inertial_system(pos, vel, v_t, v_nl, spin, Rij, pars, σ)
 
                 if t % times[i] == 0
                     println("//////// ", t)
