@@ -103,6 +103,8 @@ v0 = 0.1
 folder_path = "$(homedir())/art_DATA/TFLOCK_DATA/DATA/data_N_$(N)"
 folder_path = "$(homedir())/art_DATA/TFLOCK_DATA/L_DATA/data_N_$(N)"
 
+folder_path = "$(homedir())/art_DATA/TFLOCK_NLOC_DATA/DATA/data_N_$(N)"
+
 # files = filter(x -> match(r"._(\d+.\d+).dat", x).captures[1] == η , readdir(folder_path))
 folders = readdir(folder_path)
 
