@@ -15,4 +15,12 @@ include("local_nonLocal.jl")
 ##  INTERIAL TURN FLOCK MODEL
 include("turn_flock.jl")
 
+module DataAnalysis
+
+export test, calc_rij_2D_vect, calc_rij_3D_vect, calc_vect_2D_cm, calc_vect_3D_cm
+## DATA ANALYISIS UTILS FUNCTONS
+include("utils_funcs.jl")
+
+end
+
 end

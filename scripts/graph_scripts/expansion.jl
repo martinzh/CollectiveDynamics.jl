@@ -8,33 +8,7 @@
 
 ### ================================== ###
 
-function calc_rij_vect(vect)
-    n = div(length(vect),2)
-    vec_rij = zeros(Float64, div(n*(n-1),2) )
-    k = 1
-
-    for i in 1:2:2n, j in (i+2):2:2n
-        vec_rij[k] = sqrt( (vect[i] - vect[j])^2 + (vect[i+1] - vect[j+1])^2)
-        k += 1
-    end
-
-    return vec_rij
-end
-
-### ================================== ###
-
-function calc_vect_cm(vals)
-
-    N = size(vals, 1)
-
-    x_cm = mean(vals[1:2:N, :], 1)
-    y_cm = mean(vals[2:2:N, :], 1)
-
-    for i in 1:size(vals,2)
-        vals[1:2:N, i] -= x_cm[i]
-        vals[2:2:N, i] -= y_cm[i]
-    end
-end
+using CollectiveDynamics.DataAnalysis
 
 ### ================================== ###
 
@@ -91,9 +65,9 @@ for f in 1:length(folders)
 
         pos_data = reshape(raw_data, 2N, div(length(raw_data), 2N))
 
-        calc_vect_cm(pos_data)
+        calc_vect_2D_cm(pos_data)
 
-        push!(means, [mean(calc_rij_vect(pos_data[:, i])) for i in 1:size(pos_data,2)])
+        push!(means, [mean(calc_rij_2D_vect(pos_data[:, i])) for i in 1:size(pos_data,2)])
 
         raw_data = reinterpret(Float64,read(data_folder_path * "/" * folders[f] * "/vel_$(r).dat"))
 
