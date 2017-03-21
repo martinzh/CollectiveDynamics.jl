@@ -22,6 +22,9 @@ N = parse(Int, ARGS[1])
 data_folder_path   = "$(homedir())/art_DATA/NLOC_DATA/DATA/data_N_$(N)"
 output_folder_path = "$(homedir())/art_DATA/NLOC_DATA/EXP"
 
+data_folder_path   = "$(homedir())/art_DATA/TFLOCK_DATA/DATA/data_N_$(N)"
+output_folder_path = "$(homedir())/art_DATA/TFLOCK_DATA/EXP"
+
 folders = readdir(data_folder_path)
 
 params = [match(r"\w+_\d+(_\w+_\d+.\d+)", f).captures[1] for f in folders]

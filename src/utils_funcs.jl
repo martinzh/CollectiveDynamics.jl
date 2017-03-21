@@ -4,10 +4,6 @@
 ##     21 / 03 / 2017									         ##
 ## =========================== ## ## =========================== ##
 
-function test()
-    println("test submodule function")
-end
-
 ### ============== ### ============== ### ============== ###
 ##           COMPUTE RELATIVE DISTANCES VECTOR            ##
 ### ============== ### ============== ### ============== ###
@@ -70,7 +66,7 @@ function calc_vect_3D_cm(vals)
 
     x_cm = mean(vals[1:3:N, :], 1)
     y_cm = mean(vals[2:3:N, :], 1)
-    Z_cm = mean(vals[3:3:N, :], 1)
+    z_cm = mean(vals[3:3:N, :], 1)
 
     for i in 1:size(vals,2)
         vals[1:3:N, i] -= x_cm[i]

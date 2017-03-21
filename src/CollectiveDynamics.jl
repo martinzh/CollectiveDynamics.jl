@@ -17,7 +17,7 @@ include("turn_flock.jl")
 
 module DataAnalysis
 
-export test, calc_rij_2D_vect, calc_rij_3D_vect, calc_vect_2D_cm, calc_vect_3D_cm
+export test, calc_rij_2D_vect, calc_rij_3D_vect, calc_vect_2D_cm, calc_vect_3D_cm, get_times
 ## DATA ANALYISIS UTILS FUNCTONS
 include("utils_funcs.jl")
 
