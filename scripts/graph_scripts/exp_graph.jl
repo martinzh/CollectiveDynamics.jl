@@ -7,11 +7,16 @@ gr()
 pyplot()
 
 N = 1024
+N = 256
+
 τ = 7
+τ = 6
 
 times = get_times(τ)
 
 folder_path = "$(homedir())/art_DATA/NLOC_DATA/EXP/exp_data_N_$(N)"
+
+eta_folders = readdir(folder_path)
 
 order_files = filter( x -> ismatch(r"order_k_\d+\.\d+.dat", x), readdir(folder_path))
 exp_files = filter( x -> ismatch(r"exp_k_\d+\.\d+.dat", x), readdir(folder_path))

@@ -5,6 +5,23 @@
 ## =========================== ## ## =========================== ##
 
 ### ============== ### ============== ### ============== ###
+##                   MAKE DIR FROM PATH                   ##
+### ============== ### ============== ### ============== ###
+"""
+    make_dir_from_path(path)
+Try to make dir at path, if already exists doesn't and continues
+"""
+function make_dir_from_path(path)
+
+    try
+        mkdir(path)
+    catch error
+        println("Folder already exists")
+    end
+
+end
+
+### ============== ### ============== ### ============== ###
 ##           COMPUTE RELATIVE DISTANCES VECTOR            ##
 ### ============== ### ============== ### ============== ###
 """

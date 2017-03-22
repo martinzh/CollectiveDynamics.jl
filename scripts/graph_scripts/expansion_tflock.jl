@@ -13,53 +13,47 @@ using CollectiveDynamics.DataAnalysis
 ### ================================== ###
 
 N = parse(Int, ARGS[1])
+loc_flag = parse(Int, ARGS[2])
 
 # N = 100
 # N = 1024
 # N = 128
+# N = 256
 
+# loc_flag = 1
+
+v0 = 0.1
 ### ================================== ###
 
-# data_folder_path   = "$(homedir())/art_DATA/TFLOCK_NLOC_DATA/DATA/data_N_$(N)"
-# output_folder_path = "$(homedir())/art_DATA/TFLOCK_NLOC_DATA/EXP"
-
-data_folder_path   = "$(homedir())/art_DATA/TFLOCK_DATA/DATA/data_N_$(N)"
-output_folder_path = "$(homedir())/art_DATA/TFLOCK_DATA/EXP"
-
-eta_folders = readdir(data_folder_path)
-
-eta_vals = [match(r"\w+_(\d+\.\d+)", f).captures[1] for f in eta_folders]
-
-try
-    mkdir(output_folder_path)
-catch error
-    println("Parent folder already exists")
+if loc_flag == 1
+    data_folder_path   = "$(homedir())/art_DATA/TFLOCK_DATA/DATA/data_N_$(N)"
+    output_folder_path = "$(homedir())/art_DATA/TFLOCK_DATA/EXP"
+elseif loc_flag == 0
+    data_folder_path   = "$(homedir())/art_DATA/TFLOCK_NLOC_DATA/DATA/data_N_$(N)"
+    output_folder_path = "$(homedir())/art_DATA/TFLOCK_NLOC_DATA/EXP"
 end
 
+make_dir_from_path(output_folder_path)
 
-### ================================== ###
+eta_folders = readdir(data_folder_path)
+eta_vals = unique([match(r"\w+_(\d+\.\d+)", f).captures[1] for f in eta_folders])
 
 ### ================================== ###
 
 # f = 1
 for f in 1:length(eta_folders)
 
-    try
-        mkdir(output_folder_path * "/exp_data_N_$(N)")
-    catch error
-        println("Output folder already exists")
-    end
+    println(eta_folders[f])
 
-    try
-        mkdir(output_folder_path * "/exp_data_N_$(N)/eta_$(eta_vals[f])")
-    catch error
-        println("Output folder already exists")
-    end
+    make_dir_from_path(output_folder_path * "/exp_data_N_$(N)")
+    make_dir_from_path(output_folder_path * "/exp_data_N_$(N)/eta_$(eta_vals[f])")
 
     noise_folders = readdir(data_folder_path * "/" * eta_folders[f])
 
-    i = 1
+    # i = 1
     for i in 1:length(noise_folders)
+
+        println(noise_folders[i])
 
         psi   = Array{Float64}[]
         means = Array{Float64}[]
@@ -86,7 +80,7 @@ for f in 1:length(eta_folders)
             raw_data = reinterpret(Float64,read(data_folder_path * "/" * eta_folders[f] * "/" * noise_folders[i] * "/" * "/vel_$(r).dat"))
             vel_data = reshape(raw_data, 3N, div(length(raw_data), 3N))
 
-            push!(psi, [norm(mean([[vel_data[i, j], vel_data[i+1, j], vel_data[i+2, j]] for i in 1:3:3N])) for j in 1:size(vel_data, 2)])
+            push!(psi, (1. / v0) * [norm(mean([[vel_data[i, j], vel_data[i+1, j], vel_data[i+2, j]] for i in 1:3:3N])) for j in 1:size(vel_data, 2)])
 
         end
 
@@ -99,23 +93,5 @@ for f in 1:length(eta_folders)
     end
 
 end
+
 ### ================================== ###
-# using Plots; gr()
-#
-# τ = 7
-#
-# times = get_times(τ)
-# num_reps = length(filter(x -> ismatch(r"pos_\d+.\w+", x), readdir(data_folder_path * "/" * folders[f])))
-#
-# raw_data = reinterpret(Float64, read(output_folder_path * "/exp_k_0.0.dat"))
-# data = reshape(raw_data, length(times), num_reps)
-#
-# raw_data = reinterpret(Float64, read(output_folder_path * "/order_k_0.0.dat"))
-# order = reshape(raw_data, length(times), num_reps)
-#
-# gui()
-#
-# plot(times, mean(data, 2), leg = false, xscale = :log10, yscale = :log10)
-# plot(times, mean(order, 2), leg = false, xscale = :log10)
-#
-# plot(times, order, leg = false, xscale = :log10)
