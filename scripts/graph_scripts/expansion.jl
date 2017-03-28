@@ -30,17 +30,8 @@ folders = readdir(data_folder_path)
 params = [match(r"\w+_\d+(_\w+_\d+.\d+)", f).captures[1] for f in folders]
 k_vals = [parse(match(r"data_N_\d+_k_(.*)", f).captures[1]) for f in folders]
 
-try
-    mkdir(output_folder_path)
-catch error
-    println("Parent folder already exists")
-end
-
-try
-    mkdir(output_folder_path * "/exp_data_N_$(N)")
-catch error
-    println("Output folder already exists")
-end
+make_dir_from_path(output_folder_path)
+make_dir_from_path(output_folder_path * "/exp_data_N_$(N)")
 
 ### ================================== ###
 
