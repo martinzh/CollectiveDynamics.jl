@@ -297,8 +297,91 @@ function rot_move_part_2D!(pos, vel, v_r, v_n, η, ω)
 end
 
 ### ============== ### ============== ### ============== ###
+
+"""
+    rot_move_part_2D_MOD!(pos, vel, v_r, v_n, η, ω)
+Dynamical rules for velocity and position update.
+Computes weighted average vector instead of using angles
+# Arguments
+* pos -> particles' positions
+* vel -> particles' velocities
+* v_r -> local interactions signal
+* v_n -> non local interaction signal
+* η -> noise intensity
+* ω -> interactions relative weight
+"""
+function rot_move_part_2D_MOD!(pos, vel, v_r, v_n, η, ω)
+
+    prop_angle = atan2(vel[2], vel[1])
+    signal_angle = 0.0
+
+    signal = ω * v_r + (1.0 - ω) * v_n
+
+    i_vx = signal[1]
+    i_vy = signal[2]
+
+    i_vx != 0.0 || i_vy != 0.0 ? signal_angle = atan2(i_vy, i_vx) - prop_angle : signal_angle = 0.0
+
+    total_angle = signal_angle + 0.15 * (2.0 * rand() * pi - pi);
+
+    c = cos(total_angle)
+    s = sin(total_angle)
+
+    vx = vel[1]*c - vel[2]*s;
+    vy = vel[1]*s + vel[2]*c;
+
+    vel[1] = vx;
+    vel[2] = vy;
+
+    pos[1] += vx;
+    pos[2] += vy;
+
+end
+
+### ============== ### ============== ### ============== ###
 ##            3D PARTICLES' DYNAMICAL RULES               ##
 ### ============== ### ============== ### ============== ###
+"""
+    rot_move_part_3D_MOD!(pos, vel, v_r, v_n, η, ω)
+Dynamical rules for velocity and position update.
+Computes weighted average vector instead of using angles.
+# Arguments
+* pos -> particles' positions
+* vel -> particles' velocities
+* v_r -> local interactions signal
+* v_n -> non local interaction signal
+* η -> noise intensity
+* ω -> interactions relative weight
+"""
+function rot_move_part_3D_MOD!(pos, vel, v_r, v_n, η, ω)
+
+    signal = ω * v_r + (1.0 - ω) * v_n
+
+    signal_angle = acos(dot(vel, signal))
+
+    noise = randn(3)
+    noise_angle = acos(dot(normalize(noise), vel))
+
+    q_r = qrotation(cross(vel, signal), signal_angle) * Quaternion(vel)
+
+    u_vel = [q_r.v1, q_r.v2, q_r.v3]
+
+    q_r = qrotation(cross(u_vel, noise), η * noise_angle) * q_r
+
+    u_vel = normalize([q_r.v1, q_r.v2, q_r.v3])
+
+    vel[1] = u_vel[1]
+    vel[2] = u_vel[2]
+    vel[3] = u_vel[3]
+
+    pos[1] += u_vel[1]
+    pos[2] += u_vel[2]
+    pos[3] += u_vel[3]
+
+end
+
+### ============== ### ============== ### ============== ###
+
 """
     rot_move_part_3D!(pos, vel, v_r, v_n, η, ω)
 Dynamical rules for velocity and position update.
@@ -318,11 +401,17 @@ function rot_move_part_3D!(pos, vel, v_r, v_n, η, ω)
     noise = randn(3)
     noise_angle = acos(dot(normalize(noise), vel))
 
-    q_r = qrotation(cross(vel, v_r), loc_angle + η * noise_angle) * Quaternion(vel)
+    # q_r = qrotation(cross(vel, v_r), loc_angle + η * noise_angle) * Quaternion(vel)
+    #
+    # u_vel = [q_r.v1, q_r.v2, q_r.v3]
+    #
+    # q_r = qrotation(cross(u_vel, v_n), non_loc_angle + η * noise_angle) * q_r
+
+    q_r = qrotation(cross(vel, v_r), loc_angle ) * Quaternion(vel)
 
     u_vel = [q_r.v1, q_r.v2, q_r.v3]
 
-    q_r = qrotation(cross(u_vel, v_n), non_loc_angle + η * noise_angle) * q_r
+    q_r = qrotation(cross(u_vel, v_n), non_loc_angle ) * q_r
 
     u_vel = [q_r.v1, q_r.v2, q_r.v3]
 
@@ -366,6 +455,30 @@ function evolve_2D!(pos, vel, v_r, v_n, sp_Nij, r0, η, ω)
 end
 
 ### ============== ### ============== ### ============== ###
+
+"""
+    evolve_2D_MOD!(pos, vel, v_r, v_n, sp_Nij, r0, η, ω)
+Time evolution of the system
+# Arguments
+* pos -> particles' positions
+* vel -> particles' velocities
+* v_r -> local interactions signal
+* v_n -> non local interaction signal
+* sp_Nij -> non local sparse adjacency matrix
+* r0 -> local metric interaction range
+* η -> noise intensity
+* ω -> interactions relative weight
+"""
+function evolve_2D_MOD!(pos, vel, v_r, v_n, sp_Nij, r0, η, ω)
+
+    calc_interactions!(vel, v_r, sparse(calc_Rij(pos, r0)), 2 ) # local
+    calc_interactions!(vel, v_n, sp_Nij, 2) # non_local
+
+    map( (p, v, vr, vn) -> rot_move_part_2D_MOD!(p, v, vr, vn, η, ω), pos, vel, v_r, v_n )
+
+end
+
+### ============== ### ============== ### ============== ###
 ##                  3D SYSTEM EVOLUTION                   ##
 ### ============== ### ============== ### ============== ###
 """
@@ -382,6 +495,30 @@ Time evolution of the system
 * ω -> interactions relative weight
 """
 function evolve_3D!(pos, vel, v_r, v_n, sp_Nij, r0, η, ω)
+
+    calc_interactions!(vel, v_r, sparse(calc_Rij(pos, r0)), 3) # local
+    calc_interactions!(vel, v_n, sp_Nij, 3) # non_local
+
+    map( (p, v, vr, vn) -> rot_move_part_3D!(p, v, vr, vn, η, ω), pos, vel, v_r, v_n )
+
+end
+
+### ============== ### ============== ### ============== ###
+
+"""
+    evolve_3D_MOD!(pos, vel, v_r, v_n, sp_Nij, r0, η, ω)
+Time evolution of the system
+# Arguments
+* pos -> particles' positions
+* vel -> particles' velocities
+* v_r -> local interactions signal
+* v_n -> non local interaction signal
+* sp_Nij -> non local sparse adjacency matrix
+* r0 -> local metric interaction range
+* η -> noise intensity
+* ω -> interactions relative weight
+"""
+function evolve_3D_MOD!(pos, vel, v_r, v_n, sp_Nij, r0, η, ω)
 
     calc_interactions!(vel, v_r, sparse(calc_Rij(pos, r0)), 3) # local
     calc_interactions!(vel, v_n, sp_Nij, 3) # non_local
@@ -534,6 +671,48 @@ function full_time_evolution_2D(pos_file, vel_file, T, flock, r0, η, ω)
 end
 
 ### ============== ### ============== ### ============== ###
+"""
+    full_time_evolution_2D_MOD(pos_file, vel_file, times, flock, r0, η, ω)
+System time evolution wrapper
+"""
+function full_time_evolution_2D_MOD(pos_file, vel_file, T, flock, r0, η, ω)
+
+    times = [convert(Int, exp10(i)) for i in 0:T]
+
+    for i in 1:(length(times) - 1)
+
+        if i > 1
+
+            for t in (times[i]+1):times[i+1]
+
+                evolve_2D_MOD!(flock.pos, flock.vel, flock.v_r, flock.v_n, flock.sp_Nij, r0, η, ω)
+
+                if t % times[i] == 0 || t % times[i-1] == 0
+                    println("//////// ", t)
+                    write(pos_file, vcat(flock.pos...))
+                    write(vel_file, vcat(flock.vel...))
+                end
+            end
+
+        else
+
+            for t in (times[i]+1):times[i+1]
+
+                evolve_2D_MOD!(flock.pos, flock.vel, flock.v_r, flock.v_n, flock.sp_Nij, r0, η, ω)
+
+                if t % times[i] == 0
+                    println("//////// ", t)
+                    write(pos_file, vcat(flock.pos...))
+                    write(vel_file, vcat(flock.vel...))
+                end
+            end
+
+        end
+
+    end
+end
+
+### ============== ### ============== ### ============== ###
 
 """
     full_time_evolution_3D(pos_file, vel_file, times, flock, r0, η, ω)
@@ -563,6 +742,49 @@ function full_time_evolution_3D(pos_file, vel_file, T, flock, r0, η, ω)
             for t in (times[i]+1):times[i+1]
 
                 evolve_3D!(flock.pos, flock.vel, flock.v_r, flock.v_n, flock.sp_Nij, r0, η, ω)
+
+                if t % times[i] == 0
+                    println("//////// ", t)
+                    write(pos_file, vcat(flock.pos...))
+                    write(vel_file, vcat(flock.vel...))
+                end
+            end
+
+        end
+
+    end
+end
+
+### ============== ### ============== ### ============== ###
+
+"""
+    full_time_evolution_3D_MOD(pos_file, vel_file, times, flock, r0, η, ω)
+System time evolution wrapper
+"""
+function full_time_evolution_3D_MOD(pos_file, vel_file, T, flock, r0, η, ω)
+
+    times = [convert(Int, exp10(i)) for i in 0:T]
+
+    for i in 1:(length(times) - 1)
+
+        if i > 1
+
+            for t in (times[i]+1):times[i+1]
+
+                evolve_3D_MOD!(flock.pos, flock.vel, flock.v_r, flock.v_n, flock.sp_Nij, r0, η, ω)
+
+                if t % times[i] == 0 || t % times[i-1] == 0
+                    println("//////// ", t)
+                    write(pos_file, vcat(flock.pos...))
+                    write(vel_file, vcat(flock.vel...))
+                end
+            end
+
+        else
+
+            for t in (times[i]+1):times[i+1]
+
+                evolve_3D_MOD!(flock.pos, flock.vel, flock.v_r, flock.v_n, flock.sp_Nij, r0, η, ω)
 
                 if t % times[i] == 0
                     println("//////// ", t)
