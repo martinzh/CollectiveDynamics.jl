@@ -9,7 +9,7 @@
 ##            EXTERNAL DEPENDENCIES IMPORTS                ##
 ### =================== ## ## =========================== ###
 
-using Quaternions # Needed for 3D space rotations
+ using Quaternions # Needed for 3D space rotations
 
 ### ============== ### ============== ### ============== ###
 ##                       FLOCK TYPE                       ##

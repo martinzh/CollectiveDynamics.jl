@@ -19,7 +19,7 @@ using CollectiveDynamics
 N    = parse(Int, ARGS[1]) # Number of particles
 η    = parse(Float64, ARGS[2]) # Dissipation term
 T    = parse(Float64, ARGS[3]) # temperature, noise
-n_nl = parse(Int, ARGS[4]) # non local interactions per particle
+n_nl = parse(Float64, ARGS[4]) # non local interactions per particle
 τ    = parse(Int, ARGS[5]) # number of iterations
 rep  = parse(Int, ARGS[6]) # repetition number
 

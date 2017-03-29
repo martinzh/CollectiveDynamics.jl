@@ -5,6 +5,8 @@
 ##  14 / 11 / 2016
 ### ============== ### ============== ### ============== ###
 
+using Distributions
+
 ### ============== ### ============== ### ============== ###
 ##                      FLOCK TYPES                       ##
 ### ============== ### ============== ### ============== ###
@@ -126,7 +128,7 @@ Paramaters for the Inertial Spin Model of Collective Motion
 * N  ::Int64  # Number of particles
 * T  ::Float64  # generalized temperature
 * n_t ::Int64  # number of topological interactions
-* n_nl ::Int64 # numer of non-local interactions
+* n_nl ::Float64 # mean of non-local interactions
 """
 immutable InertialParameters
     χ  ::Float64 # generalized moment of intertia
@@ -139,13 +141,14 @@ immutable InertialParameters
     T  ::Float64  # generalized temperature
     d  ::Float64 # unknown parameter (spatial dimension)
     n_t ::Int64  # number of topological interactions
-    n_nl ::Int64 # numer of non-local interactions
+    κ_dist ::Distributions.Poisson{Float64} # mean of non-local interactions
+    # n_nl ::Float64 # mean of non-local interactions
 
     # default constructor
-    # InertialParameters() = new(1.25, 0.8, 0.3, 1.0, 1.0, 0.1, 10, 0.5, 3.0, 6, 3)
+    InertialParameters() = new(1.25, 0.8, 0.3, 1.0, 1.0, 0.1, 10, 0.5, 3.0, 6, Poisson(1.0))
 
     # full constructor
-    InertialParameters(χ, J, η, dt, ρ, v0, N, T, n_t, n_nl) = new(χ, J, η, dt, ρ, v0, N, T, 3.0, n_t, n_nl)
+    InertialParameters(χ, J, η, dt, ρ, v0, N, T, n_t, n_nl) = new(χ, J, η, dt, ρ, v0, N, T, 3.0, n_t, Poisson(n_nl))
 end
 
 ### ============== ### ============== ### ============== ###
@@ -275,9 +278,9 @@ function calc_local_nonLocal_toplogical_interactions!(vel, v_t, v_nl, Rij, n_t, 
     # compute local topological interaction
     for i in 1:size(Rij,1)
         v_t[i]  = sum( [ vel[j] for j in findin(Rij[:,i], sort(Rij[:,i])[2:n_t+1]) ] )
-        v_nl[i] = sum( [ vel[j] for j in rand(findin(Rij[:,i], sort(Rij[:,i])[n_t+2:end]), n_nl) ] ) # more efficient already knowing n_nl != 0
 
-        # n_nl != zero(Int) ? v_nl[i] = sum( [ vel[j] for j in rand(findin(nij[:,i], sort(nij[:,i])[n_t+2:end]), n_nl) ] ) : v_nl = zeros(3)
+        # v_nl[i] = sum( [ vel[j] for j in rand(findin(Rij[:,i], sort(Rij[:,i])[n_t+2:end]), n_nl) ] ) # more efficient already knowing n_nl != 0
+        n_nl[i] != zero(Float64) ? v_nl[i] = sum( [ vel[j] for j in rand(findin(Rij[:,i], sort(Rij[:,i])[n_t+2:end]), n_nl[i]) ] ) : v_nl[i] = zeros(3)
     end
 
 end
@@ -427,8 +430,10 @@ function evolve_nonLocal_inertial_system(pos, vel, v_t, v_nl, spin, Rij, pars, �
     ### COMPUTE RELATIVE DISTANCES
     calc_distance_matrix!(pos, Rij)
 
+    n_nl = rand(pars.κ_dist, pars.N)
+
     ### COMPUTE INTERACTIONS
-    calc_local_nonLocal_toplogical_interactions!(vel, v_t, v_nl, Rij, pars.n_t, pars.n_nl)
+    calc_local_nonLocal_toplogical_interactions!(vel, v_t, v_nl, Rij, pars.n_t, n_nl)
 
     ### SPIN UPDATE
     vel_spin_nonLocal_update!(pos, vel, v_t, v_nl, spin, pars, σ)
