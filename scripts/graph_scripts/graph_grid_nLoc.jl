@@ -98,15 +98,18 @@ for i in 1:length(folders)
         end
 
         plot(trays_plots...,  size = (1270,820))
-        savefig("$(homedir())/Google\ Drive/proyecto_martin/imagenes/modelo_cvgn/reps_trays_N_$(N)_$(folders[i])_T_$(T_vals[1])_nl_$(n_nl_vals[j]).png")
+        savefig("$(homedir())/figures/modelo_cvgn/reps_trays_N_$(N)_$(folders[i])_T_$(T_vals[1])_nl_$(n_nl_vals[j]).png")
+        # savefig("$(homedir())/Google\ Drive/proyecto_martin/imagenes/modelo_cvgn/reps_trays_N_$(N)_$(folders[i])_T_$(T_vals[1])_nl_$(n_nl_vals[j]).png")
         # savefig("$(homedir())/Google\ Drive/proyecto_martin/imagenes/modelo_cvgn/reps_trays_N_$(N)_$(folders[i]).png")
 
         plot(exp_plots..., size = (1270,820))
-        savefig("$(homedir())/Google\ Drive/proyecto_martin/imagenes/modelo_cvgn/reps_exp_N_$(N)_$(folders[i])_T_$(T_vals[1])_nl_$(n_nl_vals[j]).png")
+        savefig("$(homedir())/figures/modelo_cvgn/reps_exp_N_$(N)_$(folders[i])_T_$(T_vals[1])_nl_$(n_nl_vals[j]).png")
+        # savefig("$(homedir())/Google\ Drive/proyecto_martin/imagenes/modelo_cvgn/reps_exp_N_$(N)_$(folders[i])_T_$(T_vals[1])_nl_$(n_nl_vals[j]).png")
         # savefig("$(homedir())/Google\ Drive/proyecto_martin/imagenes/modelo_cvgn/reps_exp_N_$(N)_$(folders[i]).png")
 
         plot(order_plots..., size = (1270,820))
-        savefig("$(homedir())/Google\ Drive/proyecto_martin/imagenes/modelo_cvgn/reps_order_N_$(N)_$(folders[i])_T_$(T_vals[1])_nl_$(n_nl_vals[j]).png")
+        savefig("$(homedir())/figures/modelo_cvgn/reps_order_N_$(N)_$(folders[i])_T_$(T_vals[1])_nl_$(n_nl_vals[j]).png")
+        # savefig("$(homedir())/Google\ Drive/proyecto_martin/imagenes/modelo_cvgn/reps_order_N_$(N)_$(folders[i])_T_$(T_vals[1])_nl_$(n_nl_vals[j]).png")
         # savefig("$(homedir())/Google\ Drive/proyecto_martin/imagenes/modelo_cvgn/reps_order_N_$(N)_$(folders[i]).png")
     end
 end
