@@ -9,5 +9,5 @@ m="$6"
 
 for i in {1..10}
 do
-    time  nohup julia 2D_locNlocl_simScript.jl $N $k $w $T $d $m $i &
+    time  nohup julia locNloc_simScript.jl $N $k $w $T $d $m $i &
 done
