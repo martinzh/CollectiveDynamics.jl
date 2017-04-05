@@ -18,7 +18,7 @@ pyplot()
 
 N = parse(Int, ARGS[1])
 τ = parse(Int, ARGS[2])
-loc_flag = parse(Int, ARGS[3])
+loc_flag = ARGS[3]
 
 # N = 1024
 # N = 256
@@ -30,9 +30,9 @@ times = get_times(τ)
 
 # loc_flag = 0
 
-if loc_flag == 1
+if loc_flag == "l"
     folder_path = "$(homedir())/art_DATA/TFLOCK_DATA/EXP/exp_data_N_$(N)"
-elseif loc_flag == 0
+elseif loc_flag == "nl"
     folder_path = "$(homedir())/art_DATA/TFLOCK_NLOC_DATA/EXP/exp_data_N_$(N)"
 end
 
@@ -86,7 +86,7 @@ for f in 1:length(eta_folders)
     # exp_p   = plot(times, means, lab = param_vals', xscale = :log10)
     exp_p   = plot(times, means, lab = param_vals', xscale = :log10, yscale = :log10)
 
-    # exp_p   = plot(times, means, yerror = std_means, leg   =© false, xscale = :log10, yscale = :log10, size = [1024,720])
+    # exp_p   = plot(times, means, yerror = std_means, leg = false, xscale = :log10, yscale = :log10, size = [1024,720])
 
     plot(exp_p, order_p, layout = @layout([a b]), size = [1024, 720])
 
