@@ -578,9 +578,57 @@ function set_output_data_structure_2D(N, κ, ω)
 end
 
 ### ============== ### ============== ### ============== ###
+"""
+    set_output_data_structure_2D_MOD(N, κ, ω)
+Set up folders for output data
+# Arguments
+* N -> numer of particles
+* κ -> non-local average conectivity
+* ω -> interactions relative weight
+"""
+function set_output_data_structure_2D_MOD(N, κ, ω)
+
+    parent_folder_path = "$(homedir())/art_DATA/NLOC_DATA_MOD"
+    folder_path        = parent_folder_path * "/DATA/data_N_$(N)"
+    reps_path          = folder_path * "/data_N_$(N)_k_$(κ)_w_$(ω)"
+
+    try
+        mkdir("$(homedir())/art_DATA")
+    catch error
+        println("Main data folder already exists")
+    end
+
+    try
+        mkdir(parent_folder_path)
+    catch error
+        println("Parent folder already exists")
+    end
+
+    try
+        mkdir(parent_folder_path * "/DATA")
+    catch error
+        println("Parent data folder already exists")
+    end
+
+    try
+        mkdir(folder_path)
+    catch error
+        println("Folder already exists")
+    end
+
+    try
+        mkdir(reps_path)
+    catch error
+        println("Parameter folder already exists")
+    end
+
+    return reps_path
+end
+
+### ============== ### ============== ### ============== ###
 
 """
-    set_output_data_structure_2D(N, κ, ω)
+    set_output_data_structure_3D(N, κ, ω)
 Set up folders for output data
 # Arguments
 * N -> numer of particles
@@ -590,6 +638,55 @@ Set up folders for output data
 function set_output_data_structure_3D(N, κ, ω)
 
     parent_folder_path = "$(homedir())/art_DATA/NLOC_DATA_3D"
+    folder_path        = parent_folder_path * "/DATA/data_N_$(N)"
+    reps_path          = folder_path * "/data_N_$(N)_k_$(κ)_w_$(ω)"
+
+    try
+        mkdir("$(homedir())/art_DATA")
+    catch error
+        println("Main data folder already exists")
+    end
+
+    try
+        mkdir(parent_folder_path)
+    catch error
+        println("Parent folder already exists")
+    end
+
+    try
+        mkdir(parent_folder_path * "/DATA")
+    catch error
+        println("Parent folder already exists")
+    end
+
+    try
+        mkdir(folder_path)
+    catch error
+        println("Folder already exists")
+    end
+
+    try
+        mkdir(reps_path)
+    catch error
+        println("Parameter folder already exists")
+    end
+
+    return reps_path
+end
+
+### ============== ### ============== ### ============== ###
+
+"""
+    set_output_data_structure_3D_MOD(N, κ, ω)
+Set up folders for output data
+# Arguments
+* N -> numer of particles
+* κ -> non-local average conectivity
+* ω -> interactions relative weight
+"""
+function set_output_data_structure_3D_MOD(N, κ, ω)
+
+    parent_folder_path = "$(homedir())/art_DATA/NLOC_DATA_3D_MOD"
     folder_path        = parent_folder_path * "/DATA/data_N_$(N)"
     reps_path          = folder_path * "/data_N_$(N)_k_$(κ)_w_$(ω)"
 
