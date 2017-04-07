@@ -499,7 +499,7 @@ function evolve_3D!(pos, vel, v_r, v_n, sp_Nij, r0, η, ω)
     calc_interactions!(vel, v_r, sparse(calc_Rij(pos, r0)), 3) # local
     calc_interactions!(vel, v_n, sp_Nij, 3) # non_local
 
-    map( (p, v, vr, vn) -> rot_move_part_3D_MOD!(p, v, vr, vn, η, ω), pos, vel, v_r, v_n )
+    map( (p, v, vr, vn) -> rot_move_part_3D!(p, v, vr, vn, η, ω), pos, vel, v_r, v_n )
 
 end
 
@@ -523,7 +523,7 @@ function evolve_3D_MOD!(pos, vel, v_r, v_n, sp_Nij, r0, η, ω)
     calc_interactions!(vel, v_r, sparse(calc_Rij(pos, r0)), 3) # local
     calc_interactions!(vel, v_n, sp_Nij, 3) # non_local
 
-    map( (p, v, vr, vn) -> rot_move_part_3D!(p, v, vr, vn, η, ω), pos, vel, v_r, v_n )
+    map( (p, v, vr, vn) -> rot_move_part_3D_MOD!(p, v, vr, vn, η, ω), pos, vel, v_r, v_n )
 
 end
 
