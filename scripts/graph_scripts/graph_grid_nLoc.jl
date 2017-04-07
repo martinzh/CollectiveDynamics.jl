@@ -28,8 +28,8 @@ if mod_flag == 1
     v0 = 0.1
 elseif mod_flag == 0
     # folder_path = "$(homedir())/art_DATA/NLOC_DATA_3D/DATA/data_N_$(N)"
-    folder_path = "$(homedir())/art_DATA/NLOC_DATA_MOD/DATA/data_N_$(N)"
-    # folder_path = "$(homedir())/art_DATA/NLOC_DATA_MOD_3D/DATA/data_N_$(N)"
+    # folder_path = "$(homedir())/art_DATA/NLOC_DATA_MOD/DATA/data_N_$(N)"
+    folder_path = "$(homedir())/art_DATA/NLOC_DATA_MOD_3D/DATA/data_N_$(N)"
     v0 = 1.0
 end
 
@@ -153,39 +153,38 @@ elseif mod_flag == 0
                 println(r)
 
                 raw_data = reinterpret(Float64, read(data_path * "/pos_$(r).dat"))
-                # pos_data = transpose(reshape(raw_data, 3N, div(length(raw_data), 3N)))
-                pos_data = transpose(reshape(raw_data, 2N, div(length(raw_data), 2N)))
-                # pos_data = reshape(raw_data, 3N, div(length(raw_data), 3N))
+                pos_data = transpose(reshape(raw_data, 3N, div(length(raw_data), 3N)))
+                # pos_data = transpose(reshape(raw_data, 2N, div(length(raw_data), 2N)))
 
                 raw_data = reinterpret(Float64, read(data_path * "/vel_$(r).dat"))
-                # vel_data = reshape(raw_data, 3N, div(length(raw_data), 3N))
-                vel_data = reshape(raw_data, 2N, div(length(raw_data), 2N))
-                # vel_data = reshape(raw_data, 3N, div(length(raw_data), 3N))
+                vel_data = reshape(raw_data, 3N, div(length(raw_data), 3N))
+                # vel_data = reshape(raw_data, 2N, div(length(raw_data), 2N))
 
-                # x = view(pos_data, :, 1:3:3N)
-                # y = view(pos_data, :, 2:3:3N)
-                # z = view(pos_data, :, 3:3:3N)
+                x = view(pos_data, :, 1:3:3N)
+                y = view(pos_data, :, 2:3:3N)
+                z = view(pos_data, :, 3:3:3N)
 
-                x = view(pos_data, :, 1:2:2N)
-                y = view(pos_data, :, 2:2:2N)
+                # x = view(pos_data, :, 1:2:2N)
+                # y = view(pos_data, :, 2:2:2N)
 
-                # push!(trays_plots, plot(x, y, z, leg = false, tickfont = font(3)))
-                push!(trays_plots, plot(x, y, leg = false, tickfont = font(3)))
+                push!(trays_plots, plot(x, y, z, leg = false, tickfont = font(3)))
+                # push!(trays_plots, plot(x, y, leg = false, tickfont = font(3)))
 
-                # pos_data[:, 1:3:3N] .-= mean(pos_data[:, 1:3:3N], 2)
-                # pos_data[:, 2:3:3N] .-= mean(pos_data[:, 2:3:3N], 2)
-                # pos_data[:, 3:3:3N] .-= mean(pos_data[:, 3:3:3N], 2)
+                pos_data[:, 1:3:3N] .-= mean(pos_data[:, 1:3:3N], 2)
+                pos_data[:, 2:3:3N] .-= mean(pos_data[:, 2:3:3N], 2)
+                pos_data[:, 3:3:3N] .-= mean(pos_data[:, 3:3:3N], 2)
 
-                pos_data[:, 1:2:2N] .-= mean(pos_data[:, 1:2:2N], 2)
-                pos_data[:, 2:2:2N] .-= mean(pos_data[:, 2:2:2N], 2)
+                # pos_data[:, 1:2:2N] .-= mean(pos_data[:, 1:2:2N], 2)
+                # pos_data[:, 2:2:2N] .-= mean(pos_data[:, 2:2:2N], 2)
 
                 tr_pos_data = transpose(pos_data)
 
-                # means = [mean(calc_rij_3D_vect(tr_pos_data[:, i])) for i in 1:size(tr_pos_data,2)]
-                means = [mean(calc_rij_2D_vect(tr_pos_data[:, i])) for i in 1:size(tr_pos_data,2)]
+                means = [mean(calc_rij_3D_vect(tr_pos_data[:, i])) for i in 1:size(tr_pos_data,2)]
 
-                # psi = (1. / v0) * [norm(mean([ [vel_data[i, j], vel_data[i+1, j], vel_data[i+2, j] ] for i in 1:3:3N])) for j in 1:size(vel_data, 2)]
-                psi = (1. / v0) * [norm(mean([ [vel_data[i, j], vel_data[i+1, j]] for i in 1:2:2N])) for j in 1:size(vel_data, 2)]
+                # means = [mean(calc_rij_2D_vect(tr_pos_data[:, i])) for i in 1:size(tr_pos_data,2)]
+
+                psi = (1. / v0) * [norm(mean([ [vel _data[i, j], vel_data[i+1, j], vel_data[i+2, j] ] for i in 1:3:3N])) for j in 1:size(vel_data, 2)]
+                # psi = (1. / v0) * [norm(mean([ [vel_data[i, j], vel_data[i+1, j]] for i in 1:2:2N])) for j in 1:size(vel_data, 2)]
 
                 # push!(exp_plots, plot(tau, means, xscale = :log10, marker = :o, markersize = 1.2, leg = false, xlabel = "$(r)", tickfont = font(8)))
                 push!(exp_plots, plot(tau, means, xscale = :log10, yscale = :log10, marker = :o, markersize = 1.2, leg = false, xlabel = "$(r)", tickfont = font(8)))
@@ -193,26 +192,29 @@ elseif mod_flag == 0
                 push!(order_plots, plot(tau, psi, xscale = :log10, marker = :o, markersize = 1.2, leg = false, xlabel = "$(r)", tickfont = font(8)))
             end
 
-            plot(trays_plots...,  size = (1270,820))
-            # savefig("$(homedir())/figures/mod_nloc/reps_trays_N_$(N)_$(p_vals[i]).png")
-            savefig("$(homedir())/Google\ Drive/proyecto_martin/imagenes/mod_nloc/reps_trays_N_$(N)_$(p_vals[i]).png")
-
-            plot(exp_plots..., size = (1270,820))
-            # savefig("$(homedir())/figures/mod_nloc/reps_exp_N_$(N)_$(p_vals[i]).png")
-            savefig("$(homedir())/Google\ Drive/proyecto_martin/imagenes/mod_nloc/reps_exp_N_$(N)_$(p_vals[i]).png")
-
-            plot(order_plots..., size = (1270,820))
-            # savefig("$(homedir())/figures/mod_nloc/reps_order_N_$(N)_$(p_vals[i]).png")
-            savefig("$(homedir())/Google\ Drive/proyecto_martin/imagenes/mod_nloc/reps_order_N_$(N)_$(p_vals[i]).png")
-
             # plot(trays_plots...,  size = (1270,820))
-            # savefig("$(homedir())/figures/mod_nloc/reps_3D_trays_N_$(N)_$(p_vals[i]).png")
+            # # savefig("$(homedir())/figures/mod_nloc/reps_trays_N_$(N)_$(p_vals[i]).png")
+            # savefig("$(homedir())/Google\ Drive/proyecto_martin/imagenes/mod_nloc/reps_trays_N_$(N)_$(p_vals[i]).png")
             #
             # plot(exp_plots..., size = (1270,820))
-            # savefig("$(homedir())/figures/mod_nloc/reps_3D_exp_N_$(N)_$(p_vals[i]).png")
+            # # savefig("$(homedir())/figures/mod_nloc/reps_exp_N_$(N)_$(p_vals[i]).png")
+            # savefig("$(homedir())/Google\ Drive/proyecto_martin/imagenes/mod_nloc/reps_exp_N_$(N)_$(p_vals[i]).png")
             #
             # plot(order_plots..., size = (1270,820))
-            # savefig("$(homedir())/figures/mod_nloc/reps_3D_order_N_$(N)_$(p_vals[i]).png")
+            # # savefig("$(homedir())/figures/mod_nloc/reps_order_N_$(N)_$(p_vals[i]).png")
+            # savefig("$(homedir())/Google\ Drive/proyecto_martin/imagenes/mod_nloc/reps_order_N_$(N)_$(p_vals[i]).png")
+
+            plot(trays_plots...,  size = (1270,820))
+            # savefig("$(homedir())/figures/mod_nloc_3d/reps_3D_trays_N_$(N)_$(p_vals[i]).png")
+            savefig("$(homedir())/Google\ Drive/proyecto_martin/imagenes/mod_nloc_3d/reps_3D_trays_N_$(N)_$(p_vals[i]).png")
+
+            plot(exp_plots..., size = (1270,820))
+            # savefig("$(homedir())/figures/mod_nloc_3d/reps_3D_exp_N_$(N)_$(p_vals[i]).png")
+            savefig("$(homedir())/Google\ Drive/proyecto_martin/imagenes/mod_nloc_3d/reps_3D_exp_N_$(N)_$(p_vals[i]).png")
+
+            plot(order_plots..., size = (1270,820))
+            # savefig("$(homedir())/figures/mod_nloc_3d/reps_3D_order_N_$(N)_$(p_vals[i]).png")
+            savefig("$(homedir())/Google\ Drive/proyecto_martin/imagenes/mod_nloc_3d/reps_3D_order_N_$(N)_$(p_vals[i]).png")
         end
     end
 end

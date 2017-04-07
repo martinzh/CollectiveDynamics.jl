@@ -280,7 +280,8 @@ function rot_move_part_2D!(pos, vel, v_r, v_n, η, ω)
 
     i_vx != 0.0 || i_vy != 0.0 ? non_loc_angle = atan2(i_vy, i_vx) - prop_angle : non_loc_angle = 0.0
 
-    total_angle = ω * loc_angle + (1.0 - ω) * non_loc_angle + 0.15 * (2.0 * rand() * pi - pi);
+    # total_angle = ω * loc_angle + (1.0 - ω) * non_loc_angle + 0.15 * (2.0 * rand() * pi - pi);
+    total_angle = ω * loc_angle + (1.0 - ω) * non_loc_angle + η * (2.0 * rand() * pi - pi);
 
     c = cos(total_angle)
     s = sin(total_angle)
@@ -322,7 +323,8 @@ function rot_move_part_2D_MOD!(pos, vel, v_r, v_n, η, ω)
 
     i_vx != 0.0 || i_vy != 0.0 ? signal_angle = atan2(i_vy, i_vx) - prop_angle : signal_angle = 0.0
 
-    total_angle = signal_angle + 0.15 * (2.0 * rand() * pi - pi);
+    # total_angle = signal_angle + 0.15 * (2.0 * rand() * pi - pi);
+    total_angle = signal_angle + η * (2.0 * rand() * pi - pi);
 
     c = cos(total_angle)
     s = sin(total_angle)
