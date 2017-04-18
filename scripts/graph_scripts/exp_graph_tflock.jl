@@ -23,6 +23,8 @@ loc_flag = ARGS[3]
 # N = 1024
 # N = 256
 
+n_c = 6
+
 # τ = 7
 # τ = 6
 
@@ -30,8 +32,7 @@ times = get_times(τ)
 
 # loc_flag = "nl"
 
-if loc_flag == "l"
-    folder_path = "$(homedir())/art_DATA/TFLOCK_DATA/EXP/exp_data_N_$(N)"
+if loc_flag == "l" folder_path = "$(homedir())/art_DATA/TFLOCK_DATA/EXP/exp_data_N_$(N)"
 elseif loc_flag == "nl"
     folder_path = "$(homedir())/art_DATA/TFLOCK_NLOC_DATA/EXP/exp_data_N_$(N)"
 end
@@ -44,7 +45,7 @@ eta_folders = readdir(folder_path)
 
 ### ================================== ###### ================================== ###
 
-f = 1
+# f = 1
 for f in 1:length(eta_folders)
 
     println(eta_folders[f])
@@ -88,15 +89,26 @@ for f in 1:length(eta_folders)
     # exp_p   = plot(times, means, lab = param_vals', xscale = :log10)
     exp_p   = plot(times, means, lab = param_vals', xscale = :log10, yscale = :log10)
 
-    fase_ord = plot(param_vals, transpose(orders)[:, end], ylims = [0.0, 1.1], marker = :o, leg = false)
+    # fase_ord = plot( (1./(N-1-n_c)) * param_vals[1:6], transpose(orders)[1:6, end], xlims = [0.0, 0.0001], ylims = [0.0, 1.02], marker = :o, leg = false)
+
+    fase_ord = plot( (1./(N-1-n_c)) * param_vals[1:6], transpose(orders)[1:6, end], ylims = [0.0, 1.02], marker = :o, leg = false)
+
+    # fase_ord = plot( param_vals, transpose(orders)[:, end], xlims = [0.0, 0.01], ylims = [0.0, 1.05], marker = :o, leg = false)
     # fase_ord = plot(param_vals, transpose(orders)[:, end], xlims = [0.0, 0.01], ylims = [0.0, 1.1], marker = :o, leg = false)
     # plot!(fase_ord, param_vals[9:end], transpose(orders)[9:end, end], marker = :o, inset_subplots = [(1, bbox(0.5w,0.5h,0.35w,0.35h))], subplot=2)
-    # plot!(fase_ord, param_vals[10:end], transpose(orders)[10:end, end], marker = :o, ylims = [0.95, 1.05], inset_subplots = [(1, bbox(0.5w,0.5h,0.45w,0.2h))], subplot=2, leg = false)
 
+    # plot!(fase_ord, param_vals[7:end], transpose(orders)[7:end, end], marker = :o, ylims = [0.98, 1.02], inset_subplots = [(1, bbox(0.5w,0.5h,0.45w,0.2h))], subplot=2, leg = false)
+
+    plot!( fase_ord, (1./(N-1-n_c)) * param_vals[7:end], transpose(orders)[7:end, end], ylims = [0.98, 1.02], marker = :o, leg = false)
+
+    # plot!(fase_ord, (1./(N-1-n_c)) * param_vals[7:end], transpose(orders)[:, end][7:end], marker = :o, ylims = [0.98, 1.02], inset_subplots = [(1, bbox(0.5w,0.5h,0.45w,0.2h))], subplot=2, leg = false)
+    # plot!(fase_ord, (1./(N-1-n_c)) * param_vals[7:end], transpose(orders)[7:end, end], marker = :o, inset_subplots = [(1, bbox(0.5w,0.5h,0.45w,0.2h))], subplot=2, leg = false)
+
+# xlims = [0.0002, 4.0], ylims = [0.98, 1.02],
     # exp_p   = plot(times, means, yerror = std_means, leg = false, xscale = :log10, yscale = :log10, size = [1024,720])
 
     # plot(exp_p, order_p, layout = @layout([a b]), size = [1024, 720])
-    plot(exp_p, order_p, fase_ord, layout = @layout([a b c]), size = [1420, 720])
+    plot(exp_p, order_p, fase_ord, layout = @layout([a b c]), size = [1800, 720])
 
     if loc_flag == "l"
         savefig("$(homedir())/Google\ Drive/proyecto_martin/imagenes/modelo_cvgn/expansion_N_$(N)_$(eta_folders[f]).png")
