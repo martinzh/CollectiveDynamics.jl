@@ -88,18 +88,19 @@ for f in 1:length(eta_folders)
     # exp_p   = plot(times, means, lab = param_vals', xscale = :log10)
     exp_p   = plot(times, means, lab = param_vals', xscale = :log10, yscale = :log10)
 
-    fase_ord = plot(param_vals, transpose(orders)[:, end], xlims = [0.0, 0.01], ylims = [0.0, 1.1], marker = :o, leg = false)
+    fase_ord = plot(param_vals, transpose(orders)[:, end], ylims = [0.0, 1.1], marker = :o, leg = false)
+    # fase_ord = plot(param_vals, transpose(orders)[:, end], xlims = [0.0, 0.01], ylims = [0.0, 1.1], marker = :o, leg = false)
     # plot!(fase_ord, param_vals[9:end], transpose(orders)[9:end, end], marker = :o, inset_subplots = [(1, bbox(0.5w,0.5h,0.35w,0.35h))], subplot=2)
     # plot!(fase_ord, param_vals[10:end], transpose(orders)[10:end, end], marker = :o, ylims = [0.95, 1.05], inset_subplots = [(1, bbox(0.5w,0.5h,0.45w,0.2h))], subplot=2, leg = false)
 
     # exp_p   = plot(times, means, yerror = std_means, leg = false, xscale = :log10, yscale = :log10, size = [1024,720])
 
-    plot(exp_p, order_p, layout = @layout([a b]), size = [1024, 720])
-    # plot(exp_p, order_p, fase_ord, layout = @layout([a b c]), size = [1420, 720])
+    # plot(exp_p, order_p, layout = @layout([a b]), size = [1024, 720])
+    plot(exp_p, order_p, fase_ord, layout = @layout([a b c]), size = [1420, 720])
 
     if loc_flag == "l"
-        # savefig("$(homedir())/Google\ Drive/proyecto_martin/imagenes/modelo_cvgn/expansion_N_$(N)_$(eta_folders[f]).png")
-        savefig("$(homedir())/figures/modelo_cvgn/expansion_N_$(N)_$(eta_folders[f]).png")
+        savefig("$(homedir())/Google\ Drive/proyecto_martin/imagenes/modelo_cvgn/expansion_N_$(N)_$(eta_folders[f]).png")
+        # savefig("$(homedir())/figures/modelo_cvgn/expansion_N_$(N)_$(eta_folders[f]).png")
     elseif loc_flag == "nl"
         savefig("$(homedir())/Google\ Drive/proyecto_martin/imagenes/modelo_cvgn/expansion_NLOC_N_$(N)_$(eta_folders[f]).png")
     end
