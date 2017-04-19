@@ -280,7 +280,7 @@ function calc_local_nonLocal_toplogical_interactions!(vel, v_t, v_nl, Rij, n_t, 
         v_t[i]  = sum( [ vel[j] for j in findin(Rij[:,i], sort(Rij[:,i])[2:n_t+1]) ] )
 
         # v_nl[i] = sum( [ vel[j] for j in rand(findin(Rij[:,i], sort(Rij[:,i])[n_t+2:end]), n_nl) ] ) # more efficient already knowing n_nl != 0
-        n_nl[i] != zero(Float64) ? v_nl[i] = sum( [ vel[j] for j in rand(findin(Rij[:,i], sort(Rij[:,i])[n_t+2:end]), n_nl[i]) ] ) : v_nl[i] = zeros(3)
+        n_nl[i] != zero(Int64) ? v_nl[i] = sum( [ vel[j] for j in rand(findin(Rij[:,i], sort(Rij[:,i])[n_t+2:end]), n_nl[i]) ] ) : v_nl[i] = zeros(3)
     end
 
 end
