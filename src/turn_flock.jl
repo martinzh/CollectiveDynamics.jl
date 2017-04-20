@@ -285,6 +285,18 @@ function calc_local_nonLocal_toplogical_interactions!(vel, v_t, v_nl, Rij, n_t, 
 
 end
 
+function calc_local_nonLocal_toplogical_interactions_mean!(vel, v_t, v_nl, Rij, n_t, n_nl)
+
+    # compute local topological interaction
+    for i in 1:size(Rij,1)
+        v_t[i]  = mean( [ vel[j] for j in findin(Rij[:,i], sort(Rij[:,i])[2:n_t+1]) ] )
+
+        # v_nl[i] = mean( [ vel[j] for j in rand(findin(Rij[:,i], sort(Rij[:,i])[n_t+2:end]), n_nl) ] ) # more efficient already knowing n_nl != 0
+        n_nl[i] != zero(Int64) ? v_nl[i] = mean( [ vel[j] for j in rand(findin(Rij[:,i], sort(Rij[:,i])[n_t+2:end]), n_nl[i]) ] ) : v_nl[i] = zeros(3)
+    end
+
+end
+
 ### ============== ### ============== ### ============== ###
 ##             DYNAMICAL RULES PER PARTICLE               ##
 ### ============== ### ============== ### ============== ###

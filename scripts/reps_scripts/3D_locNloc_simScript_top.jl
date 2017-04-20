@@ -19,7 +19,8 @@ function evolve_system(flock, pars, n_t, κ_dist)
     n_nl = rand(κ_dist, pars.N) # obtain non-local input degree for each particle
 
     ### COMPUTE INTERACTIONS
-    CollectiveDynamics.calc_local_nonLocal_toplogical_interactions!(flock.vel, flock.v_r, flock.v_n, flock.Nij, n_t, n_nl)
+    # CollectiveDynamics.calc_local_nonLocal_toplogical_interactions!(flock.vel, flock.v_r, flock.v_n, flock.Nij, n_t, n_nl)
+    CollectiveDynamics.calc_local_nonLocal_toplogical_interaction_mean!(flock.vel, flock.v_r, flock.v_n, flock.Nij, n_t, n_nl)
 
     ### PARTICLE UPDATE
     map( (p, v, vr, vn) -> CollectiveDynamics.rot_move_part_3D!(p, v, vr, vn, pars.η, pars.ω), flock.pos, flock.vel, flock.v_r, flock.v_n )
@@ -63,7 +64,7 @@ n_t = 6 # number of topological local interactions
 ### =============== ### =============== ###
 flock = LocNonLocFlock(N, L, pars.v0, 0.0, 3)
 
-output_path = set_output_data_structure_PATH("NLOC_TOP_3D", N, κ, ω)
+output_path = set_output_data_structure_PATH("NLOC_TOP_3D_MEAN", N, κ, ω)
 
 pos_file = open(output_path * "/pos_$(rep).dat", "w+")
 vel_file = open(output_path * "/vel_$(rep).dat", "w+")
