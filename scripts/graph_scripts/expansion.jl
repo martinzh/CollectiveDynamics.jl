@@ -13,6 +13,7 @@ using CollectiveDynamics.DataAnalysis
 ### ================================== ###
 
 N = parse(Int, ARGS[1])
+folder = ARGS[2]
 
 # N = 100
 # N = 256
@@ -23,8 +24,8 @@ N = parse(Int, ARGS[1])
 # data_folder_path   = "$(homedir())/art_DATA/NLOC_DATA/DATA/data_N_$(N)"
 # output_folder_path = "$(homedir())/art_DATA/NLOC_DATA/EXP"
 
-data_folder_path   = "$(homedir())/art_DATA/NLOC_TOP_3D/DATA/data_N_$(N)"
-output_folder_path = "$(homedir())/art_DATA/NLOC_TOP_3D/EXP"
+data_folder_path   = "$(homedir())/art_DATA/$(folder)/DATA/data_N_$(N)"
+output_folder_path = "$(homedir())/art_DATA/$(folder)/EXP"
 
 folders = readdir(data_folder_path)
 
