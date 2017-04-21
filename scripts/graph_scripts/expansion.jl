@@ -28,7 +28,8 @@ output_folder_path = "$(homedir())/art_DATA/NLOC_TOP_3D/EXP"
 
 folders = readdir(data_folder_path)
 
-params = [match(r"\w+_\d+(_\w+_\d+.\d+)", f).captures[1] for f in folders]
+# params = [match(r"\w+_\d+(_\w+_\d+.\d+)", f).captures[1] for f in folders]
+params = [match(r"\w+_\d+(_\w+_\d+.\d+_\w_\d+\.\d+)", f).captures[1] for f in folders]
 k_vals = [parse(match(r"data_N_\d+_k_(\d+\.\d+)_.", f).captures[1]) for f in folders]
 
 make_dir_from_path(output_folder_path)
