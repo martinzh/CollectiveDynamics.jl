@@ -14,7 +14,11 @@ N = 256
 
 times = get_times(τ)
 
-folder_path = "$(homedir())/art_DATA/NLOC_DATA/EXP/exp_data_N_$(N)"
+folder = "NLOC_DATA"
+folder = "NLOC_TOP_3D"
+folder = "NLOC_TOP_3D_MEAN"
+
+folder_path = "$(homedir())/art_DATA/$(folder)/EXP/exp_data_N_$(N)"
 
 eta_folders = readdir(folder_path)
 
