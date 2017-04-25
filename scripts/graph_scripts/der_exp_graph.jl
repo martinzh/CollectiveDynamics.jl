@@ -1,6 +1,6 @@
 
-using Plots, CollectiveDynamics.DataAnalysis
-using Polynomials
+using Plots, CollectiveDynamics.DataAnalysis, Polynomials
+# using Polynomials
 
 ### ================================== ###
 function deriv_simple(Y, X)
@@ -44,7 +44,8 @@ order_files = filter( x -> ismatch(r"^order.", x), readdir(folder_path))
 exp_files = filter( x -> ismatch(r"^exp.", x), readdir(folder_path))
 
 # k_vals = [ match(r"(\d+\.\d+)\w+\d+\.\d+.dat$", x).captures[1] for x in order_files]
-k_vals = [ match(r"(\d+\.\d+).dat$", x).captures[1] for x in order_files]
+# k_vals = [ match(r"(\d+\.\d+).dat$", x).captures[1] for x in order_files]
+k_vals = [ match(r"^\w+(\d+\.\d+)_.", x).captures[1] for x in order_files]
 
 means = zeros(length(times), length(order_files))
 orders = zeros(length(times), length(order_files))
@@ -80,6 +81,7 @@ plot(times, means[:,end], xscale = :log10, yscale = :log10)
 
 all_derivs = zeros(length(Δtau), size(means, 2))
 all_derivs = zeros(542, size(means, 2))
+all_derivs = zeros(453, size(means, 2))
 
 for k in 1:size(means, 2)
 
@@ -103,4 +105,4 @@ plot(exp_p, derivs_p, link = :x, layout = @layout [a b])
 
 gui()
 
-scatter(times, all_derivs[:,1], xscale = :log10, alpha = 0.3)
+scatter(times, all_derivs[:,end], xscale = :log10, alpha = 0.3)
