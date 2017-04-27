@@ -41,6 +41,9 @@ p  = pars.κ / (N-1) # non-local link probability
 
 flock = LocNonLocFlock(N, L, pars.v0, p, dim)
 
+<<<<<<< HEAD
+dim == 2 ? output_path = set_output_data_structure_2D_MOD(N, κ, ω) : output_path = set_output_data_structure_3D_MOD(N, κ, ω)
+=======
 if dim == 2 && mod == "mod"
     output_path = set_output_data_structure_2D_MOD(N, κ, ω)
 elseif dim == 2 && mod == "org"
@@ -50,6 +53,7 @@ elseif dim == 3 && mod == "mod"
 elseif dim == 3 && mod == "org"
     output_path = set_output_data_structure_3D(N, κ, ω)
 end
+>>>>>>> master
 
 pos_file = open(output_path * "/pos_$(rep).dat", "w+")
 vel_file = open(output_path * "/vel_$(rep).dat", "w+")

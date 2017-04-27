@@ -677,6 +677,10 @@ function set_output_data_structure_3D(N, κ, ω)
 end
 
 ### ============== ### ============== ### ============== ###
+<<<<<<< HEAD
+
+=======
+>>>>>>> master
 """
     set_output_data_structure_3D_MOD(N, κ, ω)
 Set up folders for output data
@@ -687,6 +691,9 @@ Set up folders for output data
 """
 function set_output_data_structure_3D_MOD(N, κ, ω)
 
+<<<<<<< HEAD
+    parent_folder_path = "$(homedir())/art_DATA/NLOC_DATA_3D_MOD"
+=======
     parent_folder_path = "$(homedir())/art_DATA/NLOC_DATA_MOD_3D"
     folder_path        = parent_folder_path * "/DATA/data_N_$(N)"
     reps_path          = folder_path * "/data_N_$(N)_k_$(κ)_w_$(ω)"
@@ -727,6 +734,7 @@ end
 function set_output_data_structure_PATH(path, N, κ, ω)
 
     parent_folder_path = "$(homedir())/art_DATA/$(path)"
+>>>>>>> master
     folder_path        = parent_folder_path * "/DATA/data_N_$(N)"
     reps_path          = folder_path * "/data_N_$(N)_k_$(κ)_w_$(ω)"
 
