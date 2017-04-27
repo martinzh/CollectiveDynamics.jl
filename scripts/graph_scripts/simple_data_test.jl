@@ -15,6 +15,8 @@ N = 128
 N = 64
 
 τ = 5
+τ = 4
+τ = 3
 
 tau = get_times(τ)
 
@@ -22,6 +24,7 @@ v0 = 1.0
 ### ================================== ###
 
 folder_path = "$(homedir())/art_DATA/NLOC_DATA_3D/DATA/data_N_$(N)"
+folder_path = "$(homedir())/art_DATA/NLOC_TOP_3D/DATA/data_N_$(N)"
 
 # files = filter(x -> match(r"._(\d+.\d+).dat", x).captures[1] == η , readdir(folder_path))
 folders = readdir(folder_path)
@@ -30,7 +33,7 @@ folders = readdir(folder_path)
 # all_means = Dict()
 ### ================================== ###
 
-f = 6
+f = 1
 data_path = folder_path * "/" * folders[f]
 
 reps = [match(r"\w+(\d+).\w+", x).captures[1]  for x in filter(x -> ismatch(r"^pos_", x), readdir(data_path))]

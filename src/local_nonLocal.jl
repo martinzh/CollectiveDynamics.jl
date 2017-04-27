@@ -280,7 +280,8 @@ function rot_move_part_2D!(pos, vel, v_r, v_n, η, ω)
 
     i_vx != 0.0 || i_vy != 0.0 ? non_loc_angle = atan2(i_vy, i_vx) - prop_angle : non_loc_angle = 0.0
 
-    total_angle = ω * loc_angle + (1.0 - ω) * non_loc_angle + 0.15 * (2.0 * rand() * pi - pi);
+    # total_angle = ω * loc_angle + (1.0 - ω) * non_loc_angle + 0.15 * (2.0 * rand() * pi - pi);
+    total_angle = ω * loc_angle + (1.0 - ω) * non_loc_angle + η * (2.0 * rand() * pi - pi);
 
     c = cos(total_angle)
     s = sin(total_angle)
@@ -322,7 +323,8 @@ function rot_move_part_2D_MOD!(pos, vel, v_r, v_n, η, ω)
 
     i_vx != 0.0 || i_vy != 0.0 ? signal_angle = atan2(i_vy, i_vx) - prop_angle : signal_angle = 0.0
 
-    total_angle = signal_angle + 0.15 * (2.0 * rand() * pi - pi);
+    # total_angle = signal_angle + 0.15 * (2.0 * rand() * pi - pi);
+    total_angle = signal_angle + η * (2.0 * rand() * pi - pi);
 
     c = cos(total_angle)
     s = sin(total_angle)
@@ -357,7 +359,7 @@ function rot_move_part_3D_MOD!(pos, vel, v_r, v_n, η, ω)
 
     signal = ω * v_r + (1.0 - ω) * v_n
 
-    signal_angle = acos(dot(vel, signal))
+    norm(signal) != zero(Float64) ? signal_angle = acos(dot(vel, signal)) : signal_angle = 0.0
 
     noise = randn(3)
     noise_angle = acos(dot(normalize(noise), vel))
@@ -395,8 +397,8 @@ Dynamical rules for velocity and position update.
 """
 function rot_move_part_3D!(pos, vel, v_r, v_n, η, ω)
 
-    loc_angle     = ω * acos(dot(vel, v_r))
-    non_loc_angle = (1.0 - ω) * acos(dot(vel, v_n))
+    norm(v_r) != zero(Float64) ? loc_angle = ω * acos(dot(vel, v_r) / norm(v_r)) : loc_angle = 0.0
+    norm(v_n) != zero(Float64) ? non_loc_angle = (1.0 - ω) * acos(dot(vel, v_n) / norm(v_n)) : non_loc_angle = 0.0
 
     noise = randn(3)
     noise_angle = acos(dot(normalize(noise), vel))
@@ -523,7 +525,7 @@ function evolve_3D_MOD!(pos, vel, v_r, v_n, sp_Nij, r0, η, ω)
     calc_interactions!(vel, v_r, sparse(calc_Rij(pos, r0)), 3) # local
     calc_interactions!(vel, v_n, sp_Nij, 3) # non_local
 
-    map( (p, v, vr, vn) -> rot_move_part_3D!(p, v, vr, vn, η, ω), pos, vel, v_r, v_n )
+    map( (p, v, vr, vn) -> rot_move_part_3D_MOD!(p, v, vr, vn, η, ω), pos, vel, v_r, v_n )
 
 end
 
@@ -675,7 +677,10 @@ function set_output_data_structure_3D(N, κ, ω)
 end
 
 ### ============== ### ============== ### ============== ###
+<<<<<<< HEAD
 
+=======
+>>>>>>> master
 """
     set_output_data_structure_3D_MOD(N, κ, ω)
 Set up folders for output data
@@ -686,7 +691,50 @@ Set up folders for output data
 """
 function set_output_data_structure_3D_MOD(N, κ, ω)
 
+<<<<<<< HEAD
     parent_folder_path = "$(homedir())/art_DATA/NLOC_DATA_3D_MOD"
+=======
+    parent_folder_path = "$(homedir())/art_DATA/NLOC_DATA_MOD_3D"
+    folder_path        = parent_folder_path * "/DATA/data_N_$(N)"
+    reps_path          = folder_path * "/data_N_$(N)_k_$(κ)_w_$(ω)"
+
+    try
+        mkdir("$(homedir())/art_DATA")
+    catch error
+        println("Main data folder already exists")
+    end
+
+    try
+        mkdir(parent_folder_path)
+    catch error
+        println("Parent folder already exists")
+    end
+
+    try
+        mkdir(parent_folder_path * "/DATA")
+    catch error
+        println("Parent folder already exists")
+    end
+
+    try
+        mkdir(folder_path)
+    catch error
+        println("Folder already exists")
+    end
+
+    try
+        mkdir(reps_path)
+    catch error
+        println("Parameter folder already exists")
+    end
+
+    return reps_path
+end
+
+function set_output_data_structure_PATH(path, N, κ, ω)
+
+    parent_folder_path = "$(homedir())/art_DATA/$(path)"
+>>>>>>> master
     folder_path        = parent_folder_path * "/DATA/data_N_$(N)"
     reps_path          = folder_path * "/data_N_$(N)_k_$(κ)_w_$(ω)"
 
