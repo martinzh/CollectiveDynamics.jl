@@ -21,9 +21,6 @@ folder = ARGS[2]
 
 ### ================================== ###
 
-# data_folder_path   = "$(homedir())/art_DATA/NLOC_DATA/DATA/data_N_$(N)"
-# output_folder_path = "$(homedir())/art_DATA/NLOC_DATA/EXP"
-
 data_folder_path   = "$(homedir())/art_DATA/$(folder)/DATA/data_N_$(N)"
 output_folder_path = "$(homedir())/art_DATA/$(folder)/EXP"
 
