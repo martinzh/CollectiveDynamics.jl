@@ -83,7 +83,7 @@ for j in 1:size(means, 2)
     y_vals = broadcast(x -> log10(x), means[:, j])
 
     # ajusta valores
-    p_fit = polyfit(x_vals, y_vals, 20)
+    p_fit = polyfit(x_vals, y_vals, 30)
 
     # calcula derivada de ajuste
     all_derivs[:, j] = polyval(polyder(p_fit), x_vals)
