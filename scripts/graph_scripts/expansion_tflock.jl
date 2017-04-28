@@ -76,7 +76,7 @@ for f in 1:length(eta_folders)
 
         exp_file   = open(output_folder_path * "/exp_data_N_$(N)/eta_$(eta_vals[f])" * "/exp_" * noise_folders[i] * ".dat", "w+")
         order_file = open(output_folder_path * "/exp_data_N_$(N)/eta_$(eta_vals[f])" * "/order_" * noise_folders[i] * ".dat", "w+")
-        nn_mean_file = open(output_folder_path * "/exp_data_N_$(N)" * "/nn_mean" * params[f] * ".dat", "w+")
+        nn_mean_file = open(output_folder_path * "/exp_data_N_$(N)/eta_$(eta_vals[f])" * "/nn_mean_" * noise_folders[i] * ".dat", "w+")
 
         ### ================================== ###
 
