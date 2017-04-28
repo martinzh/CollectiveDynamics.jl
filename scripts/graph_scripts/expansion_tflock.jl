@@ -11,6 +11,21 @@
 using CollectiveDynamics.DataAnalysis
 
 ### ================================== ###
+function calc_Rij(pos, Rij)
+
+    N = size(Rij, 1)
+
+    for i in 1:3:3N, j in (i+3):3:3N
+
+        k = div(i, 3) + 1
+        l = div(j, 3) + 1
+
+        Rij[k, l] = norm([pos[i], pos[i+1], pos[i+2]] - [pos[j], pos[j+1], pos[j+2]])
+        Rij[l, k] = Rij[k, l]
+    end
+
+end
+### ================================== ###
 
 N = parse(Int, ARGS[1])
 loc_flag = parse(Int, ARGS[2])
@@ -57,13 +72,17 @@ for f in 1:length(eta_folders)
 
         psi   = Array{Float64}[]
         means = Array{Float64}[]
+        nn_means = Array{Float64}[]
 
         exp_file   = open(output_folder_path * "/exp_data_N_$(N)/eta_$(eta_vals[f])" * "/exp_" * noise_folders[i] * ".dat", "w+")
         order_file = open(output_folder_path * "/exp_data_N_$(N)/eta_$(eta_vals[f])" * "/order_" * noise_folders[i] * ".dat", "w+")
+        nn_mean_file = open(output_folder_path * "/exp_data_N_$(N)" * "/nn_mean" * params[f] * ".dat", "w+")
 
         ### ================================== ###
 
         reps = [match(r"\w+_(\d+).\w+", x).captures[1] for x in filter(x -> ismatch(r"pos_\d+.\w+", x), readdir(data_folder_path * "/" * eta_folders[f] * "/" * noise_folders[i]))]
+
+        Rij = zeros(Float64, N, N)
 
         # r = 1
         for r in reps
@@ -77,6 +96,15 @@ for f in 1:length(eta_folders)
 
             push!(means, [mean(calc_rij_3D_vect(pos_data[:, i])) for i in 1:size(pos_data,2)])
 
+            for j in 1:size(pos_data, 2)
+
+                calc_Rij(pos_data[:, j], Rij)
+                nn_time[j] = mean([sort(Rij[:, i])[2] for i in 1:N])
+
+            end
+
+            push!(nn_means, nn_time)
+
             raw_data = reinterpret(Float64,read(data_folder_path * "/" * eta_folders[f] * "/" * noise_folders[i] * "/" * "/vel_$(r).dat"))
             vel_data = reshape(raw_data, 3N, div(length(raw_data), 3N))
 
@@ -86,9 +114,11 @@ for f in 1:length(eta_folders)
 
         write(exp_file, hcat(means...))
         write(order_file, hcat(psi...))
+        write(nn_mean_file, hcat(nn_means...))
 
         close(exp_file)
         close(order_file)
+        close(nn_mean_file)
 
     end
 
