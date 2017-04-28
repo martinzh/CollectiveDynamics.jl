@@ -96,6 +96,8 @@ for f in 1:length(eta_folders)
 
             push!(means, [mean(calc_rij_3D_vect(pos_data[:, i])) for i in 1:size(pos_data,2)])
 
+            nn_time = zeros(size(pos_data, 2))
+
             for j in 1:size(pos_data, 2)
 
                 calc_Rij(pos_data[:, j], Rij)
