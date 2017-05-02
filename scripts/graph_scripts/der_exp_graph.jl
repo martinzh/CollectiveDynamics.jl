@@ -1,6 +1,5 @@
 
-using Plots, CollectiveDynamics.DataAnalysis, Polynomials
-using LaTeXStrings
+using Plots, CollectiveDynamics.DataAnalysis, Polynomials, LaTeXStrings
 ### ================================== ###
 
 gui()

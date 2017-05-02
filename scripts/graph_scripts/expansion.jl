@@ -11,7 +11,7 @@
 using CollectiveDynamics.DataAnalysis
 
 ### ================================== ###
-function calc_Rij(pos, Rij)
+function calc_Rij_3D(pos, Rij)
 
     N = size(Rij, 1)
 
@@ -26,6 +26,21 @@ function calc_Rij(pos, Rij)
 
 end
 ### ================================== ###
+function calc_Rij_2D(pos, Rij)
+
+    N = size(Rij, 1)
+
+    for i in 1:2:2N, j in (i+2):2:2N
+
+        k = div(i, 2) + 1
+        l = div(j, 2) + 1
+
+        Rij[k, l] = norm([pos[i], pos[i+1]] - [pos[j], pos[j+1]])
+        Rij[l, k] = Rij[k, l]
+    end
+
+end
+### ================================== ###
 
 N = parse(Int, ARGS[1])
 folder = ARGS[2]
@@ -35,6 +50,7 @@ folder = ARGS[2]
 # N = 1024
 
 # folder = "NLOC_TOP_3D"
+# folder = "NLOC_DATA"
 
 ### ================================== ###
 
