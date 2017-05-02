@@ -41,7 +41,7 @@ L = cbrt(N / pars.ρ) # 3D
 
 flock = InertialFlock(N, L, pars.v0)
 
-output_path = set_output_data_structure_inertial(N, η, T)
+output_path = set_output_data_structure_inertial("TFLOCK_DATA", N, η, T)
 
 pos_file  = open(output_path * "/pos_$(rep).dat", "w+")
 vel_file  = open(output_path * "/vel_$(rep).dat", "w+")

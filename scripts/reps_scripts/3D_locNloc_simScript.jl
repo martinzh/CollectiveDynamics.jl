@@ -37,7 +37,7 @@ p  = pars.κ / (N-1) # non-local link probability
 
 flock = LocNonLocFlock(N, L, pars.v0, p, 3)
 
-output_path = set_output_data_structure_3D(N, κ, ω)
+output_path = set_output_data_structure_lnl("NLOC_DATA_3D", N, κ, ω)
 
 pos_file = open(output_path * "/pos_$(rep).dat", "w+")
 vel_file = open(output_path * "/vel_$(rep).dat", "w+")

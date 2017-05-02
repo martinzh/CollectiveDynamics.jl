@@ -42,7 +42,7 @@ L = cbrt(N / pars.ρ) # 3D
 
 flock = InertialNonLocFlock(N, L, pars.v0)
 
-output_path = set_output_data_structure_inertial_nonLocal(N, η, T, n_nl)
+output_path = set_output_data_structure_inertial_nonLocal("TFLOCK_NLOC_DATA", N, η, T, n_nl)
 
 pos_file  = open(output_path * "/pos_$(rep).dat", "w+")
 vel_file  = open(output_path * "/vel_$(rep).dat", "w+")

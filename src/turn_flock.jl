@@ -152,80 +152,6 @@ immutable InertialParameters
 end
 
 ### ============== ### ============== ### ============== ###
-##                      SYSTEM SET UP                     ##
-### ============== ### ============== ### ============== ###
-"""
-    set_up_inertial_system!(N, L, v0)
-Dynamical rules for velocity and position update.
-# Arguments
-* N -> number of particles
-* L -> size of box
-* v0 -> particles speed
-"""
-function set_up_inertial_system!(N, L, v0)
-
-    Nij = zeros(Float64, N, N)
-
-    # array of random initial particles' postitions
-    pos = [ [2*rand()*L - L, 2*rand()*L - L, 2*rand()*L - L] for i in 1:N ]
-    # pos = [ [2*rand()*L - L, 2*rand()*L - L, 0.0] for i in 1:N ]
-
-    # array of particles' velocities
-    vel = v0 * [ normalize([2*rand() - 1, 2*rand() - 1, 2*rand() - 1]) for i in 1:N ]
-    # vel = v0 * [normalize([1.0, 0.0, 0.0] - [2*δ*rand() - δ, 2*δ*rand() - δ, 2*δ*rand() - δ]) for i in 1:N]
-
-    # local topological interactions
-    v_t  = [zeros(Float64, 3) for i in 1:N]
-
-    # initialize spins as zero vectors\
-    # spin = [zeros(Float64, 3) for i in 1:N]
-
-    # array of  particles' spin (initial random directions)
-    spin = [ normalize([2*rand() - 1, 2*rand() - 1, 2*rand() - 1]) for i in 1:N ]
-    # # cross product because dot(si, vi) must = 0, then normalize
-    map!((x,y) -> normalize(cross(x,y)), spin, spin, vel)
-
-    return pos, vel, v_t, spin, Nij
-end
-
-### ============== ### ============== ### ============== ###
-
-"""
-    set_up_inertial_nonLoc_system!(N, L, v0)
-Dynamical rules for velocity and position update.
-# Arguments
-* N -> number of particles
-* L -> size of box
-* v0 -> particles speed
-"""
-function set_up_inertial_nonLoc_system!(N, L, v0)
-
-    Rij = zeros(Float64, N, N)
-
-    # array of random initial particles' postitions
-    pos = [ [2*rand()*L - L, 2*rand()*L - L, 2*rand()*L - L] for i in 1:N ]
-    # pos = [ [2*rand()*L - L, 2*rand()*L - L, 0.0] for i in 1:N ]
-
-    # array of particles' velocities
-    vel = v0 * [ normalize([2*rand() - 1, 2*rand() - 1, 2*rand() - 1]) for i in 1:N ]
-    # vel = v0 * [normalize([1.0, 0.0, 0.0] - [2*δ*rand() - δ, 2*δ*rand() - δ, 2*δ*rand() - δ]) for i in 1:N]
-
-    # local topological interactions
-    v_t  = [zeros(Float64, 3) for i in 1:N]
-    v_nl = [zeros(Float64, 3) for i in 1:N]
-
-    # initialize spins as zero vectors\
-    # spin = [zeros(Float64, 3) for i in 1:N]
-
-    # array of  particles' spin (initial random directions)
-    spin = [ normalize([2*rand() - 1, 2*rand() - 1, 2*rand() - 1]) for i in 1:N ]
-    # # cross product because dot(si, vi) must = 0, then normalize
-    map!((x,y) -> normalize(cross(x,y)), spin, spin, vel)
-
-    return pos, vel, v_t, v_nl, spin, Rij
-end
-
-### ============== ### ============== ### ============== ###
 ##      RELATIVE DISTACNCES BETWEEN PARTICLES MATRIX      ##
 ### ============== ### ============== ### ============== ###
 """
@@ -466,9 +392,9 @@ Set up folders for output data
 * κ -> non-local average conectivity
 * ω -> interactions relative weight
 """
-function set_output_data_structure_inertial(N, η, T)
+function set_output_data_structure_inertial(path, N, η, T)
 
-    parent_folder_path = "$(homedir())/art_DATA/TFLOCK_DATA"
+    parent_folder_path = "$(homedir())/art_DATA/$(path)"
     folder_path        = parent_folder_path * "/DATA/data_N_$(N)"
 
     reps_path = folder_path * "/eta_$(η)/eta_$(η)_T_$(T)"
@@ -521,9 +447,9 @@ Set up folders for output data
 * κ -> non-local average conectivity
 * ω -> interactions relative weight
 """
-function set_output_data_structure_inertial_nonLocal(N, η, T, n_nl)
+function set_output_data_structure_inertial_nonLocal(path, N, η, T, n_nl)
 
-    parent_folder_path = "$(homedir())/art_DATA/TFLOCK_NLOC_DATA"
+    parent_folder_path = "$(homedir())/art_DATA/$(path)"
     folder_path        = parent_folder_path * "/DATA/data_N_$(N)"
 
     reps_path = folder_path * "/eta_$(η)/eta_$(η)_T_$(T)_nl_$(n_nl)"
