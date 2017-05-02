@@ -54,7 +54,7 @@ make_dir_from_path(output_folder_path * "/exp_data_N_$(N)")
 
 ### ================================== ###
 
-f = 13
+# f = 13
 for f in 1:length(folders)
 
     println(folders[f])
@@ -75,7 +75,7 @@ for f in 1:length(folders)
 
     Rij = zeros(Float64, N, N)
 
-    r = 1
+    # r = 1
     for r in reps
 
         println(r)
