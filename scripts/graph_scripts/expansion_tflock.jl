@@ -73,10 +73,12 @@ for f in 1:length(eta_folders)
         psi   = Array{Float64}[]
         means = Array{Float64}[]
         nn_means = Array{Float64}[]
+        vel_means = Array{Float64}[]
 
         exp_file   = open(output_folder_path * "/exp_data_N_$(N)/eta_$(eta_vals[f])" * "/exp_" * noise_folders[i] * ".dat", "w+")
         order_file = open(output_folder_path * "/exp_data_N_$(N)/eta_$(eta_vals[f])" * "/order_" * noise_folders[i] * ".dat", "w+")
         nn_mean_file = open(output_folder_path * "/exp_data_N_$(N)/eta_$(eta_vals[f])" * "/nn_mean_" * noise_folders[i] * ".dat", "w+")
+        vel_mean_file = open(output_folder_path * "/exp_data_N_$(N)/eta_$(eta_vals[f])" * "/vel_mean_" * noise_folders[i] * ".dat", "w+")
 
         ### ================================== ###
 
@@ -110,6 +112,7 @@ for f in 1:length(eta_folders)
             raw_data = reinterpret(Float64,read(data_folder_path * "/" * eta_folders[f] * "/" * noise_folders[i] * "/" * "/vel_$(r).dat"))
             vel_data = reshape(raw_data, 3N, div(length(raw_data), 3N))
 
+            push!(vel_means, vcat([mean([[vel_data[i, j], vel_data[i+1, j], vel_data[i+2, j]] for i in 1:3:3N]) for j in 1:size(vel_data, 2)]...))
             push!(psi, (1. / v0) * [norm(mean([[vel_data[i, j], vel_data[i+1, j], vel_data[i+2, j]] for i in 1:3:3N])) for j in 1:size(vel_data, 2)])
 
         end
@@ -117,10 +120,12 @@ for f in 1:length(eta_folders)
         write(exp_file, hcat(means...))
         write(order_file, hcat(psi...))
         write(nn_mean_file, hcat(nn_means...))
+        write(vel_mean_file, hcat(vel_means...))
 
         close(exp_file)
         close(order_file)
         close(nn_mean_file)
+        close(vel_mean_file)
 
     end
 
