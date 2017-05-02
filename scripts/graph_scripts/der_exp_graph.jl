@@ -1,5 +1,5 @@
 
-using Plots, CollectiveDynamics.DataAnalysis, Polynomials, LaTeXStrings
+using Plots, CollectiveDynamics.DataAnalysis, Polynomials, LaTeXStrings, Quaternions
 ### ================================== ###
 
 gui()
@@ -17,6 +17,7 @@ times = get_times(τ)
 ### ================================== ###
 
 folder = "NLOC_DATA"
+folder = "NLOC_DATA_3D"
 folder = "NLOC_TOP_3D"
 folder = "NLOC_TOP_3D_MEAN"
 folder = "TFLOCK_NLOC_DATA"
@@ -27,10 +28,14 @@ eta_folders = readdir(folder_path)
 
 order_files = filter( x -> ismatch(r"^order.", x), readdir(folder_path))
 exp_files = filter( x -> ismatch(r"^exp.", x), readdir(folder_path))
+nn_files = filter( x -> ismatch(r"^nn_mean.", x), readdir(folder_path))
+vel_files = filter( x -> ismatch(r"^vel_mean.", x), readdir(folder_path))
 
 # para TFLOCK_NLOC_DATA
 order_files = filter( x -> ismatch(r"^order.", x), readdir(folder_path * "/" * eta_folders[1]))
 exp_files = filter( x -> ismatch(r"^exp.", x), readdir(folder_path * "/" * eta_folders[1]))
+nn_files = filter( x -> ismatch(r"^nn_mean.", x), readdir(folder_path * "/" * eta_folders[1]))
+vel_files = filter( x -> ismatch(r"^vel_mean.", x), readdir(folder_path * "/" * eta_folders[1]))
 
 # k_vals = [ match(r"(\d+\.\d+)\w+\d+\.\d+.dat$", x).captures[1] for x in order_files]
 
@@ -46,28 +51,42 @@ k_vals = [ parse(Float64,match(r"^\w+(\d+\.\d+)_.", x).captures[1]) for x in ord
 ### ================================== ###
 
 means = zeros(length(times), length(order_files))
+nn_means = zeros(length(times), length(order_files))
+vel_means = zeros(2*length(times), length(order_files))
 orders = zeros(length(times), length(order_files))
 std_means = zeros(length(times), length(order_files))
 
-# i = 1
+i = 1
 k = 1
 for i in sortperm(k_vals)
 
-    # raw_data = reinterpret(Float64, read(folder_path * "/" * exp_files[i]))
+    raw_data = reinterpret(Float64, read(folder_path * "/" * exp_files[i]))
 
     # para TFLOCK_NLOC_DATA
-    raw_data = reinterpret(Float64, read(folder_path * "/" * eta_folders[1] * "/" * exp_files[i]))
+    # raw_data = reinterpret(Float64, read(folder_path * "/" * eta_folders[1] * "/" * exp_files[i]))
+
     exp_data = reshape(raw_data, length(times), div(length(raw_data), length(times)))
 
-    # raw_data = reinterpret(Float64, read(folder_path * "/" * order_files[i]))
+    raw_data = reinterpret(Float64, read(folder_path * "/" * order_files[i]))
 
     # para TFLOCK_NLOC_DATA
-    raw_data = reinterpret(Float64, read(folder_path * "/" * eta_folders[1] * "/" * order_files[i]))
+    # raw_data = reinterpret(Float64, read(folder_path * "/" * eta_folders[1] * "/" * order_files[i]))
+
     order_data = reshape(raw_data, length(times), div(length(raw_data), length(times)))
+
+    raw_data = reinterpret(Float64, read(folder_path * "/" * nn_files[i]))
+
+    nn_data = reshape(raw_data, length(times), div(length(raw_data), length(times)))
+
+    # raw_data = reinterpret(Float64, read(folder_path * "/" * vel_files[i]))
+    #
+    # vel_data = reshape(raw_data, 2*length(times), div(length(raw_data), 2*length(times)))
 
     means[:, k] = mean(exp_data, 2)
     std_means[:, k] = std(exp_data, 2)
     orders[:, k] = mean(order_data, 2)
+    nn_means[:, k] = mean(nn_data, 2)
+    # vel[:, k] = mean(order_data, 2)
 
     k += 1
 end
@@ -113,10 +132,14 @@ y_h = 1.01 #TFLOCK_NLOC_DATA
 
 order_p = plot(times, orders, lab = reshape(k_vals[sortperm(k_vals)], 1, length(k_vals)), xscale = :log10, leg = false, xlabel = L"t", ylabel = L"\Psi_{\kappa}(t)")
 
-exp_p   = plot(times, means, lab = reshape(k_vals[sortperm(k_vals)], 1, length(k_vals)), xscale = :log10, yscale = :log10, leg = false, xlabel = L"t", ylabel = L"\langle r_{ij} \rangle")
+exp_p   = plot(times, means, lab = reshape(k_vals[sortperm(k_vals)], 1, length(k_vals)), xscale = :log10, yscale = :log10, leg = false, xlabel = L"t", ylabel = L"\langle r_{ij}(t) \rangle")
+
+nn_p   = plot(times, nn_means, lab = reshape(k_vals[sortperm(k_vals)], 1, length(k_vals)), xscale = :log10, yscale = :log10, leg = false, xlabel = L"t", ylabel = L"\langle r_{nn}(t) \rangle")
+
+
+plot(exp_p, nn_p, layout = @layout [a b])
 
 exp_p   = plot(times, means, lab = reshape(k_vals[sortperm(k_vals)], 1, length(k_vals)), xscale = :log10, yscale = :log10, leg = false, xlabel = L"t", ylabel = L"\langle r_{ij} \rangle", xlims = (5exp10(2), exp10(6)))
-
 
 
 exp_p   = plot(times, means, yerror = std_means, leg = false, xscale = :log10, yscale = :log10, size = (1024,720))

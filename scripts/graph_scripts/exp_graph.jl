@@ -1,7 +1,7 @@
 ### ================================== ###
 ### ================================== ###
 
-using Plots, CollectiveDynamics.DataAnalysis, LaTeXStrings
+using Plots, CollectiveDynamics.DataAnalysis, LaTeXStrings, Quaternions
 
 gr()
 pyplot()

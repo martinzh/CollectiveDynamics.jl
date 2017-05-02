@@ -67,7 +67,7 @@ for f in 1:length(folders)
     exp_file   = open(output_folder_path * "/exp_data_N_$(N)" * "/exp" * params[f] * ".dat", "w+")
     order_file = open(output_folder_path * "/exp_data_N_$(N)" * "/order" * params[f] * ".dat", "w+")
     nn_mean_file = open(output_folder_path * "/exp_data_N_$(N)" * "/nn_mean" * params[f] * ".dat", "w+")
-    vel_mean_file = open(output_folder_path * "/exp_data_N_$(N)" * "/nn_mean" * params[f] * ".dat", "w+")
+    vel_mean_file = open(output_folder_path * "/exp_data_N_$(N)" * "/vel_mean" * params[f] * ".dat", "w+")
 
     ### ================================== ###
 
@@ -103,7 +103,7 @@ for f in 1:length(folders)
 
         vel_data = reshape(raw_data, 3N, div(length(raw_data), 3N))
 
-        push!(vel_means, vcat([mean([[vel_data[i, j], vel_data[i+1, j], vel_data[i+2, j]] for i in 1:3:3N]) for j in 1:size(vel_data, 2)]))
+        push!(vel_means, vcat([mean([[vel_data[i, j], vel_data[i+1, j], vel_data[i+2, j]] for i in 1:3:3N]) for j in 1:size(vel_data, 2)]...))
         push!(psi, [norm(mean([[vel_data[i, j], vel_data[i+1, j], vel_data[i+2, j]] for i in 1:3:3N])) for j in 1:size(vel_data, 2)])
 
     end
@@ -116,7 +116,7 @@ for f in 1:length(folders)
     close(exp_file)
     close(order_file)
     close(nn_mean_file)
-    close(vl_mean_file)
+    close(vel_mean_file)
 
 end
 ### ================================== ###
