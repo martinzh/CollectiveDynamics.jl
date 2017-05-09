@@ -14,6 +14,7 @@ N = 256
 N = 128
 N = 64
 
+τ = 6
 τ = 5
 τ = 4
 τ = 3
@@ -23,22 +24,33 @@ tau = get_times(τ)
 v0 = 1.0
 ### ================================== ###
 
-folder_path = "$(homedir())/art_DATA/NLOC_DATA_3D/DATA/data_N_$(N)"
-folder_path = "$(homedir())/art_DATA/NLOC_TOP_3D/DATA/data_N_$(N)"
+folder = "NLOC_DATA"
+folder = "NLOC_DATA_3D"
+folder = "NLOC_TOP_3D"
+folder = "NLOC_TOP_3D_MEAN"
+folder = "TFLOCK_NLOC_DATA"
+folder = "TFLOCK_DATA"
+
+folder_path = "$(homedir())/art_DATA/$(folder)/EXP/exp_data_N_$(N)"
+folder_path = "$(homedir())/exp_DATA/$(folder)/EXP/exp_data_N_$(N)"
+
+folder_path = "$(homedir())/art_DATA/$(folder)/DATA/data_N_$(N)"
 
 # files = filter(x -> match(r"._(\d+.\d+).dat", x).captures[1] == η , readdir(folder_path))
-folders = readdir(folder_path)
+eta_folders = readdir(folder_path)
+folders = readdir(folder_path * "/" * eta_folders[1])
 
 # η_vals = [match(r"\w+\d+\w+(\d+\.\d+)", f).captures[1] for f in folders]
 # all_means = Dict()
 ### ================================== ###
 
-f = 1
+f = 11
+data_path = folder_path * "/" * eta_folders[1] * "/" * folders[f]
 data_path = folder_path * "/" * folders[f]
 
 reps = [match(r"\w+(\d+).\w+", x).captures[1]  for x in filter(x -> ismatch(r"^pos_", x), readdir(data_path))]
 
-r = 1
+r = rand(reps)
 # for r in reps
 
 means = Array{Float64}[]

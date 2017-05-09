@@ -6,6 +6,7 @@ using Plots, CollectiveDynamics.DataAnalysis, Polynomials, LaTeXStrings, Quatern
 gr()
 pyplot()
 
+gui()
 ### ================================== ###
 
 N = 1024
@@ -42,6 +43,7 @@ folder = "NLOC_DATA_3D"
 folder = "NLOC_TOP_3D"
 folder = "NLOC_TOP_3D_MEAN"
 folder = "TFLOCK_NLOC_DATA"
+folder = "TFLOCK_DATA"
 
 folder_path = "$(homedir())/art_DATA/$(folder)/EXP/exp_data_N_$(N)"
 folder_path = "$(homedir())/exp_DATA/$(folder)/EXP/exp_data_N_$(N)"
@@ -49,7 +51,7 @@ folder_path = "$(homedir())/exp_DATA/$(folder)/EXP/exp_data_N_$(N)"
 eta_folders = readdir(folder_path)
 
 # Para TFLOCK_NLOC_DATA
-folder_path = folder_path * "/" * eta_folders[1]
+folder_path = folder_path * "/" * eta_folders[4]
 
 order_files = filter( x -> ismatch(r"^order.", x), readdir(folder_path))
 exp_files = filter( x -> ismatch(r"^exp.", x), readdir(folder_path))
@@ -79,26 +81,26 @@ for i in sortperm(vals)
     raw_data = reinterpret(Float64, read(folder_path * "/" * order_files[i]))
     order_data = reshape(raw_data, length(times), div(length(raw_data), length(times)))
 
-    raw_data = reinterpret(Float64, read(folder_path * "/" * nn_files[i]))
-    nn_data = reshape(raw_data, length(times), div(length(raw_data), length(times)))
+    # raw_data = reinterpret(Float64, read(folder_path * "/" * nn_files[i]))
+    # nn_data = reshape(raw_data, length(times), div(length(raw_data), length(times)))
 
     means[:, i] = mean(exp_data, 2)
     std_means[:, i] = std(exp_data, 2)
     orders[:, i] = mean(order_data, 2)
-    nn_means[:, i] = mean(nn_data, 2)
+    # nn_means[:, i] = mean(nn_data, 2)
 
 end
 
-k_lim = 0.012
+k_lim = 0.8
 
-y_l = 0.99 #NLOC_DATAÇ
+y_l = 0.98 #NLOC_DATAÇ
 y_h = 1.01 #NLOC_DATA
 
 # order_p = plot(times, orders, leg = false, xscale = :log10, xlabel = L"t", ylabel = L"\Psi_{\kappa}(t)")
 order_p = plot(times, hcat([orders[:,i] for i in sortperm(vals)]...), lab = [vals[i] for i in sortperm(vals)]', xscale = :log10, xlabel = L"t", ylabel = L"\Psi_{\kappa}(t)")
 
 # psi_plot = plot(vals[sortperm(vals)], orders[end, :], marker = :o,  xlims = (exp10(-4), k_lim), leg = false, xlabel = L"\kappa", ylabel = L"\Psi(\kappa)", xscale = :log10)
-psi_plot = plot(vals[sortperm(vals)], [orders[end, sortperm(vals)]], marker = :o,  xlims = (exp10(-4), k_lim), leg = false, xlabel = L"\kappa", ylabel = L"\Psi(\kappa)")
+psi_plot = plot(vals[sortperm(vals)], [orders[end, sortperm(vals)]], marker = :o,  xlims = (exp10(-4), k_lim), leg = false, xlabel = L"\kappa", ylabel = L"\Psi(\kappa)", xscale = :log10)
 plot!(psi_plot, vals[sortperm(vals)], orders[end, :], marker = :o,  xlims = (k_lim, vals[sortperm(vals)][end]), ylim = (y_l, y_h),  leg = false, inset_subplots = [(1, bbox(0.5w,0.55h,0.45w,0.35h))], subplot=2)
 
 exp_p   = plot(times, hcat([means[:,i] for i in sortperm(vals)]...), lab = [vals[i] for i in sortperm(vals)]', xscale = :log10, yscale = :log10, xlabel = L"t", ylabel = L"\langle r_{ij}(t) \rangle")
@@ -125,5 +127,6 @@ plot(exp_p, nn_p, order_p, layout = @layout [a b c])
 plot(exp_p, nn_p, layout = @layout [a b])
 plot(exp_p, exp_d_plot, layout = @layout [a b])
 plot(nn_p, nn_d_plot, layout = @layout [a b])
+plot(order_p, psi_plot, layout = @layout [a b])
 
 gui()
