@@ -64,7 +64,7 @@ n_t = 6 # number of topological local interactions
 ### =============== ### =============== ###
 flock = LocNonLocFlock(N, L, pars.v0, 0.0, 3)
 
-output_path = set_output_data_structure_lnl("NLOC_TOP_3D_MEAN", N, κ, ω)
+output_path = set_output_data_structure_lnl("NLOC_TOP_3D", N, κ, ω)
 
 pos_file = open(output_path * "/pos_$(rep).dat", "w+")
 vel_file = open(output_path * "/vel_$(rep).dat", "w+")
