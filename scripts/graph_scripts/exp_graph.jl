@@ -91,7 +91,7 @@ for i in sortperm(vals)
 
 end
 
-k_lim = 0.8
+k_lim = 0.05
 
 y_l = 0.98 #NLOC_DATAÇ
 y_h = 1.01 #NLOC_DATA
@@ -100,7 +100,7 @@ y_h = 1.01 #NLOC_DATA
 order_p = plot(times, hcat([orders[:,i] for i in sortperm(vals)]...), lab = [vals[i] for i in sortperm(vals)]', xscale = :log10, xlabel = L"t", ylabel = L"\Psi_{\kappa}(t)")
 
 # psi_plot = plot(vals[sortperm(vals)], orders[end, :], marker = :o,  xlims = (exp10(-4), k_lim), leg = false, xlabel = L"\kappa", ylabel = L"\Psi(\kappa)", xscale = :log10)
-psi_plot = plot(vals[sortperm(vals)], [orders[end, sortperm(vals)]], marker = :o,  xlims = (exp10(-4), k_lim), leg = false, xlabel = L"\kappa", ylabel = L"\Psi(\kappa)", xscale = :log10)
+psi_plot = plot(vals[sortperm(vals)], [orders[end, sortperm(vals)]], marker = :o,  xlims = (exp10(-3), k_lim), leg = false, xlabel = L"\kappa", ylabel = L"\Psi(\kappa)", xscale = :log10)
 plot!(psi_plot, vals[sortperm(vals)], orders[end, :], marker = :o,  xlims = (k_lim, vals[sortperm(vals)][end]), ylim = (y_l, y_h),  leg = false, inset_subplots = [(1, bbox(0.5w,0.55h,0.45w,0.35h))], subplot=2)
 
 exp_p   = plot(times, hcat([means[:,i] for i in sortperm(vals)]...), lab = [vals[i] for i in sortperm(vals)]', xscale = :log10, yscale = :log10, xlabel = L"t", ylabel = L"\langle r_{ij}(t) \rangle")

@@ -141,6 +141,22 @@ function calc_Rij(vec, r0)
     return Rij
 end
 
+function calc_Rij_MOD(vec, r0)
+
+    Rij = zeros(Int64, length(vec), length(vec))
+
+    # compute Rij entries
+    for i in 1:size(Rij,1), j in (i+1):size(Rij,1)
+
+        d = norm(vec[i] - vec[j])
+        d < r0 && d > zero(Float64) ? Rij[j,i] = one(Float64) : Rij[j,i] = zero(Float64)
+
+        Rij[i,j] = Rij[j,i]
+    end
+
+    return Rij
+end
+
 ### ============== ### ============== ### ============== ###
 ##          SET UP NON-LOCAL INTERACTION NETWORK          ##
 ### ============== ### ============== ### ============== ###
@@ -181,6 +197,15 @@ function calc_interactions!(vect, v_in, sp_Mij, d)
 
 end
 
+function calc_local_nonLocal_interactions(Rij, vel, v_r, v_n, n_nl)
+
+    for j in 1:size(Rij, 1)
+
+        length(find(x -> x == 1, Rij[:,j])) > 0 ? v_r[j] = mean( [vel[i] for i in find(x -> x == 1, Rij[:,j])] ) : v_r[j] = zeros(Float64, 3)
+        n_nl[j] > 0 ? v_n[j] = mean( [vel[i] for i in rand(find(x -> x == -1, Rij[:,j]), n_nl[j])] ) : v_n[j] = zeros(Float64, 3)
+
+    end
+end
 ### ============== ### ============== ### ============== ###
 ##            2D PARTICLES' DYNAMICAL RULES               ##
 ### ============== ### ============== ### ============== ###
@@ -291,26 +316,31 @@ function rot_move_part_3D_MOD!(pos, vel, v_r, v_n, η, ω)
 
     signal = ω * v_r + (1.0 - ω) * v_n
 
-    norm(signal) != zero(Float64) ? signal_angle = acos(dot(vel, signal)) : signal_angle = 0.0
+    norm(signal) != zero(Float64) ? signal_angle = acos(dot(vel, signal) / norm(signal)) : signal_angle = 0.0
 
-    noise = randn(3)
-    noise_angle = acos(dot(normalize(noise), vel))
+    # noise = randn(3)
+    # noise_angle = acos(dot(normalize(noise), vel))
 
-    q_r = qrotation(cross(vel, signal), signal_angle) * Quaternion(vel)
+    # q_r = qrotation(cross(vel, signal), signal_angle) * Quaternion(vel)
+    q_r = qrotation(cross(vel, signal), signal_angle + η * (2.0 * rand() * pi - pi)) * Quaternion(vel)
 
-    u_vel = [q_r.v1, q_r.v2, q_r.v3]
+    # u_vel = [q_r.v1, q_r.v2, q_r.v3]
+    #
+    # q_r = qrotation(cross(u_vel, noise), η * noise_angle) * q_r
 
-    q_r = qrotation(cross(u_vel, noise), η * noise_angle) * q_r
+    # u_vel = normalize([q_r.v1, q_r.v2, q_r.v3])
 
-    u_vel = normalize([q_r.v1, q_r.v2, q_r.v3])
+    # vel[1] = u_vel[1]
+    # vel[2] = u_vel[2]
+    # vel[3] = u_vel[3]
 
-    vel[1] = u_vel[1]
-    vel[2] = u_vel[2]
-    vel[3] = u_vel[3]
+    vel = copy(normalize([q_r.v1, q_r.v2, q_r.v3]))
 
-    pos[1] += u_vel[1]
-    pos[2] += u_vel[2]
-    pos[3] += u_vel[3]
+    # pos[1] += u_vel[1]
+    # pos[2] += u_vel[2]
+    # pos[3] += u_vel[3]
+
+    pos += vel
 
 end
 

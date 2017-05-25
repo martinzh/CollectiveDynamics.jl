@@ -23,7 +23,8 @@ function evolve_system(flock, pars, n_t, κ_dist)
     CollectiveDynamics.calc_local_nonLocal_toplogical_interactions_mean!(flock.vel, flock.v_r, flock.v_n, flock.Nij, n_t, n_nl)
 
     ### PARTICLE UPDATE
-    map( (p, v, vr, vn) -> CollectiveDynamics.rot_move_part_3D!(p, v, vr, vn, pars.η, pars.ω), flock.pos, flock.vel, flock.v_r, flock.v_n )
+    # map( (p, v, vr, vn) -> CollectiveDynamics.rot_move_part_3D!(p, v, vr, vn, pars.η, pars.ω), flock.pos, flock.vel, flock.v_r, flock.v_n )
+    map( (p, v, vr, vn) -> CollectiveDynamics.rot_move_part_3D_MOD!(p, v, vr, vn, pars.η, pars.ω), flock.pos, flock.vel, flock.v_r, flock.v_n )
 
 end
 
