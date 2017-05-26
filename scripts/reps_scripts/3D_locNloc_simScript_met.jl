@@ -14,7 +14,7 @@ using CollectiveDynamics, Distributions
 function evolve_system(flock, pars, κ_dist, r0)
 
     ### COMPUTE RELATIVE DISTANCES
-    CollectiveDynamics.calc_Rij_MOD(flock.pos, flock.Nij)
+    CollectiveDynamics.calc_Rij_MOD(flock.pos, flock.Nij, r0)
 
     n_nl = rand(κ_dist, pars.N) # obtain non-local input degree for each particle
 
