@@ -141,21 +141,21 @@ function calc_Rij(vec, r0)
     return Rij
 end
 
-function calc_Rij_MOD(vec, r0)
-
-    Rij = zeros(Int64, length(vec), length(vec))
-
-    # compute Rij entries
-    for i in 1:size(Rij,1), j in (i+1):size(Rij,1)
-
-        d = norm(vec[i] - vec[j])
-        d < r0 && d > zero(Float64) ? Rij[j,i] = one(Float64) : Rij[j,i] = zero(Float64)
-
-        Rij[i,j] = Rij[j,i]
-    end
-
-    return Rij
-end
+# function calc_Rij_MOD(vec, r0)
+#
+#     Rij = zeros(Int64, length(vec), length(vec))
+#
+#     # compute Rij entries
+#     for i in 1:size(Rij,1), j in (i+1):size(Rij,1)
+#
+#         d = norm(vec[i] - vec[j])
+#         d < r0 && d > zero(Float64) ? Rij[j,i] = one(Float64) : Rij[j,i] = zero(Float64)
+#
+#         Rij[i,j] = Rij[j,i]
+#     end
+#
+#     return Rij
+# end
 
 ### ============== ### ============== ### ============== ###
 ##          SET UP NON-LOCAL INTERACTION NETWORK          ##
