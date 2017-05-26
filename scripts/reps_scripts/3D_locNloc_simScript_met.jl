@@ -82,7 +82,7 @@ for i in 1:(length(times) - 1)
 
         for t in (times[i]+1):times[i+1]
 
-            evolve_system(flock, pars, κ_dist)
+            evolve_system(flock, pars, κ_dist, r0)
 
             if t % times[i] == 0 || t % times[i-1] == 0
                 println("//////// ", t)
@@ -95,7 +95,7 @@ for i in 1:(length(times) - 1)
 
         for t in (times[i]+1):times[i+1]
 
-            evolve_system(flock, pars, κ_dist)
+            evolve_system(flock, pars, κ_dist, r0)
 
             if t % times[i] == 0
                 println("//////// ", t)
