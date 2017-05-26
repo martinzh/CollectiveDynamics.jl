@@ -174,6 +174,26 @@ function set_Nij!(p, Nij)
     end
 end
 
+function calc_Rij_MOD(vec, Rij, r0)
+
+    # Rij = zeros(Int64, length(vec), length(vec))
+
+    # compute Rij entries
+    for i in 1:size(Rij,1), j in (i+1):size(Rij,1)
+
+        # d = norm(vec[i] - vec[j])
+        # d < r0 && d > zero(Float64) ? Rij[j,i] = one(Float64) : Rij[j,i] = zero(Float64)
+        # d <= r0 ? Rij[j,i] = 1 : Rij[j,i] = -1
+        # Rij[j,i] = d
+
+        norm(vec[i] - vec[j]) <= r0 ? Rij[j,i] = 1 : Rij[j,i] = -1
+
+        Rij[i,j] = Rij[j,i]
+    end
+
+    # return Rij
+end
+
 ### ============== ### ============== ### ============== ###
 ##                COMPUTE INTERACTION SIGNAL              ##
 ### ============== ### ============== ### ============== ###
@@ -206,6 +226,24 @@ function calc_local_nonLocal_interactions(Rij, vel, v_r, v_n, n_nl)
 
     end
 end
+
+function calc_local_nonLocal_metric_interactions(vel, v_r, v_n, Rij, n_nl)
+
+    for j in 1:size(Rij, 1)
+
+        length(find(x -> x == 1, Rij[:,j])) > 0 ? v_r[j] = mean( [vel[i] for i in find(x -> x == 1, Rij[:,j])] ) : v_r[j] = zeros(Float64, 3)
+        n_nl[j] > 0 ? v_n[j] = mean( [vel[i] for i in rand(find(x -> x == -1, Rij[:,j]), n_nl[j])] ) : v_n[j] = zeros(Float64, 3)
+
+    end
+end
+
+function calc_local_nonLocal_metric_interactions_part(vel, v_r, v_n, Rij, n_nl)
+
+    length(find(x -> x == 1, Rij)) > 0 ? v_r .= mean( [vel[i] for i in find(x -> x == 1, Rij)] ) : v_r .= zeros(Float64, 3)
+    n_nl > 0 ? v_n .= mean( [vel[i] for i in rand(find(x -> x == -1, Rij), n_nl)] ) : v_n .= zeros(Float64, 3)
+
+end
+
 ### ============== ### ============== ### ============== ###
 ##            2D PARTICLES' DYNAMICAL RULES               ##
 ### ============== ### ============== ### ============== ###
@@ -334,7 +372,7 @@ function rot_move_part_3D_MOD!(pos, vel, v_r, v_n, η, ω)
     # vel[2] = u_vel[2]
     # vel[3] = u_vel[3]
 
-    vel = copy(normalize([q_r.v1, q_r.v2, q_r.v3]))
+    vel .= normalize([q_r.v1, q_r.v2, q_r.v3])
 
     # pos[1] += u_vel[1]
     # pos[2] += u_vel[2]
