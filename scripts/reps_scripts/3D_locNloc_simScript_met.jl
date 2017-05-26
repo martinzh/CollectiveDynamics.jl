@@ -11,7 +11,7 @@ using CollectiveDynamics, Distributions
 ###          SYSTEM EVOLUTION         ###
 ### ============== ### ============== ###
 
-function evolve_system(flock, pars, n_t, κ_dist, r0)
+function evolve_system(flock, pars, κ_dist, r0)
 
     ### COMPUTE RELATIVE DISTANCES
     CollectiveDynamics.calc_Rij_MOD(flock.pos, flock.Nij)
@@ -82,7 +82,7 @@ for i in 1:(length(times) - 1)
 
         for t in (times[i]+1):times[i+1]
 
-            evolve_system(flock, pars, n_t, κ_dist)
+            evolve_system(flock, pars, κ_dist)
 
             if t % times[i] == 0 || t % times[i-1] == 0
                 println("//////// ", t)
@@ -95,7 +95,7 @@ for i in 1:(length(times) - 1)
 
         for t in (times[i]+1):times[i+1]
 
-            evolve_system(flock, pars, n_t, κ_dist)
+            evolve_system(flock, pars, κ_dist)
 
             if t % times[i] == 0
                 println("//////// ", t)
