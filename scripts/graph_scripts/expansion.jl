@@ -98,21 +98,21 @@ for f in 1:length(folders)
 
         raw_data = reinterpret(Float64,read(data_folder_path * "/" * folders[f] * "/pos_$(r).dat"))
 
-        pos_data = reshape(raw_data, 2N, div(length(raw_data), 2N))
-        # pos_data = reshape(raw_data, 3N, div(length(raw_data), 3N))
+        # pos_data = reshape(raw_data, 2N, div(length(raw_data), 2N))
+        pos_data = reshape(raw_data, 3N, div(length(raw_data), 3N))
 
-        calc_vect_2D_cm(pos_data)
-        # calc_vect_3D_cm(pos_data)
+        # calc_vect_2D_cm(pos_data)
+        calc_vect_3D_cm(pos_data)
 
         nn_time = zeros(size(pos_data, 2))
 
-        push!(means, [mean(calc_rij_2D_vect(pos_data[:, i])) for i in 1:size(pos_data,2)])
-        # push!(means, [mean(calc_rij_3D_vect(pos_data[:, i])) for i in 1:size(pos_data,2)])
+        # push!(means, [mean(calc_rij_2D_vect(pos_data[:, i])) for i in 1:size(pos_data,2)])
+        push!(means, [mean(calc_rij_3D_vect(pos_data[:, i])) for i in 1:size(pos_data,2)])
 
         for j in 1:size(pos_data, 2)
 
-            calc_Rij_2D(pos_data[:, j], Rij)
-            # calc_Rij_3D(pos_data[:, j], Rij)
+            # calc_Rij_2D(pos_data[:, j], Rij)
+            calc_Rij_3D(pos_data[:, j], Rij)
             nn_time[j] = mean([sort(Rij[:, i])[2] for i in 1:N])
 
         end
@@ -121,14 +121,14 @@ for f in 1:length(folders)
 
         raw_data = reinterpret(Float64,read(data_folder_path * "/" * folders[f] * "/vel_$(r).dat"))
 
-        vel_data = reshape(raw_data, 2N, div(length(raw_data), 2N))
-        # vel_data = reshape(raw_data, 3N, div(length(raw_data), 3N))
+        # vel_data = reshape(raw_data, 2N, div(length(raw_data), 2N))
+        vel_data = reshape(raw_data, 3N, div(length(raw_data), 3N))
 
-        push!(vel_means, vcat([mean([[vel_data[i, j], vel_data[i+1, j]] for i in 1:2:2N]) for j in 1:size(vel_data, 2)]...))
-        push!(psi, [norm(mean([[vel_data[i, j], vel_data[i+1, j]] for i in 1:2:2N])) for j in 1:size(vel_data, 2)])
+        # push!(vel_means, vcat([mean([[vel_data[i, j], vel_data[i+1, j]] for i in 1:2:2N]) for j in 1:size(vel_data, 2)]...))
+        # push!(psi, [norm(mean([[vel_data[i, j], vel_data[i+1, j]] for i in 1:2:2N])) for j in 1:size(vel_data, 2)])
 
-        # push!(vel_means, vcat([mean([[vel_data[i, j], vel_data[i+1, j], vel_data[i+2, j]] for i in 1:3:3N]) for j in 1:size(vel_data, 2)]))
-        # push!(psi, [norm(mean([[vel_data[i, j], vel_data[i+1, j], vel_data[i+2, j]] for i in 1:3:3N])) for j in 1:size(vel_data, 2)])
+        push!(vel_means, vcat([mean([[vel_data[i, j], vel_data[i+1, j], vel_data[i+2, j]] for i in 1:3:3N]) for j in 1:size(vel_data, 2)]))
+        push!(psi, [norm(mean([[vel_data[i, j], vel_data[i+1, j], vel_data[i+2, j]] for i in 1:3:3N])) for j in 1:size(vel_data, 2)])
 
     end
 
@@ -144,3 +144,4 @@ for f in 1:length(folders)
 
 end
 ### ================================== ###
+#
