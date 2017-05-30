@@ -146,7 +146,7 @@ for f in 1:length(folders)
     close(exp_file)
     close(order_file)
     close(nn_mean_file)
-    close(vl_mean_file)
+    close(vel_mean_file)
 
 end
 ### ================================== ###
