@@ -12,6 +12,7 @@ N = 1024
 N = 512
 N = 256
 N = 128
+N = 100
 N = 64
 
 τ = 6
@@ -26,6 +27,7 @@ v0 = 1.0
 
 folder = "NLOC_DATA"
 folder = "NLOC_DATA_3D"
+folder = "NLOC_MET_3D"
 folder = "NLOC_TOP_3D"
 folder = "NLOC_TOP_3D_MEAN"
 folder = "TFLOCK_NLOC_DATA"
@@ -44,8 +46,9 @@ folders = readdir(folder_path * "/" * eta_folders[1])
 # all_means = Dict()
 ### ================================== ###
 
-f = 11
+f = 5
 data_path = folder_path * "/" * eta_folders[1] * "/" * folders[f]
+data_path = folder_path * "/" * eta_folders[f]
 data_path = folder_path * "/" * folders[f]
 
 reps = [match(r"\w+(\d+).\w+", x).captures[1]  for x in filter(x -> ismatch(r"^pos_", x), readdir(data_path))]

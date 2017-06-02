@@ -353,14 +353,21 @@ Computes weighted average vector instead of using angles.
 function rot_move_part_3D_MOD!(pos, vel, v_r, v_n, η, ω)
 
     signal = ω * v_r + (1.0 - ω) * v_n
+    signal_angle = 0.0
 
     norm(signal) != zero(Float64) ? signal_angle = acos(dot(vel, signal) / norm(signal)) : signal_angle = 0.0
 
     # noise = randn(3)
     # noise_angle = acos(dot(normalize(noise), vel))
 
-    # q_r = qrotation(cross(vel, signal), signal_angle) * Quaternion(vel)
-    q_r = qrotation(cross(vel, signal), signal_angle + η * (2.0 * rand() * pi - pi)) * Quaternion(vel)
+    q_r = Quaternion(zeros(Float64, 3))
+
+    if norm(signal) != zero(Float64)
+        q_r = qrotation(cross(vel, signal), signal_angle + η * (2.0 * rand() * pi - pi)) * Quaternion(vel)
+    else
+        noise = randn(3)
+        q_r = qrotation(cross(vel, noise), η * acos(dot(normalize(noise), vel)) ) * Quaternion(vel)
+    end
 
     # u_vel = [q_r.v1, q_r.v2, q_r.v3]
     #
