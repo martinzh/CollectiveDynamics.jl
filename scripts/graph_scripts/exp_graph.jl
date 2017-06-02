@@ -10,6 +10,7 @@ gui()
 ### ================================== ###
 
 N = 1024
+N = 512
 N = 256
 
 τ = 7
@@ -41,6 +42,7 @@ end
 folder = "NLOC_DATA"
 folder = "NLOC_DATA_3D"
 folder = "NLOC_TOP_3D"
+folder = "NLOC_MET_3D"
 folder = "NLOC_TOP_3D_MEAN"
 folder = "TFLOCK_NLOC_DATA"
 folder = "TFLOCK_DATA"
@@ -81,13 +83,13 @@ for i in sortperm(vals)
     raw_data = reinterpret(Float64, read(folder_path * "/" * order_files[i]))
     order_data = reshape(raw_data, length(times), div(length(raw_data), length(times)))
 
-    # raw_data = reinterpret(Float64, read(folder_path * "/" * nn_files[i]))
-    # nn_data = reshape(raw_data, length(times), div(length(raw_data), length(times)))
+    raw_data = reinterpret(Float64, read(folder_path * "/" * nn_files[i]))
+    nn_data = reshape(raw_data, length(times), div(length(raw_data), length(times)))
 
     means[:, i] = mean(exp_data, 2)
     std_means[:, i] = std(exp_data, 2)
     orders[:, i] = mean(order_data, 2)
-    # nn_means[:, i] = mean(nn_data, 2)
+    nn_means[:, i] = mean(nn_data, 2)
 
 end
 

@@ -366,19 +366,19 @@ function rot_move_part_3D_MOD!(pos, vel, v_r, v_n, η, ω)
     #
     # q_r = qrotation(cross(u_vel, noise), η * noise_angle) * q_r
 
-    # u_vel = normalize([q_r.v1, q_r.v2, q_r.v3])
+    u_vel = normalize([q_r.v1, q_r.v2, q_r.v3])
 
-    # vel[1] = u_vel[1]
-    # vel[2] = u_vel[2]
-    # vel[3] = u_vel[3]
+    vel[1] = u_vel[1]
+    vel[2] = u_vel[2]
+    vel[3] = u_vel[3]
 
-    vel .= normalize([q_r.v1, q_r.v2, q_r.v3])
+    # vel .= normalize([q_r.v1, q_r.v2, q_r.v3])
 
-    # pos[1] += u_vel[1]
-    # pos[2] += u_vel[2]
-    # pos[3] += u_vel[3]
+    pos[1] += u_vel[1]
+    pos[2] += u_vel[2]
+    pos[3] += u_vel[3]
 
-    pos += vel
+    # pos += vel
 
 end
 
