@@ -83,7 +83,7 @@ for f in 1:length(folders)
     exp_file   = open(output_folder_path * "/exp_data_N_$(N)" * "/exp" * params[f] * ".dat", "w+")
     order_file = open(output_folder_path * "/exp_data_N_$(N)" * "/order" * params[f] * ".dat", "w+")
     nn_mean_file = open(output_folder_path * "/exp_data_N_$(N)" * "/nn_mean" * params[f] * ".dat", "w+")
-    vel_mean_file = open(output_folder_path * "/exp_data_N_$(N)" * "/nn_mean" * params[f] * ".dat", "w+")
+    vel_mean_file = open(output_folder_path * "/exp_data_N_$(N)" * "/vel_mean" * params[f] * ".dat", "w+")
 
     ### ================================== ###
 
