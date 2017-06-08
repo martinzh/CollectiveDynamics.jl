@@ -55,6 +55,11 @@ eta_folders = readdir(folder_path)
 # Para TFLOCK_NLOC_DATA
 folder_path = folder_path * "/" * eta_folders[4]
 
+make_dir_from_path("/Users/mzumaya/Google Drive/proyecto_martin/graphs_p_mod/$(folder)")
+make_dir_from_path("/Users/mzumaya/Google Drive/proyecto_martin/graphs_p_mod/$(folder)/N_$(N)")
+
+### ================================== ###### ================================== ###
+
 order_files = filter( x -> ismatch(r"^order.", x), readdir(folder_path))
 exp_files = filter( x -> ismatch(r"^exp.", x), readdir(folder_path))
 nn_files = filter( x -> ismatch(r"^nn_mean.", x), readdir(folder_path))
@@ -65,14 +70,16 @@ nn_means = zeros(length(times), length(order_files))
 
 std_means = zeros(length(times), length(order_files))
 
+### ================================== ###### ================================== ###
+
 # para NLOC
 vals = [ parse(Float64, match(r"^\w+_(\d+\.\d+)", x).captures[1]) for x in order_files ]
 
 # para TFLOCK
 vals = [ parse(Float64, match(r"(\d+\.\d+)\.dat$", x).captures[1]) for x in order_files ]
 
-# i = 1
-# for i in 1:length(order_files)
+### ================================== ###### ================================== ###
+
 for i in sortperm(vals)
 
     println(i)
@@ -93,39 +100,49 @@ for i in sortperm(vals)
 
 end
 
-k_lim = 4.0
+### ================================== ###### ================================== ###
+
+k_lim = 1.0
 
 y_l = 0.98 #NLOC_DATA
 y_h = 1.0 #NLOC_DATA
 
-# order_p = plot(times, orders, leg = false, xscale = :log10, xlabel = L"t", ylabel = L"\Psi_{\kappa}(t)")
-order_p = plot(times, hcat([orders[:,i] for i in sortperm(vals)]...), lab = [vals[i] for i in sortperm(vals)]', xscale = :log10, xlabel = L"t", ylabel = L"\Psi_{\kappa}(t)")
+### ================================== ###### ================================== ###
 
-# psi_plot = plot(vals[sortperm(vals)], orders[end, :], marker = :o,  xlims = (exp10(-4), k_lim), leg = false, xlabel = L"\kappa", ylabel = L"\Psi(\kappa)")
-psi_plot = plot(vals[sortperm(vals)], [orders[end, sortperm(vals)]], marker = :o,  xlims = (exp10(-3), k_lim), leg = false, xlabel = L"\kappa", ylabel = L"\Psi(\kappa)", xscale = :log10)
+order_p = plot(times, hcat([orders[:,i] for i in sortperm(vals)]...), lab = [vals[i] for i in sortperm(vals)]', xscale = :log10, xlabel = L"t", ylabel = L"\Psi_{\kappa}(t)", size = (800,600))
+
+savefig("/Users/mzumaya/Google Drive/proyecto_martin/graphs_p_mod/$(folder)/N_$(N)/order_t.png")
+### ================================== ###### ================================== ###
+
+psi_plot = plot(vals[sortperm(vals)], [orders[end, sortperm(vals)]], marker = :o,  xlims = (exp10(-3), k_lim), leg = false, xlabel = L"\kappa", ylabel = L"\Psi(\kappa)", xscale = :log10, size = (800,600))
 plot!(psi_plot, vals[sortperm(vals)], orders[end, :], marker = :o,  xlims = (k_lim, vals[sortperm(vals)][end]), ylim = (y_l, y_h),  leg = false, inset_subplots = [(1, bbox(0.5w,0.55h,0.45w,0.35h))], subplot=2)
 
-exp_p   = plot(times, hcat([means[:,i] for i in sortperm(vals)]...), lab = [vals[i] for i in sortperm(vals)]', xscale = :log10, yscale = :log10, xlabel = L"t", ylabel = L"\langle r_{ij}(t) \rangle")
+savefig("/Users/mzumaya/Google Drive/proyecto_martin/graphs_p_mod/$(folder)/N_$(N)/order_k.png")
+### ================================== ###### ================================== ###
+
+exp_p   = plot(times, hcat([means[:,i] for i in sortperm(vals)]...), lab = [vals[i] for i in sortperm(vals)]', xscale = :log10, yscale = :log10, xlabel = L"t", ylabel = L"\langle r^*(t) \rangle", size = (800,600))
 
 exp_p   = plot(times, hcat([means[:,i] for i in sortperm(vals)]...), lab = [vals[i] for i in sortperm(vals)]', xscale = :log10, yscale = :log10, xlims = (exp10(2), exp10(6)), xlabel = L"t", ylabel = L"\langle r^*(t) \rangle_{\kappa}")
 
 # exp_p   = plot(times, means, yerror = std_means, leg   = false, xscale = :log10, yscale = :log10, size = (1024,720))
 
-nn_p   = plot(times, hcat([nn_means[:,i] for i in sortperm(vals)]...), lab = [vals[i] for i in sortperm(vals)]', xscale = :log10, yscale = :log10, xlabel = L"t", ylabel = L"\langle r_{nn}(t) \rangle")
+savefig("/Users/mzumaya/Google Drive/proyecto_martin/graphs_p_mod/$(folder)/N_$(N)/r_t.png")
+### ================================== ###### ================================== ###
 
-nn_p   = plot(times, hcat([nn_means[:,i] for i in sortperm(vals)]...), lab = [vals[i] for i in sortperm(vals)]', xscale = :log10, xlabel = L"t", ylabel = L"\langle r_{nn}(t) \rangle")
+nn_p   = plot(times, hcat([nn_means[:,i] for i in sortperm(vals)]...), lab = [vals[i] for i in sortperm(vals)]', xscale = :log10, yscale = :log10, xlabel = L"t", ylabel = L"\langle r_{nn}^*(t) \rangle", size = (800,600))
 
-nn_p   = plot(times, hcat([nn_means[:,i] for i in sortperm(vals)]...), lab = [vals[i] for i in sortperm(vals)]', xscale = :log10, yscale = :log10, xlims = (exp10(2), exp10(6)), xlabel = L"t", ylabel = L"\langle r_{nn}(t) \rangle", ms = 1., marker = :o, alpha = 0.5)
-
-nn_p   = plot(times, hcat([nn_means[:,i] for i in sortperm(vals)]...), lab = [vals[i] for i in sortperm(vals)]', xscale = :log10, yscale = :log10, xlims = (exp10(2), exp10(6)), xlabel = L"t", ylabel = L"\langle r_{nn}(t) \rangle", ms = 1., marker = :o, alpha = 0.5)
-
-nn_p   = plot(times, hcat([nn_means[:,i] for i in sortperm(vals)]...), lab = [vals[i] for i in sortperm(vals)]', xscale = :log10, yscale = :log10, xlims = (exp10(2), exp10(6)), xlabel = L"t", ylabel = L"\langle r_{nn}(t) \rangle", lw = 1.5, alpha = 0.7)
+plot!(nn_p, times, fill(10.0, length(times)), linestyle = :dot, linecolor = :red, lab = "r_0")
 
 nn_p   = plot(times, hcat([nn_means[:,i] for i in sortperm(vals)]...), lab = [vals[i] for i in sortperm(vals)]', xscale = :log10, xlims = (exp10(2), exp10(6)), xlabel = L"t", ylabel = L"\langle r_{n.n}(t) \rangle", lw = 1.5, alpha = 0.7)
+
+savefig("/Users/mzumaya/Google Drive/proyecto_martin/graphs_p_mod/$(folder)/N_$(N)/r_nn.png")
+### ================================== ###### ================================== ###
 
 exp_d_plot = plot(times, hcat([calc_derivs(x_vals, means)[:, i] for i in sortperm(vals)]...), xscale = :log10, xlims = (exp10(1), exp10(7)), ylims = (0, 1.7), lab = [vals[i] for i in sortperm(vals)]', xlabel = L"t", ylabel = L" \frac{\mathrm{d}\langle r_{ij}(t) \rangle}{\mathrm{d}t} ")
 
 nn_d_plot = plot(times, hcat([calc_derivs(x_vals, nn_means)[:, i] for i in sortperm(vals)]...), xscale = :log10, xlims = (exp10(1), exp10(7)), ylims = (0, 1.2), lab = [vals[i] for i in sortperm(vals)]', xlabel = L"t", ylabel = L" \frac{\mathrm{d}\langle r_{nn}(t) \rangle}{\mathrm{d}t} ", legend = :topleft)
+
+### ================================== ###### ================================== ###
 
 plot(exp_p, order_p, link = :x, layout = @layout [a ;b])
 
