@@ -106,7 +106,7 @@ for f in 1:length(folders)
 
         nn_time = zeros(size(pos_data, 2))
 
-        println("pass pos_data")
+        # println("pass pos_data")
 
         # push!(means, [mean(calc_rij_2D_vect(pos_data[:, i])) for i in 1:size(pos_data,2)])
         push!(means, [mean(calc_rij_3D_vect(pos_data[:, i])) for i in 1:size(pos_data,2)])
@@ -121,7 +121,7 @@ for f in 1:length(folders)
 
         push!(nn_means, nn_time)
 
-        println("pass nn_means")
+        # println("pass nn_means")
 
         raw_data = reinterpret(Float64,read(data_folder_path * "/" * folders[f] * "/vel_$(r).dat"))
 
@@ -134,7 +134,7 @@ for f in 1:length(folders)
         push!(vel_means, vcat([mean([[vel_data[i, j], vel_data[i+1, j], vel_data[i+2, j]] for i in 1:3:3N]) for j in 1:size(vel_data, 2)]...))
         push!(psi, [norm(mean([[vel_data[i, j], vel_data[i+1, j], vel_data[i+2, j]] for i in 1:3:3N])) for j in 1:size(vel_data, 2)])
 
-        println("pass vel and psi")
+        # println("pass vel and psi")
 
     end
 

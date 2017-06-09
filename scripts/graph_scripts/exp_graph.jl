@@ -12,6 +12,7 @@ gui()
 N = 1024
 N = 512
 N = 256
+N = 128
 
 τ = 7
 τ = 6
@@ -48,7 +49,7 @@ folder = "TFLOCK_NLOC_DATA"
 folder = "TFLOCK_DATA"
 
 folder_path = "$(homedir())/art_DATA/$(folder)/EXP/exp_data_N_$(N)"
-folder_path = "$(homedir())/exp_DATA/$(folder)/EXP/exp_data_N_$(N)"
+# folder_path = "$(homedir())/exp_DATA/$(folder)/EXP/exp_data_N_$(N)"
 
 eta_folders = readdir(folder_path)
 
