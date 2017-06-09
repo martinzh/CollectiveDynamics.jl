@@ -103,7 +103,7 @@ end
 
 ### ================================== ###### ================================== ###
 
-k_lim = 1.0
+k_lim = 0.1
 
 y_l = 0.98 #NLOC_DATA
 y_h = 1.0 #NLOC_DATA
@@ -119,6 +119,13 @@ psi_plot = plot(vals[sortperm(vals)], [orders[end, sortperm(vals)]], marker = :o
 plot!(psi_plot, vals[sortperm(vals)], orders[end, :], marker = :o,  xlims = (k_lim, vals[sortperm(vals)][end]), ylim = (y_l, y_h),  leg = false, inset_subplots = [(1, bbox(0.5w,0.55h,0.45w,0.35h))], subplot=2)
 
 savefig("/Users/mzumaya/Google Drive/proyecto_martin/graphs_p_mod/$(folder)/N_$(N)/order_k.png")
+
+N_psi_plot = plot(vals[sortperm(vals)], [orders[end, sortperm(vals)]], marker = :o,  xlims = (exp10(-3), k_lim), xlabel = L"\kappa", ylabel = L"\Psi(\kappa)", xscale = :log10, size = (800,600), lab = "N = $(N)")
+
+plot!(N_psi_plot, vals[sortperm(vals)], [orders[end, sortperm(vals)]], marker = :o,  xlims = (exp10(-3), k_lim), xlabel = L"\kappa", ylabel = L"\Psi(\kappa)", xscale = :log10, size = (800,600), lab = "N = $(N)")
+
+savefig("/Users/mzumaya/Google Drive/proyecto_martin/graphs_p_mod/$(folder)/N_$(N)/order_k_size.png")
+
 ### ================================== ###### ================================== ###
 
 exp_p   = plot(times, hcat([means[:,i] for i in sortperm(vals)]...), lab = [vals[i] for i in sortperm(vals)]', xscale = :log10, yscale = :log10, xlabel = L"t", ylabel = L"\langle r^*(t) \rangle", size = (800,600))
