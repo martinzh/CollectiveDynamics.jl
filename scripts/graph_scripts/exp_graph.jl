@@ -16,6 +16,7 @@ N = 128
 
 τ = 7
 τ = 6
+τ = 4
 
 times = get_times(τ)
 x_vals = broadcast(x -> log10(x), times)
@@ -44,6 +45,7 @@ folder = "NLOC_DATA"
 folder = "NLOC_DATA_3D"
 folder = "NLOC_TOP_3D"
 folder = "NLOC_MET_3D"
+folder = "NLOC_VSK_3D"
 folder = "NLOC_TOP_3D_MEAN"
 folder = "TFLOCK_NLOC_DATA"
 folder = "TFLOCK_DATA"
@@ -109,6 +111,8 @@ y_l = 0.98 #NLOC_DATA
 y_h = 1.0 #NLOC_DATA
 
 ### ================================== ###### ================================== ###
+
+gui()
 
 order_p = plot(times, hcat([orders[:,i] for i in sortperm(vals)]...), lab = [vals[i] for i in sortperm(vals)]', xscale = :log10, xlabel = L"t", ylabel = L"\Psi_{\kappa}(t)", size = (800,600))
 

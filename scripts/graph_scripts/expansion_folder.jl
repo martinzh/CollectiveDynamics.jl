@@ -42,9 +42,9 @@ function calc_Rij_2D(pos, Rij)
 end
 ### ================================== ###
 
-N = parse(Int, ARGS[1])
-k = ARGS[2]
-folder = ARGS[3]
+folder = ARGS[1]
+N = parse(Int, ARGS[2])
+k = ARGS[3]
 
 # N = 100
 # N = 256
@@ -64,7 +64,8 @@ output_folder_path = "$(homedir())/art_DATA/$(folder)/EXP"
 
 # folders = readdir(data_folder_path)
 
-params = "_k_$(k)_w_0.5"
+# params = "_k_$(k)_w_0.5"
+params = "_rho_$(k)"
 
 # params = [match(r"\w+_\d+(_\w+_\d+.\d+)", f).captures[1] for f in folders]
 # params = [match(r"\w+_\d+(_\w+_\d+.\d+_\w_\d+\.\d+)", f).captures[1] for f in folders]

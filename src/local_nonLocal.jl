@@ -141,6 +141,20 @@ function calc_Rij(vec, r0)
     return Rij
 end
 
+function calc_Rij(vec, Rij, r0)
+
+    Rij = zeros(Float64, size(Rij))
+
+    # compute Rij entries
+    for i in 1:size(Rij,1), j in (i+1):size(Rij,1)
+
+        d = norm(vec[i] - vec[j])
+        d < r0 && d > zero(Float64) ? Rij[j,i] = one(Float64) : Rij[j,i] = zero(Float64)
+
+        Rij[i,j] = Rij[j,i]
+    end
+
+end
 # function calc_Rij_MOD(vec, r0)
 #
 #     Rij = zeros(Int64, length(vec), length(vec))
@@ -215,6 +229,12 @@ function calc_interactions!(vect, v_in, sp_Mij, d)
 
     end
 
+end
+
+function calc_vicsek_interactions(vect, v_in, Nij)
+    for i in 1:size(Nij, 1)
+        v_in[i] = mean(vect .* Nij[:, i])
+    end
 end
 
 function calc_local_nonLocal_interactions(Rij, vel, v_r, v_n, n_nl)
@@ -387,6 +407,44 @@ function rot_move_part_3D_MOD!(pos, vel, v_r, v_n, η, ω)
 
     # pos += vel
 
+end
+
+function rot_move_vicsek_3D(pos, vel, v_r, η, bound)
+
+    q_r = Quaternion(zeros(Float64, 3))
+
+    if norm(v_r) != zero(Float64)
+        signal_angle = acos(dot(vel, v_r) / norm(v_r))
+        q_r = qrotation(cross(vel, v_r), signal_angle + η * (2.0 * rand() * pi - pi)) * Quaternion(vel)
+    else
+        noise = randn(3)
+        q_r = qrotation(cross(vel, noise), η * acos(dot(normalize(noise), vel)) ) * Quaternion(vel)
+    end
+
+    ### ============== ###
+
+    u_vel = normalize([q_r.v1, q_r.v2, q_r.v3])
+
+    vel[1] = u_vel[1]
+    vel[2] = u_vel[2]
+    vel[3] = u_vel[3]
+
+    ### ============== ###
+
+    pos[1] += u_vel[1]
+    pos[2] += u_vel[2]
+    pos[3] += u_vel[3]
+
+    ### ============== ###
+
+    if(pos[1] > bound * 0.5) pos[1] -= bound end
+    if(pos[1] <= -bound * 0.5) pos[1] += bound end
+
+    if(pos[2] > bound * 0.5) pos[2] -= bound end
+    if(pos[2] <= -bound * 0.5) pos[2] += bound end
+
+    if(pos[3] > bound * 0.5) pos[3] -= bound end
+    if(pos[3] <= -bound * 0.5) pos[3] += bound end
 end
 
 ### ============== ### ============== ### ============== ###
@@ -585,6 +643,45 @@ function set_output_data_structure_lnl(path, N, κ, ω)
     parent_folder_path = "$(homedir())/art_DATA/$(path)"
     folder_path        = parent_folder_path * "/DATA/data_N_$(N)"
     reps_path          = folder_path * "/data_N_$(N)_k_$(κ)_w_$(ω)"
+
+    try
+        mkdir("$(homedir())/art_DATA")
+    catch error
+        println("Main data folder already exists")
+    end
+
+    try
+        mkdir(parent_folder_path)
+    catch error
+        println("Parent folder already exists")
+    end
+
+    try
+        mkdir(parent_folder_path * "/DATA")
+    catch error
+        println("Parent folder already exists")
+    end
+
+    try
+        mkdir(folder_path)
+    catch error
+        println("Folder already exists")
+    end
+
+    try
+        mkdir(reps_path)
+    catch error
+        println("Parameter folder already exists")
+    end
+
+    return reps_path
+end
+
+function set_output_data_structure_vsk(path, N, ρ)
+
+    parent_folder_path = "$(homedir())/art_DATA/$(path)"
+    folder_path        = parent_folder_path * "/DATA/data_N_$(N)"
+    reps_path          = folder_path * "/data_N_$(N)_rho_$(ρ)"
 
     try
         mkdir("$(homedir())/art_DATA")

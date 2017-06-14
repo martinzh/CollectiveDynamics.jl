@@ -42,13 +42,15 @@ function calc_Rij_2D(pos, Rij)
 end
 ### ================================== ###
 
-N = parse(Int, ARGS[1])
-folder = ARGS[2]
+folder = ARGS[1]
+N = parse(Int, ARGS[2])
 
 # N = 100
+# N = 128
 # N = 256
 # N = 1024
 
+# folder = "NLOC_VSK_3D"
 # folder = "NLOC_TOP_3D"
 # folder = "NLOC_DATA"
 
@@ -59,9 +61,16 @@ output_folder_path = "$(homedir())/art_DATA/$(folder)/EXP"
 
 folders = readdir(data_folder_path)
 
-# params = [match(r"\w+_\d+(_\w+_\d+.\d+)", f).captures[1] for f in folders]
-params = [match(r"\w+_\d+(_\w+_\d+.\d+_\w_\d+\.\d+)", f).captures[1] for f in folders]
-k_vals = [parse(match(r"data_N_\d+_k_(\d+\.\d+)_.", f).captures[1]) for f in folders]
+# TFLOCK y VSK
+# params = [match(r"\w+_\d+(_\w+_\d+.\d+|_\w+_\d+.\d+\w-\d+)", f).captures[1] for f in folders]
+
+capt = [match(r"\w+(_\w+_\d+\.\d+)$|\w+(_\w+_\d+\.\d+e-5)$", f).captures for f in folders]
+params = [vcat(capt...)[i] for i in find(x -> x != nothing, vcat(capt...))]
+
+# NLOC
+# params = [match(r"\w+_\d+(_\w+_\d+.\d+_\w_\d+\.\d+)", f).captures[1] for f in folders]
+
+# k_vals = [parse(match(r"data_N_\d+_k_(\d+\.\d+)_.", f).captures[1]) for f in folders]
 
 make_dir_from_path(output_folder_path)
 make_dir_from_path(output_folder_path * "/exp_data_N_$(N)")
