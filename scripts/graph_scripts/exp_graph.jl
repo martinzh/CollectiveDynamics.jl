@@ -75,6 +75,11 @@ std_means = zeros(length(times), length(order_files))
 
 ### ================================== ###### ================================== ###
 
+
+# para VSK
+capt = [match(r"_(\d+\.\d+)\.\w+$|_(\d+\.\d+e-5)\.\w+$", f).captures for f in order_files]
+vals = [parse(Float64, vcat(capt...)[i]) for i in find(x -> x != nothing, vcat(capt...))]
+
 # para NLOC
 vals = [ parse(Float64, match(r"^\w+_(\d+\.\d+)", x).captures[1]) for x in order_files ]
 
@@ -105,7 +110,7 @@ end
 
 ### ================================== ###### ================================== ###
 
-k_lim = 0.1
+k_lim = 0.5
 
 y_l = 0.98 #NLOC_DATA
 y_h = 1.0 #NLOC_DATA
@@ -119,7 +124,7 @@ order_p = plot(times, hcat([orders[:,i] for i in sortperm(vals)]...), lab = [val
 savefig("/Users/mzumaya/Google Drive/proyecto_martin/graphs_p_mod/$(folder)/N_$(N)/order_t.png")
 ### ================================== ###### ================================== ###
 
-psi_plot = plot(vals[sortperm(vals)], [orders[end, sortperm(vals)]], marker = :o,  xlims = (exp10(-3), k_lim), leg = false, xlabel = L"\kappa", ylabel = L"\Psi(\kappa)", xscale = :log10, size = (800,600))
+psi_plot = plot(vals[sortperm(vals)], [orders[end, sortperm(vals)]], marker = :o,  xlims = (exp10(-5), k_lim), leg = false, xlabel = L"\kappa", ylabel = L"\Psi(\kappa)", xscale = :log10, size = (800,600))
 plot!(psi_plot, vals[sortperm(vals)], orders[end, :], marker = :o,  xlims = (k_lim, vals[sortperm(vals)][end]), ylim = (y_l, y_h),  leg = false, inset_subplots = [(1, bbox(0.5w,0.55h,0.45w,0.35h))], subplot=2)
 
 savefig("/Users/mzumaya/Google Drive/proyecto_martin/graphs_p_mod/$(folder)/N_$(N)/order_k.png")
