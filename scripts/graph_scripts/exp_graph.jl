@@ -110,22 +110,30 @@ end
 
 ### ================================== ###### ================================== ###
 
-k_lim = 0.5
+k_lim = 1.0
 
-y_l = 0.98 #NLOC_DATA
+y_l = 0.97 #NLOC_DATA
 y_h = 1.0 #NLOC_DATA
 
 ### ================================== ###### ================================== ###
 
 gui()
 
-order_p = plot(times, hcat([orders[:,i] for i in sortperm(vals)]...), lab = [vals[i] for i in sortperm(vals)]', xscale = :log10, xlabel = L"t", ylabel = L"\Psi_{\kappa}(t)", size = (800,600))
+# order_p = plot(times, hcat([orders[:,i] for i in sortperm(vals)]...), lab = [vals[i] for i in sortperm(vals)]', xscale = :log10, xlabel = L"t", ylabel = L"\Psi_{\kappa}(t)", size = (600,600), grid = false)
+
+order_p = plot(times, hcat([orders[:,i] for i in sortperm(vals)]...), lab = [vals[i] for i in sortperm(vals)]', xscale = :log10 , grid = false, tickfont = font(12), size = (600,600), aspect_ratio = :equal)
 
 savefig("/Users/mzumaya/Google Drive/proyecto_martin/graphs_p_mod/$(folder)/N_$(N)/order_t.png")
 ### ================================== ###### ================================== ###
 
 psi_plot = plot(vals[sortperm(vals)], [orders[end, sortperm(vals)]], marker = :o,  xlims = (exp10(-5), k_lim), leg = false, xlabel = L"\kappa", ylabel = L"\Psi(\kappa)", xscale = :log10, size = (800,600))
 plot!(psi_plot, vals[sortperm(vals)], orders[end, :], marker = :o,  xlims = (k_lim, vals[sortperm(vals)][end]), ylim = (y_l, y_h),  leg = false, inset_subplots = [(1, bbox(0.5w,0.55h,0.45w,0.35h))], subplot=2)
+
+### ================================== ###
+
+psi_plot = plot(vals[sortperm(vals)], [orders[end, sortperm(vals)]], marker = :o,  xlims = (exp10(-2), k_lim), leg = false, grid = false, size = (600,600), tickfont = font(16), aspect_ratio = :equal)
+
+plot!(psi_plot, vals[sortperm(vals)], orders[end, :], marker = :o,  xlims = (k_lim, vals[sortperm(vals)][end]), ylim = (y_l, y_h),  leg = false, inset_subplots = [(1, bbox(0.65w,0.55h,0.25w,0.25h))], subplot=2, grid = false, tickfont = font(10))
 
 savefig("/Users/mzumaya/Google Drive/proyecto_martin/graphs_p_mod/$(folder)/N_$(N)/order_k.png")
 

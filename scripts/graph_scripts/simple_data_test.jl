@@ -46,7 +46,7 @@ folders = readdir(folder_path * "/" * eta_folders[1])
 # all_means = Dict()
 ### ================================== ###
 
-f = 9
+f = 12
 data_path = folder_path * "/" * eta_folders[1] * "/" * folders[f]
 data_path = folder_path * "/" * eta_folders[f]
 data_path = folder_path * "/" * folders[f]
@@ -67,9 +67,10 @@ x = view(pos_data, :, 1:3:3N)
 y = view(pos_data, :, 2:3:3N)
 z = view(pos_data, :, 3:3:3N)
 
-trays = plot(x, y, z, leg = false, size = (800,600))
+# trays = plot(x, y, z, leg = false, size = (600,600), aspect_ratio = :equal)
+trays = plot(x, y, z, leg = false, size = (800,800), tickfont = font(1), aspect_ratio = :equal)
 
-savefig("/Users/mzumaya/Google Drive/proyecto_martin/graphs_p_mod/loc_nloc_topo/N_512/k_1.png")
+savefig("/Users/mzumaya/Google Drive/proyecto_martin/graphs_p_mod/$(folder)/N_$(N)/k_0_5.png")
 
 gui()
 
