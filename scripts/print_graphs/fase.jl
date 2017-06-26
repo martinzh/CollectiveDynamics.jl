@@ -1,4 +1,7 @@
 using PyPlot,CollectiveDynamics.DataAnalysis
+using GR, CollectiveDynamics.DataAnalysis
+using Plots, CollectiveDynamics.DataAnalysis
+
 
 ### ================================== ###
 
@@ -75,9 +78,38 @@ writecsv("3D_top_order", hcat(vals[sortperm(vals)], orders[end, sortperm(vals)])
 
 ### ================================== ###
 
-met_vals = readcsv("3D_met_order")
-top_vals = readcsv("3D_top_order")
+met_vals = readcsv("3D_met_order.csv")
+top_vals = readcsv("3D_top_order.csv")
 
+### ================================== ###
+### PLOTS
+### ================================== ###
+
+gr()
+gui()
+
+# plot(met_vals[:, 1], met_vals[:, 2], "g-o",  top_vals[:, 1], top_vals[:, 2], "y-^", xlim = (0.0, 1.0))
+plot(hcat(met_vals[2:end, 1], top_vals[2:end, 1]),  hcat(met_vals[2:end, 2], top_vals[2:end, 2]), xscale = :log10, xlims = [exp10(-3), 1.0], marker = [:o :^], ms = 6, leg = false, tickfont = font(101, 0), grid = false, dpi = 100, size = (800, 600))
+
+savefig("test_gr.png")
+
+tickfont = font(GR.FONT_TIMES_ROMAN)
+### ================================== ###
+### GR
+### ================================== ###
+
+plot(hcat(met_vals[2:end, 1], top_vals[2:end, 1]),  hcat(met_vals[2:end, 2], top_vals[2:end, 2]), xlim = (exp10(-3), 1.0))
+
+plot(met_vals[2:end, 1], met_vals[2:end, 2], "g-o",  top_vals[2:end, 1], top_vals[2:end, 2], "y-^", xlim = (0.0, 0.6))
+polyline(met_vals[2:end, 1], met_vals[2:end, 2])
+polyline(top_vals[2:end, 1], top_vals[2:end, 2])
+setmarkersize(3)
+setscale(GR.OPTION_X_LOG)
+settextfontprec(101, 0)
+updategks()
+
+### ================================== ###
+### PYPLOT
 ### ================================== ###
 
 plt[:rc]("text", usetex=true)
