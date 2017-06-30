@@ -1,6 +1,7 @@
 ENV["PLOTS_USE_ATOM_PLOTPLANE"] = "false"
 
 using PyPlot, LaTeXStrings, CollectiveDynamics.DataAnalysis
+using PyPlot
 
 ###==============###==============###==============###
 
@@ -34,7 +35,7 @@ folder_path = "$(homedir())/art_DATA/$(folder)/DATA/data_N_$(N)"
 
 eta_folders = readdir(folder_path)
 
-f = 12
+f = 10
 data_path = folder_path * "/" * eta_folders[f]
 
 reps = [match(r"\w+(\d+).\w+", x).captures[1]  for x in filter(x -> ismatch(r"^pos_", x), readdir(data_path))]
@@ -53,31 +54,35 @@ z = view(pos_data, :, 3:3:3N)
 plt[:rc]("font", family="serif")
 plt[:rc]("text", usetex=true)
 
-plt[:rc]("figure.autolayout")
-
-plt[:rcParams]["figure.autolayout"] = true
+# plt[:rc]("figure.autolayout")
+# plt[:rcParams]["figure.autolayout"] = true
 
 ###==============###==============###==============###
 fs = 14
-ls = 8
+ls = 10
 
-sx = 2.5
-sy = 2.5
+sx = sy = 3
 
 ###==============###==============###==============###
 
 plt[:ticklabel_format](style = "sci", scilimits = (2,4))
 plt[:ticklabel_format](style = "plain")
 
-fig = plt[:figure](num = 1, dpi = 300, facecolor="w", edgecolor="k", autolayout = true)
+fig = plt[:figure](num = 1, dpi = 100, facecolor="w", edgecolor="k")
 fig[:set_size_inches](sx, sy, forward = true)
 
-fig[:subplots_adjust](bottom=-0.15,top=1.2)
+# fig[:subplots_adjust](bottom=-0.15,top=1.2)
 
 ###==============###==============###==============###
 
-ax = Axes3D(fig)
-ax[:autoscale](enable = true)
+# ax = Axes3D(fig)
+ax[:autoscale](enable = true, tight = true)
+
+###==============###==============###==============###
+fig = plt[:figure]()
+fig[:set_size_inches](sx, sy, forward = true)
+
+ax = fig[:gca](projection = "3d")
 
 ###==============###==============###==============###
 
@@ -98,39 +103,52 @@ ax[:xaxis][:pane][:fill] = false
 ax[:yaxis][:pane][:fill] = false
 ax[:zaxis][:pane][:fill] = true
 
-plt[:zoom](0.8)
+ax[:set_xlabel](L"\mathrm{x}", labelpad =0)
+ax[:set_ylabel](L"\mathrm{y}", labelpad =0)
+ax[:set_zlabel](L"\mathrm{z}", labelpad =0)
 
-ax[:gcf]()[:subplots_adjust](bottom=0.35)
+ax[:relim]()
+ax[:autoscale_view](tight = true)
+fig[:subplots_adjust](top=1.05)
 ###==============###==============###==============###
 
-plt[:tick_params](which = "both", labelsize = ls, direction = "in", pad = -3)
+plt[:tick_params](which = "both", labelsize = ls, direction = "in", pad = 1.5)
 
 ### K = 0
 
 ax[:set_xticks](collect(linspace(-2exp10(4),2exp10(4),5)))
-ax[:set_xticklabels](collect(-2:1:2))
-
-ax[:set_yticks](collect(linspace(-2exp10(4),2exp10(4),5)))
-ax[:set_yticklabels](collect(-2:1:2))
-
+ax[:set_yticks](collect(linspace(0, exp10(5),4)))
 ax[:set_zticks](collect(linspace(-1exp10(4),2exp10(4),5)))
+
+ax[:set_xticklabels](collect(-2:1:2))
+ax[:set_yticklabels](collect(-2:1:2))
 ax[:set_zticklabels](collect(-2:1:2))
 
-### K = 0
+ax[:set_xticklabels](["-1e+4", "0", "1e+4"])
+ax[:set_yticklabels](["-1e+4", "0", "1e+4"])
+ax[:set_zticklabels](["-1e+4", "0", "1e+4"])
 
-ax[:set_yticks](collect(linspace(-2exp10(4),2exp10(4),5)))
-ax[:set_yticklabels](collect(-2:1:2))
+ax[:set_xticks]([0, 5exp10(4), 1exp10(5)])
+ax[:set_yticks]([0, -5exp10(4), -1.5exp10(5)])
+ax[:set_zticks]([0, -4exp10(4), -8exp10(4), -1.2exp10(5)])
 
-ax[:set_zticks](collect(linspace(5exp10(4),25exp10(4),5)))
-ax[:set_zticklabels](["5e5","10e5","15e5","25e5"])
+ax[:set_xticklabels](["-1.5e+5", "-1e+5", "-5e+4", "0"])
+ax[:set_yticklabels](["0", "4e+4", "8e+4", "1.2e+5"])
+ax[:set_zticklabels](["0", "5e+4", "1e+5"])
 
-# ax[:set_xlabel](L"\mathrm{x}\;(10^4)")
-# ax[:set_ylabel](L"\mathrm{y}\;(10^4)")
-# ax[:set_zlabel](L"\mathrm{z}\;(10^4)")
+ax[:set_xticklabels](["-5e+4", "0", "5e+4"])
+ax[:set_yticklabels](["0", "-5e+4", "-1.5e+5"])
+ax[:set_zticklabels](["-6e+4", "-4e+4", "-2e+4", "0"])
 
+ax[:set_zlim]([-1.2exp10(5), 0.0])
+ax[:set_ylim]([-2.25exp10(5), 0.0])
 ###==============###==============###==============###
 
-fig[:savefig]("fase_test1.eps", dpi = 300, format = "eps", bbox_inches = "tight" , pad_inches = 0.01)
+fig[:savefig]("fase_test2.eps", dpi = 100, format = "eps", bbox_inches = "tight" , pad_inches = 0.27)
+
+fig[:savefig]("fase_test1.eps", dpi = 600, format = "eps", bbox_inches = "tight")
+
+fig[:savefig]("fase_test1.eps", format = "eps", bbox_inches = "tight")
 
 ###==============###==============###==============###
 
