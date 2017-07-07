@@ -9,7 +9,7 @@
 
 using CollectiveDynamics
 
-include("/Users/mzumaya/GitRepos/CollectiveDynamics.jl/parallel_test/SVM.jl")
+include("$(homedir())/GitRepos/CollectiveDynamics.jl/parallel_test/SVM.jl")
 
 ### ============== ### ============== ###
 
