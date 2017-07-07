@@ -163,12 +163,12 @@ function av_vel_cell(box, vel)
 end
 
 ### ============== ### ============== ###
-function assign_cell(flock, box)
+function assign_cell(flock, box, cell_size)
 
     box.p_per_cell = Dict{Array{Int,1}, Array{Int, 1}}()
 
     for i in 1:N
-        flock.p_cell_id[i] = convert(Array{Int}, div.(floor.(flock.pos[i]), box.L/box.M)) + 1
+        flock.p_cell_id[i] = convert(Array{Int}, div.(floor.(flock.pos[i]), cell_size)) + 1
 
         haskey(box.p_per_cell, flock.p_cell_id[i]) ? push!(box.p_per_cell[flock.p_cell_id[i]], i) : box.p_per_cell[flock.p_cell_id[i]] = [i]
     end

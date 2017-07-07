@@ -14,9 +14,16 @@ N = 512
 N = 256
 N = 128
 
+N = 8
+N = 80
+N = 800
+N = 2400
+N = 4000
+
 τ = 7
 τ = 6
 τ = 4
+τ = 3
 
 times = get_times(τ)
 x_vals = broadcast(x -> log10(x), times)
@@ -49,6 +56,7 @@ folder = "NLOC_VSK_3D"
 folder = "NLOC_TOP_3D_MEAN"
 folder = "TFLOCK_NLOC_DATA"
 folder = "TFLOCK_DATA"
+folder = "SVM_GRID_3D"
 
 folder_path = "$(homedir())/art_DATA/$(folder)/EXP/exp_data_N_$(N)"
 # folder_path = "$(homedir())/exp_DATA/$(folder)/EXP/exp_data_N_$(N)"
@@ -122,6 +130,8 @@ gui()
 # order_p = plot(times, hcat([orders[:,i] for i in sortperm(vals)]...), lab = [vals[i] for i in sortperm(vals)]', xscale = :log10, xlabel = L"t", ylabel = L"\Psi_{\kappa}(t)", size = (600,600), grid = false)
 
 order_p = plot(times, hcat([orders[:,i] for i in sortperm(vals)]...), lab = [vals[i] for i in sortperm(vals)]', xscale = :log10 , grid = false, tickfont = font(12), size = (600,600), aspect_ratio = :equal)
+
+order_p = plot(times, hcat([orders[:,i] for i in sortperm(vals)]...), lab = [vals[i] for i in sortperm(vals)]', xscale = :log10)
 
 savefig("/Users/mzumaya/Google Drive/proyecto_martin/graphs_p_mod/$(folder)/N_$(N)/order_t.png")
 ### ================================== ###### ================================== ###

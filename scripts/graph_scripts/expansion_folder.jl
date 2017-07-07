@@ -46,23 +46,23 @@ folder = ARGS[1]
 N = parse(Int, ARGS[2])
 k = ARGS[3]
 
-N = 80
+# N = 4000
 # N = 100
 # N = 256
 # N = 512
 # N = 1024
 
 # k = "9.0"
-k = "0.01"
+# k = "0.5"
 
 # folder = "NLOC_MET_3D"
 # folder = "NLOC_TOP_3D"
 # folder = "NLOC_DATA"
-folder = "SVM_GRID_3D"
+# folder = "SVM_GRID_3D"
 
 ### ================================== ###
 
-data_folder_path   = "$(homedir())/art_DATA/$(folder)/DATA/data_N_$(N)/data_N_$(N)_k_$(k)_w_0.5"
+# data_folder_path   = "$(homedir())/art_DATA/$(folder)/DATA/data_N_$(N)/data_N_$(N)_k_$(k)_w_0.5"
 data_folder_path   = "$(homedir())/art_DATA/$(folder)/DATA/data_N_$(N)/data_N_$(N)_rho_$(k)"
 output_folder_path = "$(homedir())/art_DATA/$(folder)/EXP"
 
@@ -160,4 +160,3 @@ close(vel_mean_file)
 println("Done")
 
 ### ================================== ###
-#
