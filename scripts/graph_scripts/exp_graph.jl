@@ -9,6 +9,7 @@ pyplot()
 gui()
 ### ================================== ###
 
+N = 4096
 N = 1024
 N = 512
 N = 256
@@ -22,6 +23,7 @@ N = 4000
 
 τ = 7
 τ = 6
+τ = 5
 τ = 4
 τ = 3
 
@@ -57,6 +59,7 @@ folder = "NLOC_TOP_3D_MEAN"
 folder = "TFLOCK_NLOC_DATA"
 folder = "TFLOCK_DATA"
 folder = "SVM_GRID_3D"
+folder = "SVM_GRID_FN_3D"
 
 folder_path = "$(homedir())/art_DATA/$(folder)/EXP/exp_data_N_$(N)"
 # folder_path = "$(homedir())/exp_DATA/$(folder)/EXP/exp_data_N_$(N)"
@@ -118,7 +121,7 @@ end
 
 ### ================================== ###### ================================== ###
 
-k_lim = 1.0
+k_lim = 0.52
 
 y_l = 0.97 #NLOC_DATA
 y_h = 1.0 #NLOC_DATA
@@ -136,7 +139,7 @@ order_p = plot(times, hcat([orders[:,i] for i in sortperm(vals)]...), lab = [val
 savefig("/Users/mzumaya/Google Drive/proyecto_martin/graphs_p_mod/$(folder)/N_$(N)/order_t.png")
 ### ================================== ###### ================================== ###
 
-psi_plot = plot(vals[sortperm(vals)], [orders[end, sortperm(vals)]], marker = :o,  xlims = (exp10(-5), k_lim), leg = false, xlabel = L"\kappa", ylabel = L"\Psi(\kappa)", xscale = :log10, size = (800,600))
+psi_plot = plot(vals[sortperm(vals)], [orders[end, sortperm(vals)]], marker = :o,  xlims = (0.0009, k_lim), leg = false, xlabel = L"\kappa", ylabel = L"\Psi(\kappa)", xscale = :log10, size = (800,600))
 plot!(psi_plot, vals[sortperm(vals)], orders[end, :], marker = :o,  xlims = (k_lim, vals[sortperm(vals)][end]), ylim = (y_l, y_h),  leg = false, inset_subplots = [(1, bbox(0.5w,0.55h,0.45w,0.35h))], subplot=2)
 
 ### ================================== ###
@@ -188,3 +191,6 @@ plot(nn_p, nn_d_plot, layout = @layout [a b])
 plot(order_p, psi_plot, layout = @layout [a b])
 
 gui()
+
+### ================================== ###### ================================== ###
+writecsv("vsk_order_3d.csv",hcat(vals[sortperm(vals)], orders[end, sortperm(vals)]))
