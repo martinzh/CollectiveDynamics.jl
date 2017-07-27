@@ -108,6 +108,11 @@ r_fit_vals = [polyfit(x_vals[x_l:end], r_vals[x_l:end, i], 1) for i in sortperm(
 r_nn_fit_vals = [polyfit(x_vals[x_l:end], r_nn_vals[x_l:end, i], 1) for i in sortperm(vals)]
 
 ### ================================== ###
+# kappa , d_rij(kappa), alpha_rij(kappa),d_rnn(kappa), alpha_rnn(kappa)
+writecsv("top_diff_vals.csv", [["kappa" "diff_coef_rij" "diff_exp_rij" "diff_coef_rnn" "diff_exp_rnn"] ; hcat([vals[i] for i in sortperm(vals)], [exp10(r_fit_vals[i][0]) for i in 1:length(r_fit_vals)], [r_fit_vals[i][1] for i in 1:length(r_fit_vals)], [exp10(r_nn_fit_vals[i][0]) for i in 1:length(r_nn_fit_vals)], [r_nn_fit_vals[i][1] for i in 1:length(r_nn_fit_vals)]) ])
+
+writecsv("met_diff_vals.csv", [["kappa" "diff_coef_rij" "diff_exp_rij" "diff_coef_rnn" "diff_exp_rnn"] ; hcat([vals[i] for i in sortperm(vals)], [exp10(r_fit_vals[i][0]) for i in 1:length(r_fit_vals)], [r_fit_vals[i][1] for i in 1:length(r_fit_vals)], [exp10(r_nn_fit_vals[i][0]) for i in 1:length(r_nn_fit_vals)], [r_nn_fit_vals[i][1] for i in 1:length(r_nn_fit_vals)]) ])
+### ================================== ###
 # draft pplots
 
 m_plot = plot(times, means[:, sortperm(vals)], leg = false, xscale = :log10, yscale = :log10, lw = 1.4, xlabel = "t", ylabel = "r_ij(t)")
@@ -246,12 +251,51 @@ fig[:savefig]("coef_diff_met.eps", dpi = 300, format = "eps", bbox_inches = "tig
 plt[:clf]()
 
 ### ================================== ###
-## diffsion exponents met
+## diffsion coefficients top
+
+vals = readcsv("top_diff_vals.csv")
 
 ax = fig[:add_subplot](111)
 
-ax[:plot](vals[sortperm(vals)][2:end], [r_fit_vals[i][1] for i in 2:length(r_fit_vals)], "-<", color = "#00ae88", ms = 3, lw = 0.5)
-ax[:plot](vals[sortperm(vals)][2:end], [r_nn_fit_vals[i][1] for i in 2:length(r_fit_vals)], "-x", color = "#ffa500", ms = 3, lw = 0.5)
+# ax[:plot](vals[sortperm(vals)][2:end], [r_fit_vals[i][1] for i in 2:length(r_fit_vals)], "-<", color = "#00ae88", ms = 3, lw = 0.5)
+# ax[:plot](vals[sortperm(vals)][2:end], [r_nn_fit_vals[i][1] for i in 2:length(r_fit_vals)], "-x", color = "#ffa500", ms = 3, lw = 0.5)
+
+ax[:plot](vals[2:end, 1], vals[2:end, 2], "-<", color = "#00ae88", ms = 3, lw = 0.5)
+ax[:plot](vals[2:end, 1], vals[2:end, 4], "-x", color = "#ffa500", ms = 3, lw = 0.5)
+
+ax[:plot](vals_t[2:end, 1], vals_t[2:end, 2], "-o", color = "#552299", ms = 3, lw = 0.5)
+ax[:plot](vals_t[2:end, 1], vals_t[2:end, 4], "-x", color = "#d24760", ms = 3, lw = 0.5)
+
+plt[:xscale]("log")
+plt[:yscale]("log")
+
+plt[:tick_params](which = "both", labelsize = ls, direction = "in", pad = 4)
+ax[:tick_params](axis="x",which="minor",bottom="off")
+ax[:tick_params](axis="y",which="minor",left="off")
+
+plt[:xlim](0.6exp10(-3), 1.5exp10(0))
+
+plt[:yticks]([exp10(-2), exp10(0), exp10(2)])
+
+ax[:text](2.6exp10(-4), 3exp10(3), L"D(\kappa)", ha="center", va="center", size=fs)
+ax[:text](2, 3exp10(-4), L"\kappa", ha="center", va="center", size=fs)
+
+fig[:savefig]("coef_diff_top.eps", dpi = 300, format = "eps", bbox_inches = "tight" , pad_inches = 0.1)
+
+plt[:clf]()
+
+### ================================== ###
+## diffsion exponents top
+
+vals = readcsv("top_diff_vals.csv")
+
+ax = fig[:add_subplot](111)
+
+# ax[:plot](vals[sortperm(vals)][2:end], [r_fit_vals[i][1] for i in 2:length(r_fit_vals)], "-<", color = "#00ae88", ms = 3, lw = 0.5)
+# ax[:plot](vals[sortperm(vals)][2:end], [r_nn_fit_vals[i][1] for i in 2:length(r_fit_vals)], "-x", color = "#ffa500", ms = 3, lw = 0.5)
+
+ax[:plot](vals[2:end, 1], vals[2:end, 3], "-<", color = "#00ae88", ms = 3, lw = 0.5)
+ax[:plot](vals[2:end, 1], vals[2:end, 5], "-x", color = "#ffa500", ms = 3, lw = 0.5)
 
 plt[:xscale]("log")
 # plt[:yscale]("log")
@@ -260,16 +304,52 @@ plt[:tick_params](which = "both", labelsize = ls, direction = "in", pad = 4)
 ax[:tick_params](axis="x",which="minor",bottom="off")
 ax[:tick_params](axis="y",which="minor",left="off")
 
-plt[:xlim](0.5exp10(-2), 2exp10(1))
+plt[:xlim](0.6exp10(-3), 1.5exp10(0))
 
-plt[:xticks]([exp10(-2), exp10(-1), exp10(0), exp10(1)])
-# plt[:yticks](collect(0.85:0.25:1))
+# plt[:yticks]([exp10(-2), exp10(0), exp10(2)])
 
-ax[:text](2.3exp10(-3), 1.02, L"\alpha(\kappa)", ha="center", va="center", size=fs)
-ax[:text](25, 0.88, L"\kappa", ha="center", va="center", size=fs)
+ax[:text](2exp10(-3), 1.15, L"\alpha(\kappa)", ha="center", va="center", size=fs)
+ax[:text](1, 0.98, L"\kappa", ha="center", va="center", size=fs)
 
-fig[:savefig]("exp_diff_met.eps", dpi = 300, format = "eps", bbox_inches = "tight" , pad_inches = 0.1)
+fig[:savefig]("exp_diff_top.eps", dpi = 300, format = "eps", bbox_inches = "tight" , pad_inches = 0.1)
 
+plt[:clf]()
+
+### ================================== ###
+## diffsion exponents BOTH
+
+vals_t = readcsv("top_diff_vals.csv")
+vals_m = readcsv("met_diff_vals.csv")
+
+ax = fig[:add_subplot](111)
+
+# ax[:plot](vals[sortperm(vals)][2:end], [r_fit_vals[i][1] for i in 2:length(r_fit_vals)], "-<", color = "#00ae88", ms = 3, lw = 0.5)
+# ax[:plot](vals[sortperm(vals)][2:end], [r_nn_fit_vals[i][1] for i in 2:length(r_fit_vals)], "-x", color = "#ffa500", ms = 3, lw = 0.5)
+
+ax[:plot](vals_t[2:end, 1], vals_t[2:end, 2], "-<", color = "#00ae88", ms = 3, lw = 0.5)
+ax[:plot](vals_t[2:end, 1], vals_t[2:end, 4], "-s", color = "#ffa500", ms = 3, lw = 0.5)
+
+ax[:plot](vals_m[2:end, 1], vals_m[2:end, 2], "-o", color = "#552299", ms = 3, lw = 0.5)
+ax[:plot](vals_m[2:end, 1], vals_m[2:end, 4], "-x", color = "#d24760", ms = 3, lw = 0.5)
+
+plt[:xscale]("log")
+plt[:yscale]("log")
+
+plt[:tick_params](which = "both", labelsize = ls, direction = "in", pad = 4)
+ax[:tick_params](axis="x",which="minor",bottom="off")
+ax[:tick_params](axis="y",which="minor",left="off")
+
+# plt[:xlim](0.6exp10(-3), 1.5exp10(0))
+
+plt[:xticks]([exp10(-3), exp10(-2), exp10(-1), exp10(0), exp10(1)])
+plt[:yticks]([exp10(-2), exp10(0), exp10(2), exp10(3)])
+
+ax[:text](2.3exp10(-4), 7exp10(3), L"D(\kappa)", ha="center", va="center", size=fs)
+ax[:text](25, 3exp10(-4), L"\kappa", ha="center", va="center", size=fs)
+
+fig[:savefig]("coeff_diff_both.eps", dpi = 300, format = "eps", bbox_inches = "tight" , pad_inches = 0.1)
+
+plt[:clf]()
 
 ### ================================== ###
 ## d_rij top
@@ -313,7 +393,7 @@ ax[:plot](times, d_nn_means[:, sortperm(vals)], "-", ms = 2, lw = 0.5)
 
 x_f = 200
 
-ax[:plot](times[x_f:end], broadcast(x-> exp10(-4)x , times[x_f:end]), "r--", lw = 0.8)
+ax[:plot](times[x_f:end], broadcast(x-> 5exp10(-4)x , times[x_f:end]), "r--", lw = 0.8)
 
 plt[:xscale]("log")
 plt[:yscale]("log")
@@ -323,19 +403,32 @@ plt[:xlim](3, 1.5exp10(6))
 plt[:tick_params](which = "both", labelsize = ls, direction = "in", pad = 4)
 
 plt[:xticks]([exp10(1), exp10(2), exp10(3), exp10(4), exp10(5), exp10(6)])
-plt[:yticks]([exp10(0), exp10(3), exp10(6)])
+plt[:yticks]([exp10(-4), exp10(-1), exp10(2), exp10(5)])
 # plt[:yticklabels](["10", "10^{2}", "10^{5}", "10^{8}"])
 
-ax[:text](exp10(6), 1.8exp10(-4), L"t", ha="center", va="center", size=fs)
-ax[:text](3.5exp10(1), exp10(6), L"\langle \Delta r_{\mathrm{nn}} \rangle_{\kappa}", ha="center", va="center", size=fs)
+ax[:text](exp10(6), 3exp10(-6), L"t", ha="center", va="center", size=fs)
+ax[:text](3exp10(1), exp10(4), L"\langle \Delta r_{\mathrm{nn}} \rangle_{\kappa}", ha="center", va="center", size=fs)
 
-ax[:text](1.5exp10(3), exp10(8), L"\kappa", ha="center", va="center", size=0.8fs)
+# ax[:text](1.5exp10(3),5exp10(2), L"\kappa", ha="center", va="center", size=0.8fs)
 
-ax[:annotate]("", xy = (exp10(4), 0.7exp10(3)), xycoords = "data", xytext = (1.5exp10(3), 0.2exp10(8)), arrowprops = Dict(:facecolor => "#423b3b", :edgecolor => "#423b3b", :width => 0.1, :headwidth => 2, :headlength => 3) )
+ax[:annotate](L"\kappa", xy = (0.7exp10(4), 2exp10(0)), xycoords = "data", xytext = (1.5exp10(3), 5exp10(2)), arrowprops = Dict(:facecolor => "#423b3b", :edgecolor => "#423b3b", :width => 0.1, :headwidth => 2, :headlength => 3) )
 
 plt[:tight_layout]()
 
-fig[:savefig]("delta_rnn_met.eps", dpi = 300, format = "eps", bbox_inches = "tight" , pad_inches = 0.1)
+# ax2 = plt[:axes]([0.55, 0.28, 0.3, 0.3])
+#
+# ax2[:plot](times[x_f:end], d_nn_means[x_f:end, sortperm(vals)], "-", lw = 0.5)
+# ax2[:plot](times[x_f:end], broadcast(x-> 5exp10(-4)x , times[x_f:end]), "r--", lw = 0.6)
+#
+# plt[:xscale]("log")
+# plt[:yscale]("log")
+#
+# plt[:tick_params](which = "both", labelsize = 0.5ls, direction = "in", pad = 4)
+#
+# ax2[:annotate](L"\kappa", xy = (0.7exp10(4), 2exp10(0)), xycoords = "data", xytext = (1.5exp10(3), 5exp10(2)), arrowprops = Dict(:facecolor => "#423b3b", :edgecolor => "#423b3b", :width => 0.1, :headwidth => 2, :headlength => 3) )
+
+
+fig[:savefig]("delta_rnn_top.eps", dpi = 300, format = "eps", bbox_inches = "tight" , pad_inches = 0.1)
 
 ### ================================== ###
 
