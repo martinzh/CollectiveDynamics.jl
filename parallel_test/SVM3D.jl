@@ -1,5 +1,5 @@
 ### ============== ### ============== ###
-### UTILITY FUNCTIONS FOR SVM
+### UTILITY FUNCTIONS FOR SVM 3D
 ### IN PERIODIC BOUNDARY CONDITION
 ### ============== ### ============== ###
 

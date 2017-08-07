@@ -10,7 +10,7 @@
 
 using CollectiveDynamics
 
-include("$(homedir())/GitRepos/CollectiveDynamics.jl/parallel_test/SVM.jl")
+include("$(homedir())/GitRepos/CollectiveDynamics.jl/parallel_test/SVM3D.jl")
 
 ### ============== ### ============== ###
 
@@ -59,9 +59,9 @@ rep = parse(Int, ARGS[4])
 
 # N = 2^13
 # N = 2^11
-N = 4096
+# N = 4096
 
-ρ = 0.1
+# ρ = 0.1
 # T = 3
 # rep = 1
 

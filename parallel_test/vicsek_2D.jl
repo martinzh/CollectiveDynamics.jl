@@ -1,6 +1,7 @@
 ### ============== ### ============== ###
 ##    3D Simple Vicksek Model          ##
-##    Grid version (particle search)   ##
+##    Grid version                     ##
+##    (cell velocity search)           ##
 ##    Martin Zumaya Hernandez          ##
 ##    30 / 06 / 2017                   ##
 ### ============== ### ============== ###
@@ -9,7 +10,7 @@
 
 using CollectiveDynamics
 
-include("$(homedir())/GitRepos/CollectiveDynamics.jl/parallel_test/SVM3D.jl")
+include("$(homedir())/GitRepos/CollectiveDynamics.jl/parallel_test/SVM2D.jl")
 
 ### ============== ### ============== ###
 
@@ -58,9 +59,9 @@ rep = parse(Int, ARGS[4])
 
 # N = 2^13
 # N = 2^11
-N = 4096
+# N = 4096
 
-ρ = 0.1
+# ρ = 0.1
 # T = 3
 # rep = 1
 
@@ -80,7 +81,7 @@ l = 0.5 # interaction range is double the distance each particle moves in one ti
 r0 = (v0 * dt) / l # local interaction range
 
 # L = M * r0 # box size in terms of interaction range
-L  = cbrt(N / ρ) # size of box
+L  = sqrt(N / ρ) # size of box
 
 ### =============== ### =============== ###
 
@@ -96,7 +97,7 @@ flock = Flock(N, L, dt, v0, r0, η)
 
 ### ============== ### ============== ###
 
-output_path = CollectiveDynamics.set_output_data_structure_vsk("SVM_GRID_FN_3D", N, ρ)
+output_path = CollectiveDynamics.set_output_data_structure_vsk("SVM_GRID_FN_2D", N, ρ)
 
 pos_file = open(output_path * "/pos_$(rep).dat", "w+")
 vel_file = open(output_path * "/vel_$(rep).dat", "w+")
@@ -139,29 +140,3 @@ close(pos_file)
 close(vel_file)
 
 println("Done all")
-
-
-# for i in 1:1000
-#
-#     println(i)
-#
-#     assign_cell(flock, box)
-#
-#     # for i in eachindex(flock.v_r)
-#     #     println(i, "\t",flock.vel[i])
-#     # end
-#
-#     # Search interactions in adjacent cells
-#     for i in eachindex(flock.pos)
-#         get_neighbors(i, flock, box)
-#         # println("pass")
-#     end
-#
-#     # for i in eachindex(flock.v_r)
-#     #     println(i, "\t",flock.v_r[i])
-#     # end
-#
-#     # update particles' position
-#     broadcast(update_part, flock.pos, flock.vel, flock.v_r, flock.η, box.L)
-#
-# end

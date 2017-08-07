@@ -32,6 +32,7 @@ folder = "NLOC_TOP_3D"
 folder = "NLOC_TOP_3D_MEAN"
 folder = "TFLOCK_NLOC_DATA"
 folder = "TFLOCK_DATA"
+folder = "SVM_GRID_FN_2D"
 
 folder_path = "$(homedir())/art_DATA/$(folder)/EXP/exp_data_N_$(N)"
 folder_path = "$(homedir())/exp_DATA/$(folder)/EXP/exp_data_N_$(N)"
@@ -46,7 +47,7 @@ folders = readdir(folder_path * "/" * eta_folders[1])
 # all_means = Dict()
 ### ================================== ###
 
-f = 12
+f = 1
 data_path = folder_path * "/" * eta_folders[1] * "/" * folders[f]
 data_path = folder_path * "/" * eta_folders[f]
 data_path = folder_path * "/" * folders[f]
@@ -60,6 +61,17 @@ means = Array{Float64}[]
 psi   = Array{Float64}[]
 
 raw_data = reinterpret(Float64, read(data_path * "/pos_$(r).dat"))
+
+# 2D
+pos_data = transpose(reshape(raw_data, 2N, div(length(raw_data), 2N)))
+
+x = view(pos_data, :, 1:2:2N)
+y = view(pos_data, :, 2:2:2N)
+
+trays = plot(x, y, leg = false, size = (800,800), tickfont = font(1), aspect_ratio = :equal)
+
+
+# 3D
 pos_data = transpose(reshape(raw_data, 3N, div(length(raw_data), 3N)))
 # pos_data = reshape(raw_data, 3N, div(length(raw_data), 3N))
 
@@ -75,6 +87,16 @@ savefig("/Users/mzumaya/Google Drive/proyecto_martin/graphs_p_mod/$(folder)/N_$(
 gui()
 
 raw_data = reinterpret(Float64, read(data_path * "/vel_$(r).dat"))
+
+# 2D
+vel_data = transpose(reshape(raw_data, 2N, div(length(raw_data), 2N)))
+# vel_data = reshape(raw_data, 3N, div(length(raw_data), 3N))
+
+pos_data[:, 1:2:2N] = pos_data[:, 1:2:2N] .- mean(pos_data[:, 1:2:2N], 2)
+pos_data[:, 2:2:2N] = pos_data[:, 2:2:2N] .- mean(pos_data[:, 2:2:2N], 2)
+
+
+# 3D
 vel_data = transpose(reshape(raw_data, 3N, div(length(raw_data), 3N)))
 # vel_data = reshape(raw_data, 3N, div(length(raw_data), 3N))
 
@@ -88,6 +110,10 @@ means = [mean(calc_rij_3D_vect(tr_pos_data[:, i])) for i in 1:size(tr_pos_data,2
 
 tr_vel_data = transpose(vel_data)
 
+# 2D
+psi = (1. / v0) * [norm(mean([ [tr_vel_data[i, j], tr_vel_data[i+1, j] ] for i in 1:2:2N])) for j in 1:size(tr_vel_data, 2)]
+
+# 3D
 psi = (1. / v0) * [norm(mean([ [tr_vel_data[i, j], tr_vel_data[i+1, j], tr_vel_data[i+2, j] ] for i in 1:3:3N])) for j in 1:size(tr_vel_data, 2)]
 
 expansion = plot(tau, means, xscale = :log10, yscale = :log10, marker = :o, markersize = 2.0, leg = false, title = "expansion", titlefont = font(10))
