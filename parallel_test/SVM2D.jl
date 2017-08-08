@@ -52,8 +52,8 @@ type Box
 
         bulk_cells = [[i,j] for i in 2:M-1, j in 2:M-1]
 
-        bottom_cells = [[i,1] for i in 2:M-1]
-        top_cells = [[i,M] for i in 2:M-1]
+        bottom_cells = [[i,M] for i in 2:M-1]
+        top_cells = [[i,1] for i in 2:M-1]
 
         left_cells = [[1,j] for j in 2:M-1]
         right_cells = [[M,j] for j in 2:M-1]
@@ -229,7 +229,7 @@ function check_corners(p_id, cell_id, p_per_cell, L)
         end
     end
 
-    sum(k_t) > 0. ? v_t = sum(v_t) ./ sum(k_t) : v_t = zeros(3)
+    sum(k_t) > 0. ? v_t = sum(v_t) ./ sum(k_t) : v_t = zeros(2)
 
     return v_t
 end

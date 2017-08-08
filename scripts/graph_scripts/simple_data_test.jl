@@ -47,7 +47,7 @@ folders = readdir(folder_path * "/" * eta_folders[1])
 # all_means = Dict()
 ### ================================== ###
 
-f = 1
+f = 2
 data_path = folder_path * "/" * eta_folders[1] * "/" * folders[f]
 data_path = folder_path * "/" * eta_folders[f]
 data_path = folder_path * "/" * folders[f]
@@ -124,3 +124,5 @@ l = @layout [  a{0.5w} [b
     c]]
 
 plot( trays, expansion, order, layout = l )
+
+gui()
