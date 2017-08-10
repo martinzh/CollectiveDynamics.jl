@@ -47,7 +47,7 @@ folders = readdir(folder_path * "/" * eta_folders[1])
 # all_means = Dict()
 ### ================================== ###
 
-f = 2
+f = 3
 data_path = folder_path * "/" * eta_folders[1] * "/" * folders[f]
 data_path = folder_path * "/" * eta_folders[f]
 data_path = folder_path * "/" * folders[f]

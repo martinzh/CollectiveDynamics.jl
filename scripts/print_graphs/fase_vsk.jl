@@ -30,6 +30,7 @@ folder = "NLOC_TOP_3D_MEAN"
 folder = "TFLOCK_NLOC_DATA"
 folder = "TFLOCK_DATA"
 folder = "SVM_GRID_FN_3D"
+folder = "SVM_GRID_FN_2D"
 
 folder_path = "$(homedir())/art_DATA/$(folder)/EXP/exp_data_N_$(N)"
 folder_path = "$(homedir())/art_DATA/$(folder)/DATA/data_N_$(N)"
@@ -58,7 +59,7 @@ vals = [parse(Float64, vcat(capt...)[i]) for i in find(x -> x != nothing, vcat(c
 vals = [ parse(Float64, match(r"^\w+_(\d+\.\d+)", x).captures[1]) for x in order_files ]
 
 ### ================================== ###
-i = 3
+i = 15
 for i in sortperm(vals)
 
     println(i)
@@ -82,12 +83,18 @@ end
 writecsv("3D_met_order", hcat(vals[sortperm(vals)], orders[end, sortperm(vals)]))
 writecsv("3D_top_order", hcat(vals[sortperm(vals)], orders[end, sortperm(vals)]))
 writecsv("3D_vsk_order", hcat(vals[sortperm(vals)], orders[end, sortperm(vals)]))
+writecsv("2D_vsk_order", hcat(vals[sortperm(vals)], orders[end, sortperm(vals)]))
+
+# plt[:plot](vals[sortperm(vals)], orders[end, sortperm(vals)])
+#
+# plot(times, order_data)
 
 ### ================================== ###
 
 met_vals = readcsv("3D_met_order.csv")
 top_vals = readcsv("3D_top_order.csv")
 vsk_vals = readcsv("3D_vsk_order.csv")
+vsk_vals_2D = readcsv("2D_vsk_order.csv")
 
 ### ================================== ###
 ### PYPLOT

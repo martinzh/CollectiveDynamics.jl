@@ -58,7 +58,7 @@ type Box
         left_cells = [[1,j] for j in 2:M-1]
         right_cells = [[M,j] for j in 2:M-1]
 
-        corners = [[i,j] for i in [1,M], j in [1, M]]
+        corners = [[i,j] for i in [1,M], j in [1,M]]
 
         ### ============== ### ============== ###
 
@@ -413,8 +413,11 @@ function update_part(pos, vel, v_r, η, L)
         vel[i] = u_vel[i]
         pos[i] += u_vel[i]
 
-        if(pos[i] > L * 0.5) pos[i] -= L end
-        if(pos[i] <= -L * 0.5) pos[i] += L end
+        # if(pos[i] > L * 0.5) pos[i] -= L end
+        # if(pos[i] <= -L * 0.5) pos[i] += L end
+
+        if(pos[i] > L ) pos[i] -= L end
+        if(pos[i] < 0.0) pos[i] += L end
     end
 
 end
