@@ -9,3 +9,5 @@ for i in {1..10}
 do
     time  nohup julia 2D_locNloc_simScript_met.jl $N $k $w $T $i &
 done
+
+wait
