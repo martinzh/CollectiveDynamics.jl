@@ -7,5 +7,7 @@ T="$4"
 
 for i in {1..10}
 do
-    time  nohup julia 3D_locNloc_simScript_top.jl $N $k $w $T $i &
+    time  nohup /home/martin/Code/julia/julia 3D_locNloc_simScript_top.jl $N $k $w $T $i &
 done
+
+wait
