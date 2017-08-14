@@ -636,6 +636,45 @@ function set_output_data_structure_lnl(path, N, κ, ω)
     return reps_path
 end
 
+function set_output_data_structure_vsk(path, N, ρ)
+
+    parent_folder_path = "$(homedir())/art_DATA/$(path)"
+    folder_path        = parent_folder_path * "/DATA/data_N_$(N)"
+    reps_path          = folder_path * "/data_N_$(N)_rho_$(ρ)"
+
+    try
+        mkdir("$(homedir())/art_DATA")
+    catch error
+        println("Main data folder already exists")
+    end
+
+    try
+        mkdir(parent_folder_path)
+    catch error
+        println("Parent folder already exists")
+    end
+
+    try
+        mkdir(parent_folder_path * "/DATA")
+    catch error
+        println("Parent folder already exists")
+    end
+
+    try
+        mkdir(folder_path)
+    catch error
+        println("Folder already exists")
+    end
+
+    try
+        mkdir(reps_path)
+    catch error
+        println("Parameter folder already exists")
+    end
+
+    return reps_path
+end
+
 ### ============== ### ============== ### ============== ###
 ##                   WHOLE TIME EVOLUTION                 ##
 ### ============== ### ============== ### ============== ###

@@ -93,10 +93,10 @@ means     = Array{Float64}[]
 nn_means  = Array{Float64}[]
 vel_means = Array{Float64}[]
 
-exp_file   = open(output_folder_path * "/exp_data_N_$(N)" * "/exp" * params * ".dat", "w+")
+# exp_file   = open(output_folder_path * "/exp_data_N_$(N)" * "/exp" * params * ".dat", "w+")
 order_file = open(output_folder_path * "/exp_data_N_$(N)" * "/order" * params * ".dat", "w+")
-nn_mean_file = open(output_folder_path * "/exp_data_N_$(N)" * "/nn_mean" * params * ".dat", "w+")
-vel_mean_file = open(output_folder_path * "/exp_data_N_$(N)" * "/vel_mean" * params * ".dat", "w+")
+# nn_mean_file = open(output_folder_path * "/exp_data_N_$(N)" * "/nn_mean" * params * ".dat", "w+")
+# vel_mean_file = open(output_folder_path * "/exp_data_N_$(N)" * "/vel_mean" * params * ".dat", "w+")
 
 ### ================================== ###
 
@@ -109,11 +109,11 @@ for r in reps
 
     println(r)
 
-    raw_data = reinterpret(Float64,read(data_folder_path * "/pos_$(r).dat"))
-
-    pos_data = reshape(raw_data, 2N, div(length(raw_data), 2N))
-    calc_vect_2D_cm(pos_data)
-    push!(means, [mean(calc_rij_2D_vect(pos_data[:, i])) for i in 1:size(pos_data,2)])
+    # raw_data = reinterpret(Float64,read(data_folder_path * "/pos_$(r).dat"))
+    #
+    # pos_data = reshape(raw_data, 2N, div(length(raw_data), 2N))
+    # calc_vect_2D_cm(pos_data)
+    # push!(means, [mean(calc_rij_2D_vect(pos_data[:, i])) for i in 1:size(pos_data,2)])
 
     # pos_data = reshape(raw_data, 3N, div(length(raw_data), 3N))
     # calc_vect_3D_cm(pos_data)
@@ -121,18 +121,18 @@ for r in reps
 
     # println("pass pos_data")
 
-    nn_time = zeros(size(pos_data, 2))
-
-    for j in 1:size(pos_data, 2)
-
-        calc_Rij_2D(pos_data[:, j], Rij)
-        # calc_Rij_3D(pos_data[:, j], Rij)
-
-        nn_time[j] = mean([sort(Rij[:, i])[2] for i in 1:N])
-
-    end
-
-    push!(nn_means, nn_time)
+    # nn_time = zeros(size(pos_data, 2))
+    #
+    # for j in 1:size(pos_data, 2)
+    #
+    #     calc_Rij_2D(pos_data[:, j], Rij)
+    #     # calc_Rij_3D(pos_data[:, j], Rij)
+    #
+    #     nn_time[j] = mean([sort(Rij[:, i])[2] for i in 1:N])
+    #
+    # end
+    #
+    # push!(nn_means, nn_time)
 
     # println("pass nn_means")
 
@@ -140,26 +140,26 @@ for r in reps
 
     vel_data = reshape(raw_data, 2N, div(length(raw_data), 2N))
 
-    push!(vel_means, vcat([mean([[vel_data[i, j], vel_data[i+1, j]] for i in 1:2:2N]) for j in 1:size(vel_data, 2)]...))
     push!(psi, [norm(mean([[vel_data[i, j], vel_data[i+1, j]] for i in 1:2:2N])) for j in 1:size(vel_data, 2)])
+    # push!(vel_means, vcat([mean([[vel_data[i, j], vel_data[i+1, j]] for i in 1:2:2N]) for j in 1:size(vel_data, 2)]...))
 
     # vel_data = reshape(raw_data, 3N, div(length(raw_data), 3N))
-    # push!(vel_means, vcat([mean([[vel_data[i, j], vel_data[i+1, j], vel_data[i+2, j]] for i in 1:3:3N]) for j in 1:size(vel_data, 2)]...))
     # push!(psi, [norm(mean([[vel_data[i, j], vel_data[i+1, j], vel_data[i+2, j]] for i in 1:3:3N])) for j in 1:size(vel_data, 2)])
+    # push!(vel_means, vcat([mean([[vel_data[i, j], vel_data[i+1, j], vel_data[i+2, j]] for i in 1:3:3N]) for j in 1:size(vel_data, 2)]...))
 
     # println("pass vel and psi")
 
 end
 
-write(exp_file, hcat(means...))
 write(order_file, hcat(psi...))
-write(nn_mean_file, hcat(nn_means...))
-write(vel_mean_file, hcat(vel_means...))
+# write(exp_file, hcat(means...))
+# write(nn_mean_file, hcat(nn_means...))
+# write(vel_mean_file, hcat(vel_means...))
 
-close(exp_file)
 close(order_file)
-close(nn_mean_file)
-close(vel_mean_file)
+# close(exp_file)
+# close(nn_mean_file)
+# close(vel_mean_file)
 
 println("Done")
 

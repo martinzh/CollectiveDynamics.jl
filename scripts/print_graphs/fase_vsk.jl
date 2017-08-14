@@ -58,9 +58,15 @@ vals = [parse(Float64, vcat(capt...)[i]) for i in find(x -> x != nothing, vcat(c
 # para NLOC
 vals = [ parse(Float64, match(r"^\w+_(\d+\.\d+)", x).captures[1]) for x in order_files ]
 
+# 1,2,3,6
+# [order_files[i] for i in [4,5,7,10,13,15]]
+# raw_data = reinterpret(Float64, read(folder_path * "/" * order_files[15]))
+# order_data = reshape(raw_data, length(times), div(length(raw_data), length(times)))
+
 ### ================================== ###
 i = 15
-for i in sortperm(vals)
+# for i in sortperm(vals)
+for i in [4,5,7,10,13,15]
 
     println(i)
 
@@ -85,7 +91,7 @@ writecsv("3D_top_order", hcat(vals[sortperm(vals)], orders[end, sortperm(vals)])
 writecsv("3D_vsk_order", hcat(vals[sortperm(vals)], orders[end, sortperm(vals)]))
 writecsv("2D_vsk_order", hcat(vals[sortperm(vals)], orders[end, sortperm(vals)]))
 
-# plt[:plot](vals[sortperm(vals)], orders[end, sortperm(vals)])
+plt[:plot](vals[sortperm(vals)], orders[end, sortperm(vals)])
 #
 # plot(times, order_data)
 
