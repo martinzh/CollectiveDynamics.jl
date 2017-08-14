@@ -64,25 +64,25 @@ vals = [ parse(Float64, match(r"^\w+_(\d+\.\d+)", x).captures[1]) for x in order
 # order_data = reshape(raw_data, length(times), div(length(raw_data), length(times)))
 
 ### ================================== ###
-i = 15
-# for i in sortperm(vals)
-for i in [4,5,7,10,13,15]
+i = 1
+# for i in [4,5,7,10,13,15]
+for i in sortperm(vals)
 
     println(i)
 
-    raw_data = reinterpret(Float64, read(folder_path * "/" * exp_files[i]))
-    exp_data = reshape(raw_data, length(times), div(length(raw_data), length(times)))
+    # raw_data = reinterpret(Float64, read(folder_path * "/" * exp_files[i]))
+    # exp_data = reshape(raw_data, length(times), div(length(raw_data), length(times)))
 
     raw_data = reinterpret(Float64, read(folder_path * "/" * order_files[i]))
     order_data = reshape(raw_data, length(times), div(length(raw_data), length(times)))
 
-    raw_data = reinterpret(Float64, read(folder_path * "/" * nn_files[i]))
-    nn_data = reshape(raw_data, length(times), div(length(raw_data), length(times)))
+    # raw_data = reinterpret(Float64, read(folder_path * "/" * nn_files[i]))
+    # nn_data = reshape(raw_data, length(times), div(length(raw_data), length(times)))
 
-    means[:, i] = mean(exp_data, 2)
-    std_means[:, i] = std(exp_data, 2)
     orders[:, i] = mean(order_data, 2)
-    nn_means[:, i] = mean(nn_data, 2)
+    # means[:, i] = mean(exp_data, 2)
+    # std_means[:, i] = std(exp_data, 2)
+    # nn_means[:, i] = mean(nn_data, 2)
 
 end
 
@@ -91,7 +91,8 @@ writecsv("3D_top_order", hcat(vals[sortperm(vals)], orders[end, sortperm(vals)])
 writecsv("3D_vsk_order", hcat(vals[sortperm(vals)], orders[end, sortperm(vals)]))
 writecsv("2D_vsk_order", hcat(vals[sortperm(vals)], orders[end, sortperm(vals)]))
 
-plt[:plot](vals[sortperm(vals)], orders[end, sortperm(vals)])
+plt[:plot](vals[sortperm(vals)], orders[end, sortperm(vals)], "-o")
+plt[:plot](times, orders)
 #
 # plot(times, order_data)
 
