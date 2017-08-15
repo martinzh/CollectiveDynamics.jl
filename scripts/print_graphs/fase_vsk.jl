@@ -91,10 +91,12 @@ writecsv("3D_top_order", hcat(vals[sortperm(vals)], orders[end, sortperm(vals)])
 writecsv("3D_vsk_order", hcat(vals[sortperm(vals)], orders[end, sortperm(vals)]))
 writecsv("2D_vsk_order", hcat(vals[sortperm(vals)], orders[end, sortperm(vals)]))
 
-plt[:plot](vals[sortperm(vals)], orders[end, sortperm(vals)], "-o")
-plt[:plot](times, orders)
-#
-# plot(times, order_data)
+### ================================== ###
+## TEST
+
+plot(vals[sortperm(vals)], orders[end, sortperm(vals)], marker = :o, leg = false, xscale = :log10, xlims = [0.01, 1.5])
+plot(times, orders, xscale = :log10, leg = false)
+gr()
 
 ### ================================== ###
 

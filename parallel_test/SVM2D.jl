@@ -417,7 +417,7 @@ function update_part(pos, vel, v_r, η, L)
         # if(pos[i] <= -L * 0.5) pos[i] += L end
 
         if(pos[i] > L ) pos[i] -= L end
-        if(pos[i] < 0.0) pos[i] += L end
+        if(pos[i] <= 0.0) pos[i] += L end
     end
 
 end
