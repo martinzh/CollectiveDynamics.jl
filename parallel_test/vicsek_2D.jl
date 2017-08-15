@@ -76,8 +76,8 @@ M = 10 # number of boxes per dimension
 # M = 5 # number of boxes per dimension
 # M = 4 # number of boxes per dimension
 
-l = 0.5 # interaction range is double the distance each particle moves in one time step
-# l = 0.1 # interaction range is ten times the distance each particle moves in one time step
+# l = 0.5 # interaction range is double the distance each particle moves in one time step
+l = 0.1 # interaction range is ten times the distance each particle moves in one time step
 r0 = (v0 * dt) / l # local interaction range
 
 # L = M * r0 # box size in terms of interaction range
@@ -97,7 +97,7 @@ flock = Flock(N, L, dt, v0, r0, η)
 
 ### ============== ### ============== ###
 
-output_path = CollectiveDynamics.set_output_data_structure_vsk("SVM_GRID_FN_2D", N, ρ)
+output_path = CollectiveDynamics.set_output_data_structure_vsk("SVM_GRID_10_2D", N, ρ)
 
 pos_file = open(output_path * "/pos_$(rep).dat", "w+")
 vel_file = open(output_path * "/vel_$(rep).dat", "w+")
