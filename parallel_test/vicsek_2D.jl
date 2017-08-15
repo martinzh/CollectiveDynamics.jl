@@ -113,7 +113,7 @@ for i in 1:(length(times) - 1)
             evolve_system(flock, box, cell_size)
 
             if t % times[i] == 0 || t % times[i-1] == 0
-                println("//////// ", t)
+                # println("//////// ", t)
                 write(pos_file, vcat(flock.pos...))
                 write(vel_file, vcat(flock.vel...))
             end
@@ -126,7 +126,7 @@ for i in 1:(length(times) - 1)
             evolve_system(flock, box, cell_size)
 
             if t % times[i] == 0
-                println("//////// ", t)
+                # println("//////// ", t)∫
                 write(pos_file, vcat(flock.pos...))
                 write(vel_file, vcat(flock.vel...))
             end
