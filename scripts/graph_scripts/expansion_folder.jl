@@ -66,14 +66,14 @@ k = ARGS[3]
 
 ### ================================== ###
 
-# data_folder_path   = "$(homedir())/art_DATA/$(folder)/DATA/data_N_$(N)/data_N_$(N)_k_$(k)_w_0.5"
-data_folder_path   = "$(homedir())/art_DATA/$(folder)/DATA/data_N_$(N)/data_N_$(N)_rho_$(k)"
+data_folder_path   = "$(homedir())/art_DATA/$(folder)/DATA/data_N_$(N)/data_N_$(N)_k_$(k)_w_0.5"
+# data_folder_path   = "$(homedir())/art_DATA/$(folder)/DATA/data_N_$(N)/data_N_$(N)_rho_$(k)"
 output_folder_path = "$(homedir())/art_DATA/$(folder)/EXP"
 
-# folders = readdir(data_folder_path)
+folders = readdir(data_folder_path)
 
-# params = "_k_$(k)_w_0.5"
-params = "_rho_$(k)"
+params = "_k_$(k)_w_0.5"
+# params = "_rho_$(k)"
 
 # params = [match(r"\w+_\d+(_\w+_\d+.\d+)", f).captures[1] for f in folders]
 # params = [match(r"\w+_\d+(_\w+_\d+.\d+_\w_\d+\.\d+)", f).captures[1] for f in folders]

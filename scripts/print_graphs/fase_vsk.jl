@@ -93,7 +93,9 @@ writecsv("2D_vsk_order", hcat(vals[sortperm(vals)], orders[end, sortperm(vals)])
 ### ================================== ###
 ## TEST
 
-plot(vals[sortperm(vals)], orders[end, sortperm(vals)], marker = :o, leg = false, xscale = :log10, xlims = [0.01, 1.5])
+f = plot(vals[sortperm(vals)], orders[end, sortperm(vals)], marker = :o, leg = false, xscale = :log10, xlims = [0.1, 5.5])
+plot!(f, fill(0.3, 10), collect(0.0:0.1:1.0))
+
 plot(vals[sortperm(vals)], orders[end, sortperm(vals)], marker = :o, leg = false, xscale = :lin, xlims = [0.01, 1.5])
 plot(times, orders, xscale = :log10, leg = false)
 plot(times, orders, xscale = :lin, leg = false)
