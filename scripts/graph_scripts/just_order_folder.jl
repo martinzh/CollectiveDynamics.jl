@@ -37,10 +37,10 @@ model  = ARGS[4]
 
 ### ================================== ###
 
-if model = "lnl"
+if model == "lnl"
     data_folder_path   = "$(homedir())/art_DATA/$(folder)/DATA/data_N_$(N)/data_N_$(N)_k_$(k)_w_0.5"
     params = "_k_$(k)_w_0.5"
-elseif model = "svm"
+elseif model == "svm"
     data_folder_path   = "$(homedir())/art_DATA/$(folder)/DATA/data_N_$(N)/data_N_$(N)_rho_$(k)"
     params = "_rho_$(k)"
 end
