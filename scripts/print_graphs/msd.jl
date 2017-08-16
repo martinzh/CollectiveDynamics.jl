@@ -29,14 +29,21 @@ x_vals = broadcast(x -> log10(x), times)
 
 folder = "NLOC_DATA"
 folder = "NLOC_DATA_3D"
+
 folder = "NLOC_MET_3D"
+folder = "NLOC_MET_2D"
+
 folder = "NLOC_TOP_3D"
 folder = "NLOC_TOP_3D_MEAN"
+
 folder = "TFLOCK_NLOC_DATA"
 folder = "TFLOCK_DATA"
+
 folder = "SVM_GRID_FN_3D"
 
 folder_path = "$(homedir())/art_DATA/$(folder)/EXP/exp_data_N_$(N)"
+folder_path = "$(homedir())/art_DATA/$(folder)/EXP/exp_data_N_$(N)/eta_1.5"
+
 folder_path = "$(homedir())/art_DATA/$(folder)/DATA/data_N_$(N)"
 
 # eta_folders = readdir(folder_path)
@@ -58,8 +65,10 @@ std_means = zeros(length(times), length(order_files))
 capt = [match(r"_(\d+\.\d+)\.\w+$|_(\d+\.\d+e-5)\.\w+$", f).captures for f in order_files]
 vals = [parse(Float64, vcat(capt...)[i]) for i in find(x -> x != nothing, vcat(capt...))]
 
-
 # para NLOC
+vals = [ parse(Float64, match(r"^\w+_(\d+\.\d+)", x).captures[1]) for x in order_files ]
+
+# para TFLOCK
 vals = [ parse(Float64, match(r"^\w+_(\d+\.\d+)", x).captures[1]) for x in order_files ]
 
 ### ================================== ###
@@ -163,7 +172,8 @@ ax[:plot](times, d_means[:, sortperm(vals)], "-", ms = 2, lw = 0.5)
 
 x_f = 200
 
-ax[:plot](times[x_f:end], broadcast(x-> 0.5exp10(-2)x , times[x_f:end]), "r--", lw = 0.8)
+ax[:plot](times[x_f:end], broadcast(x-> 0.02exp10(-2)x , times[x_f:end]), "r--", lw = 0.8) # 3D met
+ax[:plot](times[x_f:end], broadcast(x-> 0.05exp10(-2)x , times[x_f:end]), "r--", lw = 0.8) # 2D met
 
 plt[:xscale]("log")
 plt[:yscale]("log")
@@ -173,19 +183,26 @@ plt[:xlim](3, 1.5exp10(6))
 plt[:tick_params](which = "both", labelsize = ls, direction = "in", pad = 4)
 
 plt[:xticks]([exp10(1), exp10(2), exp10(3), exp10(4), exp10(5), exp10(6)])
+
 plt[:yticks]([exp10(0), exp10(3), exp10(6), exp10(8)])
 # plt[:yticklabels](["10", "10^{2}", "10^{5}", "10^{8}"])
 
-ax[:text](exp10(6), 0.5exp10(-2), L"t", ha="center", va="center", size=fs)
-ax[:text](3exp10(1), exp10(8), L"\langle \Delta r_{ij} \rangle_{\kappa}", ha="center", va="center", size=fs)
+ax[:text](exp10(6), 0.5exp10(-2), L"t", ha="center", va="center", size=fs) # 3D met
+ax[:text](exp10(6), 0.8exp10(-3), L"t", ha="center", va="center", size=fs) # 2D met
 
-ax[:text](1.5exp10(3), 1.8exp10(7), L"\kappa", ha="center", va="center", size=0.8fs)
+ax[:text](4exp10(1), exp10(8), L"\langle \Delta r_{ij} \rangle_{\kappa}", ha="center", va="center", size=fs)  # 3D
+ax[:text](3.5exp10(1), exp10(7), L"\langle \Delta r_{ij} \rangle_{\kappa}", ha="center", va="center", size=fs)  # 2D
 
-ax[:annotate]("", xy = (exp10(4), 1.5exp10(2)), xycoords = "data", xytext = (1.5exp10(3), 5exp10(6)), arrowprops = Dict(:facecolor => "#423b3b", :edgecolor => "#423b3b", :width => 0.1, :headwidth => 2, :headlength => 3) )
+# ax[:text](1.5exp10(3), 1.8exp10(7), L"\kappa", ha="center", va="center", size=0.8fs)
+
+ax[:annotate](L"\kappa", xy = (1.5exp10(4), 1.5exp10(2)), xycoords = "data", xytext = (1.5exp10(3), 5exp10(6)), arrowprops = Dict(:facecolor => "#423b3b", :edgecolor => "#423b3b", :width => 0.1, :headwidth => 2, :headlength => 3) ) # 3D met
+
+ax[:annotate](L"\kappa", xy = (exp10(4), 3exp10(2)), xycoords = "data", xytext = (1.5exp10(3), 3exp10(6)), arrowprops = Dict(:facecolor => "#423b3b", :edgecolor => "#423b3b", :width => 0.1, :headwidth => 2, :headlength => 3) ) # 2D met
 
 plt[:tight_layout]()
 
-fig[:savefig]("delta_rij_met.eps", dpi = 300, format = "eps", bbox_inches = "tight" , pad_inches = 0.1)
+fig[:savefig]("delta_rij_met.eps", dpi = 300, format = "eps", bbox_inches = "tight" , pad_inches = 0.1) # 3D met
+fig[:savefig]("2D_delta_rij_met.eps", dpi = 300, format = "eps", bbox_inches = "tight" , pad_inches = 0.1) # 2D met
 
 plt[:clf]()
 
@@ -197,29 +214,37 @@ ax[:plot](times, d_nn_means[:, sortperm(vals)], "-", ms = 2, lw = 0.5)
 
 x_f = 200
 
-ax[:plot](times[x_f:end], broadcast(x-> exp10(-4)x , times[x_f:end]), "r--", lw = 0.8)
+ax[:plot](times[x_f:end], broadcast(x-> 0.1exp10(-4)x , times[x_f:end]), "r--", lw = 0.8) # 3D met
+ax[:plot](times[x_f:end], broadcast(x-> 0.1exp10(-4)x , times[x_f:end]), "r--", lw = 0.8) # 2D met
 
 plt[:xscale]("log")
 plt[:yscale]("log")
 
-plt[:xlim](3, 1.5exp10(6))
+plt[:xlim](10, 1.5exp10(6))
+plt[:ylim](exp10(-3), exp10(7)) # 3D
+plt[:ylim](exp10(-4), exp10(6)) # 2D
 
 plt[:tick_params](which = "both", labelsize = ls, direction = "in", pad = 4)
 
 plt[:xticks]([exp10(1), exp10(2), exp10(3), exp10(4), exp10(5), exp10(6)])
-plt[:yticks]([exp10(0), exp10(3), exp10(6)])
+plt[:yticks]([exp10(-3), exp10(0), exp10(3), exp10(6)])
 # plt[:yticklabels](["10", "10^{2}", "10^{5}", "10^{8}"])
 
-ax[:text](exp10(6), 1.8exp10(-4), L"t", ha="center", va="center", size=fs)
-ax[:text](3.5exp10(1), exp10(6), L"\langle \Delta r_{\mathrm{nn}} \rangle_{\kappa}", ha="center", va="center", size=fs)
+ax[:text](exp10(6), 7exp10(-3), L"t", ha="center", va="center", size=fs) # 3D met
+ax[:text](exp10(6), 6exp10(-4), L"t", ha="center", va="center", size=fs) # 2D met
 
-ax[:text](1.5exp10(3), 1.8exp10(5), L"\kappa", ha="center", va="center", size=0.8fs)
+ax[:text](1.2exp10(2), exp10(6), L"\langle \Delta r_{\mathrm{nn}} \rangle_{\kappa}", ha="center", va="center", size=fs) # 3D met
+ax[:text](exp10(2), 0.5exp10(5), L"\langle \Delta r_{\mathrm{nn}} \rangle_{\kappa}", ha="center", va="center", size=fs) # 2D met
 
-ax[:annotate]("", xy = (8exp10(3), 0.3exp10(1)), xycoords = "data", xytext = (1.5exp10(3), 0.6exp10(5)), arrowprops = Dict(:facecolor => "#423b3b", :edgecolor => "#423b3b", :width => 0.1, :headwidth => 2, :headlength => 3) )
+# ax[:text](1.5exp10(3), 1.8exp10(5), L"\kappa", ha="center", va="center", size=0.8fs)
+
+ax[:annotate](L"\kappa", xy = (1.5exp10(4), 0.4exp10(1)), xycoords = "data", xytext = (1.5exp10(3), 0.6exp10(5)), arrowprops = Dict(:facecolor => "#423b3b", :edgecolor => "#423b3b", :width => 0.1, :headwidth => 2, :headlength => 3) ) # 3D met
+ax[:annotate](L"\kappa", xy = (exp10(4), 0.3exp10(1)), xycoords = "data", xytext = (1.5exp10(3), 0.6exp10(4)), arrowprops = Dict(:facecolor => "#423b3b", :edgecolor => "#423b3b", :width => 0.1, :headwidth => 2, :headlength => 3) ) # 2D met
 
 plt[:tight_layout]()
 
 fig[:savefig]("delta_rnn_met.eps", dpi = 300, format = "eps", bbox_inches = "tight" , pad_inches = 0.1)
+fig[:savefig]("2D_delta_rnn_met.eps", dpi = 300, format = "eps", bbox_inches = "tight" , pad_inches = 0.1)
 
 plt[:clf]()
 
@@ -228,8 +253,8 @@ plt[:clf]()
 
 ax = fig[:add_subplot](111)
 
-ax[:plot](vals[sortperm(vals)][2:end], [exp10(r_fit_vals[i][0]) for i in 2:length(r_fit_vals)], "-<", color = "#00ae88", ms = 3, lw = 0.5)
-ax[:plot](vals[sortperm(vals)][2:end], [exp10(r_nn_fit_vals[i][0]) for i in 2:length(r_fit_vals)], "-x", color = "#ffa500", ms = 3, lw = 0.5)
+ax[:plot](vals[sortperm(vals)][2:end], [exp10(r_fit_vals[i][0]) for i in 2:length(r_fit_vals)], "-<", color = "#00ae88", ms = 3, lw = 0.5, label = L"\langle \Delta r_{ij} \rangle_{\kappa}"  )
+ax[:plot](vals[sortperm(vals)][2:end], [exp10(r_nn_fit_vals[i][0]) for i in 2:length(r_fit_vals)], "-x", color = "#ffa500", ms = 3, lw = 0.5, label = L"\langle \Delta r_{\mathrm{nn}} \rangle_{\kappa}")
 
 plt[:xscale]("log")
 plt[:yscale]("log")
@@ -239,14 +264,21 @@ ax[:tick_params](axis="x",which="minor",bottom="off")
 ax[:tick_params](axis="y",which="minor",left="off")
 
 plt[:xlim](0.5exp10(-2), 2exp10(1))
+plt[:ylim](exp10(-3), exp10(3))
 
-plt[:yticks]([exp10(-2), exp10(-1), exp10(0), exp10(1), exp10(2)])
+plt[:yticks]([exp10(-3), exp10(-2), exp10(-1), exp10(0), exp10(1), exp10(2)])
 plt[:xticks]([exp10(-2), exp10(-1), exp10(0), exp10(1)])
 
-ax[:text](2exp10(-3), 4.5exp10(2), L"D(\kappa)", ha="center", va="center", size=fs)
-ax[:text](25, 0.8exp10(-3), L"\kappa", ha="center", va="center", size=fs)
+ax[:text](2exp10(-3), 4.5exp10(2), L"D(\kappa)", ha="center", va="center", size=fs) # 3D
+ax[:text](25, 0.8exp10(-3), L"\kappa", ha="center", va="center", size=fs) # 3D
+
+ax[:text](4.5exp10(-3), 5.5exp10(2), L"D(\kappa)", ha="center", va="center", size=fs) # 2D
+ax[:text](1.7, 0.4exp10(-3), L"\kappa", ha="center", va="center", size=fs) # 2D
+
+plt[:legend](fontsize = "x-small")
 
 fig[:savefig]("coef_diff_met.eps", dpi = 300, format = "eps", bbox_inches = "tight" , pad_inches = 0.1)
+fig[:savefig]("2D_coef_diff_met.eps", dpi = 300, format = "eps", bbox_inches = "tight" , pad_inches = 0.1)
 
 plt[:clf]()
 
@@ -359,7 +391,7 @@ ax[:plot](times, d_means[:, sortperm(vals)], "-", ms = 2, lw = 0.5)
 
 x_f = 200
 
-ax[:plot](times[x_f:end], broadcast(x-> exp10(-2)x , times[x_f:end]), "r--", lw = 0.8)
+ax[:plot](times[x_f:end], broadcast(x-> 0.1exp10(-2)x , times[x_f:end]), "r--", lw = 0.8)
 
 plt[:xscale]("log")
 plt[:yscale]("log")
@@ -375,9 +407,9 @@ plt[:yticks]([exp10(0), exp10(3), exp10(6), exp10(9)])
 ax[:text](exp10(6), 0.5exp10(-1), L"t", ha="center", va="center", size=fs)
 ax[:text](3exp10(1), 0.8exp10(9), L"\langle \Delta r_{ij} \rangle_{\kappa}", ha="center", va="center", size=fs)
 
-ax[:text](1.5exp10(3), exp10(8), L"\kappa", ha="center", va="center", size=0.8fs)
+# ax[:text](1.5exp10(3), exp10(8), L"\kappa", ha="center", va="center", size=0.8fs)
 
-ax[:annotate]("", xy = (exp10(4), 0.7exp10(3)), xycoords = "data", xytext = (1.5exp10(3), 0.2exp10(8)), arrowprops = Dict(:facecolor => "#423b3b", :edgecolor => "#423b3b", :width => 0.1, :headwidth => 2, :headlength => 3) )
+ax[:annotate](L"\kappa", xy = (2exp10(4), 0.7exp10(3)), xycoords = "data", xytext = (1.5exp10(3), 0.2exp10(8)), arrowprops = Dict(:facecolor => "#423b3b", :edgecolor => "#423b3b", :width => 0.1, :headwidth => 2, :headlength => 3) )
 
 plt[:tight_layout]()
 
@@ -393,7 +425,7 @@ ax[:plot](times, d_nn_means[:, sortperm(vals)], "-", ms = 2, lw = 0.5)
 
 x_f = 200
 
-ax[:plot](times[x_f:end], broadcast(x-> 5exp10(-4)x , times[x_f:end]), "r--", lw = 0.8)
+ax[:plot](times[x_f:end], broadcast(x-> 0.2exp10(-4)x , times[x_f:end]), "r--", lw = 0.8)
 
 plt[:xscale]("log")
 plt[:yscale]("log")

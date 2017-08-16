@@ -106,7 +106,9 @@ gr()
 met_vals = readcsv("3D_met_order.csv")
 top_vals = readcsv("3D_top_order.csv")
 vsk_vals = readcsv("3D_vsk_order.csv")
+
 vsk_vals_2D = readcsv("2D_vsk_order.csv")
+vsk_vals_2D = readcsv("$(homedir())/art_DATA/order_vicsek_n10000.csv")
 
 ### ================================== ###
 ### PYPLOT
@@ -125,8 +127,8 @@ k_lim = 0.51
 y_l = 0.97 #NLOC_DATA
 y_h = 1.0 #NLOC_DATA
 
-fs = 14
-ls = 12
+fs = 12
+ls = 10
 
 fig = plt[:figure](num = 1, dpi = 300, facecolor="w", edgecolor="k")
 fig[:set_size_inches](2.4, 1.92, forward = true)
@@ -136,10 +138,22 @@ ax = fig[:add_subplot](111)
 
 ###==============###==============###==============###
 
+plt[:clf]()
+
+###==============###==============###==============###
+
 ax[:plot](met_vals[:, 1], met_vals[:, 2], "-o", color = "#7C98AB", ms = 2, lw = 0.5)
 ax[:plot](top_vals[:, 1], top_vals[:, 2], "-^", color = "#F6883D", ms = 2, lw = 0.5)
 
+###==============###==============###==============###
+
 ax[:plot](vcat(vsk_vals, [1.0 0.98])[:, 1], vcat(vsk_vals, [1.0 0.98])[:, 2], "-s", color = "#423b3b", ms = 2, lw = 0.5)
+
+###==============###==============###==============###
+
+ax[:plot](vsk_vals_2D[:, 1], vsk_vals_2D[:, end], "-s", color = "#423b3b", ms = 2, lw = 0.5)
+
+###==============###==============###==============###
 
 # ρ_0
 ax[:plot](fill(0.3, 5), collect(linspace(0.,1.,5)), "--", color = "#0e599f", lw = 0.8)
@@ -147,12 +161,16 @@ ax[:plot](fill(0.3, 5), collect(linspace(0.,1.,5)), "--", color = "#0e599f", lw 
 # unbounded
 ax[:plot](vcat(vsk_vals, [1.0 0.98])[:, 1], [vsk_vals[1, 2] + rand(-0.005:0.001:0.005) for i in 1:16], ":", color = "#CD2B18", lw = 1.2)
 
+# unbounded
+ax[:plot](vsk_vals_2D[:, 1], [vsk_vals_2D[1, end] + rand(-0.005:0.001:0.005) for i in 1:size(vsk_vals_2D, 1)], ":", color = "#CD2B18", lw = 1.2)
+
 #7C98AB, #F6883D
 plt[:xscale]("log")
 # plt[:xscale]("linear")
 
 plt[:xlim](0.00085, 1.2)
 plt[:xlim](0.00085, 1.8)
+plt[:xlim](0.00008, 0.51)
 
 plt[:yticks](collect(linspace(0,1,5)))
 plt[:yticks](collect(linspace(0,1,3)))
@@ -160,14 +178,22 @@ plt[:yticks](collect(linspace(0,1,3)))
 plt[:xticks]([exp10(-3), exp10(-2), exp10(-1), 0.3 , exp10(0)])
 plt[:xticklabels](["10^{-3}", "10^{-2}", "10^{-1}", "0.3", "10^{-3}"])
 
+plt[:xticks]([exp10(-4), exp10(-3), exp10(-2), exp10(-1)])
+
 ax[:text](1.0, 0.1, L"\kappa", ha="center", va="center", size=fs)
 ax[:text](0.0025, 0.9, L"\Psi(\kappa)", ha="center", va="center", size=fs)
 
-ax[:text](0.2, 0.08, L"\rho_0", ha="center", va="center", size=0.75*fs)
-ax[:text](0.3, -0.2, L"\rho_0", ha="center", va="center", size=0.75*fs)
+ax[:text](0.3, -0.2, L"\rho_0", ha="center", va="center", size=0.75*fs) # 3D
+ax[:text](0.2, 0.08, L"\rho_0", ha="center", va="center", size=0.75*fs) # 2D
 
-ax[:text](0.85, 0.08, L"\rho", ha="center", va="center", size=fs)
-ax[:text](0.0025, 0.9, L"\Psi(\rho)", ha="center", va="center", size=fs)
+ax[:text](0.85, 0.08, L"\rho", ha="center", va="center", size=fs) # 3D
+ax[:text](0.6, -0.12, L"\rho", ha="center", va="center", size=fs) # 2D
+
+ax[:text](0.0025, 0.9, L"\Psi(\rho)", ha="center", va="center", size=fs) # 3D
+ax[:text](0.00025, 0.95, L"\Psi(\rho)", ha="center", va="center", size=fs) # 2D
+
+ax[:tick_params](axis="x",which="minor",bottom="off")
+ax[:tick_params](axis="y",which="minor",left="off")
 
 plt[:tick_params](which = "both", labelsize = ls, direction = "in", pad = 4)
 plt[:tight_layout]()
@@ -181,6 +207,8 @@ fig[:savefig]("fase_test1.eps", dpi = 300, format = "eps", bbox_inches = "tight"
 fig[:savefig]("order_kappa.eps", dpi = 300, format = "eps", bbox_inches = "tight" , pad_inches = 0.1)
 
 fig[:savefig]("order_vsk.eps", dpi = 300, format = "eps", bbox_inches = "tight" , pad_inches = 0.1)
+
+fig[:savefig]("2D_order_vsk.eps", dpi = 300, format = "eps", bbox_inches = "tight" , pad_inches = 0.1)
 
 ###==============###==============###==============###
 
