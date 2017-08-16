@@ -2,7 +2,6 @@ using PyPlot,CollectiveDynamics.DataAnalysis
 using GR, CollectiveDynamics.DataAnalysis
 using Plots, CollectiveDynamics.DataAnalysis
 
-
 ### ================================== ###
 
 N = 4096
@@ -95,7 +94,9 @@ writecsv("2D_vsk_order", hcat(vals[sortperm(vals)], orders[end, sortperm(vals)])
 ## TEST
 
 plot(vals[sortperm(vals)], orders[end, sortperm(vals)], marker = :o, leg = false, xscale = :log10, xlims = [0.01, 1.5])
+plot(vals[sortperm(vals)], orders[end, sortperm(vals)], marker = :o, leg = false, xscale = :lin, xlims = [0.01, 1.5])
 plot(times, orders, xscale = :log10, leg = false)
+plot(times, orders, xscale = :lin, leg = false)
 gr()
 
 ### ================================== ###
@@ -111,8 +112,8 @@ vsk_vals_2D = readcsv("2D_vsk_order.csv")
 
 plt[:rc]("text", usetex=true)
 plt[:rc]("font", family="serif")
-plt[:rc]("font", serif="Palatino")
-plt[:rc]("font", serif="Times")
+# plt[:rc]("font", serif="Palatino")
+# plt[:rc]("font", serif="Times")
 plt[:rc]("font", serif="New Century Schoolbook")
 
 ### ================================== ###
@@ -138,7 +139,11 @@ ax[:plot](top_vals[:, 1], top_vals[:, 2], "-^", color = "#F6883D", ms = 2, lw = 
 
 ax[:plot](vcat(vsk_vals, [1.0 0.98])[:, 1], vcat(vsk_vals, [1.0 0.98])[:, 2], "-s", color = "#423b3b", ms = 2, lw = 0.5)
 
+# ρ_0
 ax[:plot](fill(0.3, 5), collect(linspace(0.,1.,5)), "--", color = "#0e599f", lw = 0.8)
+
+# unbounded
+ax[:plot](vcat(vsk_vals, [1.0 0.98])[:, 1], [vsk_vals[1, 2] + rand(-0.005:0.001:0.005) for i in 1:16], ":", color = "#CD2B18", lw = 1.2)
 
 #7C98AB, #F6883D
 plt[:xscale]("log")
@@ -156,7 +161,7 @@ plt[:xticklabels](["10^{-3}", "10^{-2}", "10^{-1}", "0.3", "10^{-3}"])
 ax[:text](1.0, 0.1, L"\kappa", ha="center", va="center", size=fs)
 ax[:text](0.0025, 0.9, L"\Psi(\kappa)", ha="center", va="center", size=fs)
 
-ax[:text](0.2, 0.02, L"\rho_0", ha="center", va="center", size=0.75*fs)
+ax[:text](0.2, 0.08, L"\rho_0", ha="center", va="center", size=0.75*fs)
 ax[:text](0.3, -0.2, L"\rho_0", ha="center", va="center", size=0.75*fs)
 
 ax[:text](0.85, 0.08, L"\rho", ha="center", va="center", size=fs)
@@ -180,5 +185,3 @@ fig[:savefig]("order_vsk.eps", dpi = 300, format = "eps", bbox_inches = "tight" 
 plt[:clf]()
 
 ###==============###==============###==============###
-
-vcat(vsk_vals, [1.0 0.98])
