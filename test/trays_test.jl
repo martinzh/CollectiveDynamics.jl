@@ -180,8 +180,8 @@ ax[:set_yticks]([-1exp10(4), 0 , exp10(4)])
 ax[:set_xticklabels](["-1e+4", "0", "1e+4"])
 ax[:set_yticklabels](["-1e+4", "0", "1e+4"])
 
-ax[:text](1.3exp10(4), -1.5exp10(4), L"x", ha="center", va="center", size=fs) # 3D met
-ax[:text](-1.5exp10(4), 1.3exp10(4), L"y", ha="center", va="center", size=fs) # 3D met
+ax[:text](1.6exp10(4), -1.5exp10(4), L"x", ha="center", va="center", size=fs) # 3D met
+ax[:text](-1.5exp10(4), 1.7exp10(4), L"y", ha="center", va="center", size=fs) # 3D met
 
 plt[:tight_layout]()
 ###==============###==============###==============###
@@ -191,6 +191,8 @@ fig[:savefig]("fase_test2.eps", dpi = 100, format = "eps", bbox_inches = "tight"
 fig[:savefig]("fase_test1.eps", dpi = 600, format = "eps", bbox_inches = "tight")
 
 fig[:savefig]("fase_test1.eps", format = "eps", bbox_inches = "tight")
+
+fig[:savefig]("2D_trays_k_0.eps", format = "eps", bbox_inches = "tight")
 
 ###==============###==============###==============###
 
