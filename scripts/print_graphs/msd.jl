@@ -34,6 +34,7 @@ folder = "NLOC_MET_3D"
 folder = "NLOC_MET_2D"
 
 folder = "NLOC_TOP_3D"
+folder = "NLOC_TOP_2D"
 folder = "NLOC_TOP_3D_MEAN"
 
 folder = "TFLOCK_NLOC_DATA"
@@ -112,6 +113,7 @@ r_vals = broadcast(x -> log10(x), d_means)
 r_nn_vals = broadcast(x -> log10(x), d_nn_means)
 
 x_l = 320
+x_l = 345
 
 r_fit_vals = [polyfit(x_vals[x_l:end], r_vals[x_l:end, i], 1) for i in sortperm(vals)]
 r_nn_fit_vals = [polyfit(x_vals[x_l:end], r_nn_vals[x_l:end, i], 1) for i in sortperm(vals)]
@@ -364,6 +366,9 @@ ax[:plot](vals_t[2:end, 1], vals_t[2:end, 4], "-s", color = "#ffa500", ms = 3, l
 ax[:plot](vals_m[2:end, 1], vals_m[2:end, 2], "-o", color = "#552299", ms = 3, lw = 0.5)
 ax[:plot](vals_m[2:end, 1], vals_m[2:end, 4], "-x", color = "#d24760", ms = 3, lw = 0.5)
 
+ax[:plot](vals[sortperm(vals)][2:end],[r_fit_vals[i][1] for i in 2:length(r_fit_vals)], "-o", color = "#552299", ms = 3, lw = 0.5, label = L"\langle \Delta r_{ij} \rangle_{\kappa}")
+ax[:plot](vals[sortperm(vals)][2:end], [r_nn_fit_vals[i][1] for i in 2:length(r_fit_vals)], "-x", color = "#d24760", ms = 3, lw = 0.5, label = L"\langle \Delta r_{\mathrm{nn}} \rangle_{\kappa}")
+
 plt[:xscale]("log")
 plt[:yscale]("log")
 
@@ -376,10 +381,18 @@ ax[:tick_params](axis="y",which="minor",left="off")
 plt[:xticks]([exp10(-3), exp10(-2), exp10(-1), exp10(0), exp10(1)])
 plt[:yticks]([exp10(-2), exp10(0), exp10(2), exp10(3)])
 
+#3D
 ax[:text](2.3exp10(-4), 7exp10(3), L"D(\kappa)", ha="center", va="center", size=fs)
 ax[:text](25, 3exp10(-4), L"\kappa", ha="center", va="center", size=fs)
 
+#2D
+ax[:text](0.0045, 1.115, L"D(\kappa)", ha="center", va="center", size=fs)
+ax[:text](1.7, 0.992, L"\kappa", ha="center", va="center", size=fs)
+
+plt[:legend](fontsize = "x-small", loc = 4)
+
 fig[:savefig]("coeff_diff_both.eps", dpi = 300, format = "eps", bbox_inches = "tight" , pad_inches = 0.1)
+fig[:savefig]("2D_coeff_diff_top.eps", dpi = 300, format = "eps", bbox_inches = "tight" , pad_inches = 0.1)
 
 plt[:clf]()
 
@@ -391,7 +404,7 @@ ax[:plot](times, d_means[:, sortperm(vals)], "-", ms = 2, lw = 0.5)
 
 x_f = 200
 
-ax[:plot](times[x_f:end], broadcast(x-> 0.1exp10(-2)x , times[x_f:end]), "r--", lw = 0.8)
+ax[:plot](times[x_f:end], broadcast(x-> 0.02exp10(-2)x , times[x_f:end]), "r--", lw = 0.8)
 
 plt[:xscale]("log")
 plt[:yscale]("log")
@@ -404,16 +417,24 @@ plt[:xticks]([exp10(1), exp10(2), exp10(3), exp10(4), exp10(5), exp10(6)])
 plt[:yticks]([exp10(0), exp10(3), exp10(6), exp10(9)])
 # plt[:yticklabels](["10", "10^{2}", "10^{5}", "10^{8}"])
 
+# 3D
 ax[:text](exp10(6), 0.5exp10(-1), L"t", ha="center", va="center", size=fs)
 ax[:text](3exp10(1), 0.8exp10(9), L"\langle \Delta r_{ij} \rangle_{\kappa}", ha="center", va="center", size=fs)
 
+ax[:annotate](L"\kappa", xy = (2exp10(4), 0.7exp10(3)), xycoords = "data", xytext = (1.5exp10(3), 0.2exp10(8)), arrowprops = Dict(:facecolor => "#423b3b", :edgecolor => "#423b3b", :width => 0.1, :headwidth => 2, :headlength => 3) )
+
+# 2D
+ax[:text](exp10(6), 0.2exp10(-3), L"t", ha="center", va="center", size=fs)
+ax[:text](3exp10(1), 0.8exp10(8), L"\langle \Delta r_{ij} \rangle_{\kappa}", ha="center", va="center", size=fs)
+
 # ax[:text](1.5exp10(3), exp10(8), L"\kappa", ha="center", va="center", size=0.8fs)
 
-ax[:annotate](L"\kappa", xy = (2exp10(4), 0.7exp10(3)), xycoords = "data", xytext = (1.5exp10(3), 0.2exp10(8)), arrowprops = Dict(:facecolor => "#423b3b", :edgecolor => "#423b3b", :width => 0.1, :headwidth => 2, :headlength => 3) )
+ax[:annotate](L"\kappa", xy = (exp10(4), 0.7exp10(3)), xycoords = "data", xytext = (1.5exp10(3), 0.2exp10(8)), arrowprops = Dict(:facecolor => "#423b3b", :edgecolor => "#423b3b", :width => 0.1, :headwidth => 2, :headlength => 3) )
 
 plt[:tight_layout]()
 
 fig[:savefig]("delta_rij_top.eps", dpi = 300, format = "eps", bbox_inches = "tight" , pad_inches = 0.1)
+fig[:savefig]("2D_delta_rij_top.eps", dpi = 300, format = "eps", bbox_inches = "tight" , pad_inches = 0.1)
 
 plt[:clf]()
 
@@ -425,7 +446,7 @@ ax[:plot](times, d_nn_means[:, sortperm(vals)], "-", ms = 2, lw = 0.5)
 
 x_f = 200
 
-ax[:plot](times[x_f:end], broadcast(x-> 0.2exp10(-4)x , times[x_f:end]), "r--", lw = 0.8)
+ax[:plot](times[x_f:end], broadcast(x-> 0.02exp10(-4)x , times[x_f:end]), "r--", lw = 0.8)
 
 plt[:xscale]("log")
 plt[:yscale]("log")
@@ -438,10 +459,15 @@ plt[:xticks]([exp10(1), exp10(2), exp10(3), exp10(4), exp10(5), exp10(6)])
 plt[:yticks]([exp10(-4), exp10(-1), exp10(2), exp10(5)])
 # plt[:yticklabels](["10", "10^{2}", "10^{5}", "10^{8}"])
 
+# 3D
 ax[:text](exp10(6), 3exp10(-6), L"t", ha="center", va="center", size=fs)
 ax[:text](3exp10(1), exp10(4), L"\langle \Delta r_{\mathrm{nn}} \rangle_{\kappa}", ha="center", va="center", size=fs)
 
-# ax[:text](1.5exp10(3),5exp10(2), L"\kappa", ha="center", va="center", size=0.8fs)
+ax[:annotate](L"\kappa", xy = (0.7exp10(4), 2exp10(0)), xycoords = "data", xytext = (1.5exp10(3), 5exp10(2)), arrowprops = Dict(:facecolor => "#423b3b", :edgecolor => "#423b3b", :width => 0.1, :headwidth => 2, :headlength => 3) )
+
+# 2D
+ax[:text](exp10(6), 5exp10(-8), L"t", ha="center", va="center", size=fs)
+ax[:text](5exp10(1), 4exp10(3), L"\langle \Delta r_{\mathrm{nn}} \rangle_{\kappa}", ha="center", va="center", size=fs)
 
 ax[:annotate](L"\kappa", xy = (0.7exp10(4), 2exp10(0)), xycoords = "data", xytext = (1.5exp10(3), 5exp10(2)), arrowprops = Dict(:facecolor => "#423b3b", :edgecolor => "#423b3b", :width => 0.1, :headwidth => 2, :headlength => 3) )
 
@@ -461,6 +487,8 @@ plt[:tight_layout]()
 
 
 fig[:savefig]("delta_rnn_top.eps", dpi = 300, format = "eps", bbox_inches = "tight" , pad_inches = 0.1)
+
+fig[:savefig]("2D_delta_rnn_top.eps", dpi = 300, format = "eps", bbox_inches = "tight" , pad_inches = 0.1)
 
 ### ================================== ###
 
