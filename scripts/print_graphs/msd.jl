@@ -69,7 +69,7 @@ vals = [parse(Float64, vcat(capt...)[i]) for i in find(x -> x != nothing, vcat(c
 vals = [ parse(Float64, match(r"^\w+_(\d+\.\d+)", x).captures[1]) for x in order_files ]
 
 # para TFLOCK
-vals = [ parse(Float64, match(r"^\w+_(\d+\.\d+)", x).captures[1]) for x in order_files ]
+vals = [ parse(Float64, match(r"(\d\.\d+)\.\w+$", x).captures[1]) for x in order_files ]
 
 ### ================================== ###
 # i = 3

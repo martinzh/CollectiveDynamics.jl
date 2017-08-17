@@ -24,9 +24,14 @@ v0 = 1.0
 
 folder = "NLOC_DATA"
 folder = "NLOC_DATA_3D"
+
+folder = "NLOC_MET_2D"
 folder = "NLOC_MET_3D"
+
+folder = "NLOC_TOP_2D"
 folder = "NLOC_TOP_3D"
 folder = "NLOC_TOP_3D_MEAN"
+
 folder = "TFLOCK_NLOC_DATA"
 folder = "TFLOCK_DATA"
 
@@ -35,7 +40,7 @@ folder_path = "$(homedir())/art_DATA/$(folder)/DATA/data_N_$(N)"
 
 eta_folders = readdir(folder_path)
 
-f = 10
+f = 4
 data_path = folder_path * "/" * eta_folders[f]
 
 reps = [match(r"\w+(\d+).\w+", x).captures[1]  for x in filter(x -> ismatch(r"^pos_", x), readdir(data_path))]
@@ -43,22 +48,29 @@ reps = [match(r"\w+(\d+).\w+", x).captures[1]  for x in filter(x -> ismatch(r"^p
 r = rand(reps)
 
 raw_data = reinterpret(Float64, read(data_path * "/pos_$(r).dat"))
+
 pos_data = transpose(reshape(raw_data, 3N, div(length(raw_data), 3N)))
 
 x = view(pos_data, :, 1:3:3N)
 y = view(pos_data, :, 2:3:3N)
 z = view(pos_data, :, 3:3:3N)
 
+pos_data = transpose(reshape(raw_data, 2N, div(length(raw_data), 2N)))
+x = view(pos_data, :, 1:2:2N)
+y = view(pos_data, :, 2:2:2N)
+
+
 ###==============###==============###==============###
 
-plt[:rc]("font", family="serif")
 plt[:rc]("text", usetex=true)
+plt[:rc]("font", family="serif")
+plt[:rc]("font", serif="New Century Schoolbook")
 
 # plt[:rc]("figure.autolayout")
 # plt[:rcParams]["figure.autolayout"] = true
 
 ###==============###==============###==============###
-fs = 14
+fs = 12
 ls = 10
 
 sx = sy = 3
@@ -71,6 +83,9 @@ plt[:ticklabel_format](style = "plain")
 fig = plt[:figure](num = 1, dpi = 100, facecolor="w", edgecolor="k")
 fig[:set_size_inches](sx, sy, forward = true)
 
+fig = plt[:figure](num = 1, dpi = 300, facecolor="w", edgecolor="w")
+fig[:set_size_inches](2.4, 1.92, forward = true)
+
 # fig[:subplots_adjust](bottom=-0.15,top=1.2)
 
 ###==============###==============###==============###
@@ -79,16 +94,26 @@ fig[:set_size_inches](sx, sy, forward = true)
 ax[:autoscale](enable = true, tight = true)
 
 ###==============###==============###==============###
+
 fig = plt[:figure]()
 fig[:set_size_inches](sx, sy, forward = true)
 
 ax = fig[:gca](projection = "3d")
+ax = fig[:add_subplot](111)
 
+plt[:clf]()
 ###==============###==============###==============###
 
 for i in rand(1:N, 256)
     plot3D(xs = x[:, i], ys= y[:, i], zs = z[:, i], zdir = "z", lw = 0.5)
     # plot3D(x[:, i], y[:, i], color = "0.5" ,zdir="z", zs=minimum(z), lw = 0.2)
+end
+
+
+###==============###==============###==============###
+# for i in rand(1:N, 256)
+for i in 1:N
+    plt[:plot](x[:, i], y[:, i], lw = 0.5)
 end
 
 ###==============###==============###==============###
@@ -142,6 +167,23 @@ ax[:set_zticklabels](["-6e+4", "-4e+4", "-2e+4", "0"])
 
 ax[:set_zlim]([-1.2exp10(5), 0.0])
 ax[:set_ylim]([-2.25exp10(5), 0.0])
+###==============###==============###==============###
+# 2D
+
+plt[:tick_params](which = "both", labelsize = ls, direction = "in", pad = 1.5)
+
+### K = 0
+
+ax[:set_xticks]([-1exp10(4), 0 , exp10(4)])
+ax[:set_yticks]([-1exp10(4), 0 , exp10(4)])
+
+ax[:set_xticklabels](["-1e+4", "0", "1e+4"])
+ax[:set_yticklabels](["-1e+4", "0", "1e+4"])
+
+ax[:text](1.3exp10(4), -1.5exp10(4), L"x", ha="center", va="center", size=fs) # 3D met
+ax[:text](-1.5exp10(4), 1.3exp10(4), L"y", ha="center", va="center", size=fs) # 3D met
+
+plt[:tight_layout]()
 ###==============###==============###==============###
 
 fig[:savefig]("fase_test2.eps", dpi = 100, format = "eps", bbox_inches = "tight" , pad_inches = 0.27)

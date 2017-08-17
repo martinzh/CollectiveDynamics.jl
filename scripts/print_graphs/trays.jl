@@ -27,9 +27,13 @@ v0 = 1.0
 
 folder = "NLOC_DATA"
 folder = "NLOC_DATA_3D"
+
 folder = "NLOC_MET_3D"
+folder = "NLOC_MET_2D"
+
 folder = "NLOC_TOP_3D"
 folder = "NLOC_TOP_3D_MEAN"
+
 folder = "TFLOCK_NLOC_DATA"
 folder = "TFLOCK_DATA"
 
@@ -47,7 +51,7 @@ folders = readdir(folder_path * "/" * eta_folders[1])
 
 ### ================================== ###
 
-f = 6
+f = 4
 data_path = folder_path * "/" * eta_folders[1] * "/" * folders[f]
 data_path = folder_path * "/" * eta_folders[f]
 data_path = folder_path * "/" * folders[f]
@@ -62,6 +66,7 @@ psi   = Array{Float64}[]
 
 raw_data = reinterpret(Float64, read(data_path * "/pos_$(r).dat"))
 pos_data = transpose(reshape(raw_data, 3N, div(length(raw_data), 3N)))
+pos_data = transpose(reshape(raw_data, 2N, div(length(raw_data), 2N)))
 # pos_data = reshape(raw_data, 3N, div(length(raw_data), 3N))
 
 ### ================================== ###
@@ -75,6 +80,28 @@ z = view(pos_data, :, 3:3:3N)
 
 for i in rand(1:N, 256)
     plot3D(xs = x[:,i], ys = y[:,i], zs = z[:,i], zdir = "z", lw = 0.8)
+end
+
+plt[:ticklabel_format](style = "sci", scilimits = (2,4), useOffset = false)
+
+plt[:NullFormatter]()
+
+plt[:clf]()
+
+rand(1:N, 100)
+
+savefig("/Users/mzumaya/Google Drive/proyecto_martin/graphs_p_mod/$(folder)/N_$(N)/k_0_5.png")
+
+### ================================== ###
+
+x = view(pos_data, :, 1:2:2N)
+y = view(pos_data, :, 2:2:2N)
+
+# trays = plot(x, y, z, leg = false, size = (600,600), aspect_ratio = :equal)
+# trays = plot(x, y, z, leg = false, size = (800,800), tickfont = font(1), aspect_ratio = :equal)
+
+for i in rand(1:N, 256)
+    plt[:plot](x[:,i], y[:,i], lw = 0.8)
 end
 
 plt[:ticklabel_format](style = "sci", scilimits = (2,4), useOffset = false)
