@@ -366,12 +366,8 @@ ax[:plot](vals_t[2:end, 1], vals_t[2:end, 4], "-s", color = "#ffa500", ms = 3, l
 ax[:plot](vals_m[2:end, 1], vals_m[2:end, 2], "-o", color = "#552299", ms = 3, lw = 0.5)
 ax[:plot](vals_m[2:end, 1], vals_m[2:end, 4], "-x", color = "#d24760", ms = 3, lw = 0.5)
 
-<<<<<<< HEAD
-ax[:plot](vals_m[2:end, 1], vals_m[2:end, 4], "-s", color = "#ffa500", ms = 3, lw = 0.5)
-=======
 ax[:plot](vals[sortperm(vals)][2:end],[r_fit_vals[i][1] for i in 2:length(r_fit_vals)], "-o", color = "#552299", ms = 3, lw = 0.5, label = L"\langle \Delta r_{ij} \rangle_{\kappa}")
 ax[:plot](vals[sortperm(vals)][2:end], [r_nn_fit_vals[i][1] for i in 2:length(r_fit_vals)], "-x", color = "#d24760", ms = 3, lw = 0.5, label = L"\langle \Delta r_{\mathrm{nn}} \rangle_{\kappa}")
->>>>>>> origin/master
 
 plt[:xscale]("log")
 plt[:yscale]("log")
@@ -389,15 +385,6 @@ plt[:yticks]([exp10(-2), exp10(0), exp10(2), exp10(3)])
 ax[:text](2.3exp10(-4), 7exp10(3), L"D(\kappa)", ha="center", va="center", size=fs)
 ax[:text](25, 3exp10(-4), L"\kappa", ha="center", va="center", size=fs)
 
-<<<<<<< HEAD
-ax[:set_xlabel](L"\kappa", labelpad =0)
-ax[:set_ylabel](L"D(\kappa)" , labelpad =10, rotation = "horizontal")
-
-plt[:tight_layout]()
-
-fig[:savefig]("coeff_diff_both.eps", dpi = 300, format = "eps", bbox_inches = "tight" , pad_inches = 0.1)
-fig[:savefig]("coeff_diff_both.png", dpi = 300, format = "png", bbox_inches = "tight" , pad_inches = 0.1)
-=======
 #2D
 ax[:text](0.0045, 1.115, L"D(\kappa)", ha="center", va="center", size=fs)
 ax[:text](1.7, 0.992, L"\kappa", ha="center", va="center", size=fs)
@@ -406,7 +393,6 @@ plt[:legend](fontsize = "x-small", loc = 4)
 
 fig[:savefig]("coeff_diff_both.eps", dpi = 300, format = "eps", bbox_inches = "tight" , pad_inches = 0.1)
 fig[:savefig]("2D_coeff_diff_top.eps", dpi = 300, format = "eps", bbox_inches = "tight" , pad_inches = 0.1)
->>>>>>> origin/master
 
 plt[:clf]()
 
