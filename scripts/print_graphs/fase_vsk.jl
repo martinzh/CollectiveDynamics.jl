@@ -143,6 +143,9 @@ plt[:clf]()
 ###==============###==============###==============###
 
 ax[:plot](met_vals[:, 1], met_vals[:, 2], "-o", color = "#7C98AB", ms = 2, lw = 0.5)
+
+ax[:plot](met_vals[:, 1], met_vals[:, 2], "-o", color = "#000000", ms = 2, lw = 0.5)
+
 ax[:plot](top_vals[:, 1], top_vals[:, 2], "-^", color = "#F6883D", ms = 2, lw = 0.5)
 
 ###==============###==============###==============###
@@ -198,6 +201,9 @@ ax[:tick_params](axis="y",which="minor",left="off")
 plt[:tick_params](which = "both", labelsize = ls, direction = "in", pad = 4)
 plt[:tight_layout]()
 
+ax[:set_xlabel](L"\kappa", labelpad =0)
+ax[:set_ylabel](L"\Psi", labelpad =0)
+
 ###==============###==============###==============###
 
 # plt[:savefig]("fase_t.eps", dpi = "figure", format = "eps", bbox_inches = "tight" , pad_inches = 0.1)
@@ -209,6 +215,8 @@ fig[:savefig]("order_kappa.eps", dpi = 300, format = "eps", bbox_inches = "tight
 fig[:savefig]("order_vsk.eps", dpi = 300, format = "eps", bbox_inches = "tight" , pad_inches = 0.1)
 
 fig[:savefig]("2D_order_vsk.eps", dpi = 300, format = "eps", bbox_inches = "tight" , pad_inches = 0.1)
+
+fig[:savefig]("met_order_kappa.png", dpi = 300, format = "png", bbox_inches = "tight" , pad_inches = 0.1)
 
 ###==============###==============###==============###
 

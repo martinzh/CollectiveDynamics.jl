@@ -351,7 +351,7 @@ plt[:clf]()
 ## diffsion exponents BOTH
 
 vals_t = readcsv("top_diff_vals.csv")
-vals_m = readcsv("met_diff_vals.csv")
+vals_m = readcsv("3D_met_diff_vals.csv")
 
 ax = fig[:add_subplot](111)
 
@@ -363,6 +363,8 @@ ax[:plot](vals_t[2:end, 1], vals_t[2:end, 4], "-s", color = "#ffa500", ms = 3, l
 
 ax[:plot](vals_m[2:end, 1], vals_m[2:end, 2], "-o", color = "#552299", ms = 3, lw = 0.5)
 ax[:plot](vals_m[2:end, 1], vals_m[2:end, 4], "-x", color = "#d24760", ms = 3, lw = 0.5)
+
+ax[:plot](vals_m[2:end, 1], vals_m[2:end, 4], "-s", color = "#ffa500", ms = 3, lw = 0.5)
 
 plt[:xscale]("log")
 plt[:yscale]("log")
@@ -379,7 +381,13 @@ plt[:yticks]([exp10(-2), exp10(0), exp10(2), exp10(3)])
 ax[:text](2.3exp10(-4), 7exp10(3), L"D(\kappa)", ha="center", va="center", size=fs)
 ax[:text](25, 3exp10(-4), L"\kappa", ha="center", va="center", size=fs)
 
+ax[:set_xlabel](L"\kappa", labelpad =0)
+ax[:set_ylabel](L"D(\kappa)" , labelpad =10, rotation = "horizontal")
+
+plt[:tight_layout]()
+
 fig[:savefig]("coeff_diff_both.eps", dpi = 300, format = "eps", bbox_inches = "tight" , pad_inches = 0.1)
+fig[:savefig]("coeff_diff_both.png", dpi = 300, format = "png", bbox_inches = "tight" , pad_inches = 0.1)
 
 plt[:clf]()
 
@@ -461,6 +469,22 @@ plt[:tight_layout]()
 
 
 fig[:savefig]("delta_rnn_top.eps", dpi = 300, format = "eps", bbox_inches = "tight" , pad_inches = 0.1)
+
+### ================================== ###
+
+ax = fig[:add_subplot](111)
+
+ax[:plot](times, orders[:,1], "-s", color = "#ffa500", ms = 0.1, lw = 0.5)
+plt[:xscale]("log")
+
+plt[:tick_params](which = "both", labelsize = ls, direction = "in", pad = 1.5)
+
+ax[:set_xlabel](L"t", labelpad =0)
+ax[:set_ylabel](L"\Psi(t)", labelpad =0)
+
+plt[:tight_layout]()
+
+fig[:savefig]("psi_vicsek_3D.png", dpi = 300, format = "png", bbox_inches = "tight" , pad_inches = 0.1)
 
 ### ================================== ###
 
