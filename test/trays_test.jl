@@ -1,7 +1,6 @@
 ENV["PLOTS_USE_ATOM_PLOTPLANE"] = "false"
 
 using PyPlot, LaTeXStrings, CollectiveDynamics.DataAnalysis
-using PyPlot
 
 ###==============###==============###==============###
 
@@ -40,12 +39,13 @@ folder_path = "$(homedir())/art_DATA/$(folder)/DATA/data_N_$(N)"
 
 eta_folders = readdir(folder_path)
 
-f = 4
+f = 7
 data_path = folder_path * "/" * eta_folders[f]
 
 reps = [match(r"\w+(\d+).\w+", x).captures[1]  for x in filter(x -> ismatch(r"^pos_", x), readdir(data_path))]
 
 r = rand(reps)
+r = 6
 
 raw_data = reinterpret(Float64, read(data_path * "/pos_$(r).dat"))
 
@@ -70,7 +70,7 @@ plt[:rc]("font", serif="New Century Schoolbook")
 # plt[:rcParams]["figure.autolayout"] = true
 
 ###==============###==============###==============###
-fs = 12
+fs = 10
 ls = 10
 
 sx = sy = 3
@@ -113,7 +113,7 @@ end
 ###==============###==============###==============###
 # for i in rand(1:N, 256)
 for i in 1:N
-    plt[:plot](x[:, i], y[:, i], lw = 0.5)
+    plt[:plot](x[:, i], y[:, i], lw = 0.3)
 end
 
 ###==============###==============###==============###
@@ -173,15 +173,57 @@ ax[:set_ylim]([-2.25exp10(5), 0.0])
 plt[:tick_params](which = "both", labelsize = ls, direction = "in", pad = 1.5)
 
 ### K = 0
-
 ax[:set_xticks]([-1exp10(4), 0 , exp10(4)])
 ax[:set_yticks]([-1exp10(4), 0 , exp10(4)])
 
 ax[:set_xticklabels](["-1e+4", "0", "1e+4"])
 ax[:set_yticklabels](["-1e+4", "0", "1e+4"])
 
-ax[:text](1.6exp10(4), -1.5exp10(4), L"x", ha="center", va="center", size=fs) # 3D met
-ax[:text](-1.5exp10(4), 1.7exp10(4), L"y", ha="center", va="center", size=fs) # 3D met
+ax[:text](1.6exp10(4), -1.5exp10(4), L"x", ha="center", va="center", size=fs)
+ax[:text](-1.5exp10(4), 1.7exp10(4), L"y", ha="center", va="center", size=fs)
+
+### K = 1.0, r = 4
+ax[:set_xticks]([0 , 2exp10(4), 4exp10(4)])
+ax[:set_yticks]([0 , 2exp10(4), 4exp10(4)])
+
+ax[:set_xticklabels](["0", "2e+4", "4e+4"])
+ax[:set_yticklabels](["0", "2e+4", "4e+4"])
+
+ax[:text](4.2exp10(4), -exp10(4), L"x", ha="center", va="center", size=fs)
+ax[:text](exp10(2), 3.6exp10(4), L"y", ha="center", va="center", size=fs)
+
+### K = 0.0, r = 2 top
+ax[:set_xticks]([-4exp10(4), 0, 4exp10(4)])
+ax[:set_yticks]([-4exp10(4), 0, 4exp10(4)])
+
+ax[:set_xticklabels](["-4e+4", "0", "4e+4"])
+ax[:set_yticklabels](["-4e+4", "0", "4e+4"])
+
+ax[:text](4.2exp10(4), -4exp10(4), L"x", ha="center", va="center", size=fs)
+ax[:text](-4exp10(4), 4exp10(4), L"y", ha="center", va="center", size=fs)
+
+ax[:text](4.2exp10(4), -4exp10(4), L"x", ha="center", va="center", size=fs)
+ax[:text](-4exp10(4), 4exp10(4), L"y", ha="center", va="center", size=fs)
+
+### K = 0.025, r = 1 top
+ax[:set_xticks]([0, 1exp10(5), 2exp10(5)])
+ax[:set_yticks]([0, 2.5exp10(4), 5exp10(4), 7.5exp10(4)])
+
+ax[:set_xticklabels](["0", "1e+5", "2e+5"])
+ax[:set_yticklabels](["0", "2.5e+4", "5e+4", "7.5e+4"])
+
+ax[:text](2.5exp10(5), -exp10(4), L"x", ha="center", va="center", size=fs)
+ax[:text](0, 8.3exp10(4), L"y", ha="center", va="center", size=fs)
+
+### K = 1.0, r = 5 top
+ax[:set_xticks]([-5exp10(4), 0, 5exp10(4)])
+ax[:set_yticks]([-5exp10(4), 0, 5exp10(4)])
+
+ax[:set_xticklabels](["-5e+4", "0", "5e+4"])
+ax[:set_yticklabels](["-5e+4", "0", "5e+4"])
+
+ax[:text](5.3exp10(4), -6.5exp10(4), L"x", ha="center", va="center", size=fs)
+ax[:text](-7.5exp10(4), 5exp10(4), L"y", ha="center", va="center", size=fs)
 
 plt[:tight_layout]()
 ###==============###==============###==============###
@@ -192,7 +234,10 @@ fig[:savefig]("fase_test1.eps", dpi = 600, format = "eps", bbox_inches = "tight"
 
 fig[:savefig]("fase_test1.eps", format = "eps", bbox_inches = "tight")
 
-fig[:savefig]("2D_trays_k_0.eps", format = "eps", bbox_inches = "tight")
+fig[:savefig]("2D_met_k_1.eps", format = "eps", bbox_inches = "tight")
+fig[:savefig]("2D_top_k_0.eps", format = "eps", bbox_inches = "tight")
+fig[:savefig]("2D_top_k_025.eps", format = "eps", bbox_inches = "tight")
+fig[:savefig]("2D_top_k_1.eps", format = "eps", bbox_inches = "tight")
 
 ###==============###==============###==============###
 
