@@ -23,11 +23,18 @@ times = get_times(τ)
 
 folder = "NLOC_DATA"
 folder = "NLOC_DATA_3D"
+
+folder = "NLOC_MET_2D"
 folder = "NLOC_MET_3D"
+
+folder = "NLOC_TOP_2D"
 folder = "NLOC_TOP_3D"
+
 folder = "NLOC_TOP_3D_MEAN"
+
 folder = "TFLOCK_NLOC_DATA"
 folder = "TFLOCK_DATA"
+
 folder = "SVM_GRID_FN_3D"
 folder = "SVM_GRID_FN_2D"
 
@@ -85,8 +92,12 @@ for i in sortperm(vals)
 
 end
 
+writecsv("2D_met_order", hcat(vals[sortperm(vals)], orders[end, sortperm(vals)]))
 writecsv("3D_met_order", hcat(vals[sortperm(vals)], orders[end, sortperm(vals)]))
+
+writecsv("2D_top_order", hcat(vals[sortperm(vals)], orders[end, sortperm(vals)]))
 writecsv("3D_top_order", hcat(vals[sortperm(vals)], orders[end, sortperm(vals)]))
+
 writecsv("3D_vsk_order", hcat(vals[sortperm(vals)], orders[end, sortperm(vals)]))
 writecsv("2D_vsk_order", hcat(vals[sortperm(vals)], orders[end, sortperm(vals)]))
 
@@ -96,7 +107,9 @@ writecsv("2D_vsk_order", hcat(vals[sortperm(vals)], orders[end, sortperm(vals)])
 f = plot(vals[sortperm(vals)], orders[end, sortperm(vals)], marker = :o, leg = false, xscale = :log10, xlims = [0.1, 5.5])
 plot!(f, fill(0.3, 10), collect(0.0:0.1:1.0))
 
-plot(vals[sortperm(vals)], orders[end, sortperm(vals)], marker = :o, leg = false, xscale = :lin, xlims = [0.01, 1.5])
+plot(vals[sortperm(vals)], orders[end, sortperm(vals)], marker = :o, leg = false, xscale = :log10, xlims = [0.01, 1.5])
+
+plot(vals[sortperm(vals)], orders[end, sortperm(vals)], leg = false, xscale = :log10, xlims = [0.01, 1.5])
 plot(times, orders, xscale = :log10, leg = false)
 plot(times, orders, xscale = :lin, leg = false)
 gr()

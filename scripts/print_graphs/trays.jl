@@ -51,7 +51,7 @@ folders = readdir(folder_path * "/" * eta_folders[1])
 
 ### ================================== ###
 
-f = 6
+f = 9
 data_path = folder_path * "/" * eta_folders[f]
 
 # data_path = folder_path * "/" * eta_folders[1] * "/" * folders[f]

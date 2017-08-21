@@ -36,6 +36,7 @@ folder = "TFLOCK_DATA"
 
 folder_path = "$(homedir())/art_DATA/$(folder)/EXP/exp_data_N_$(N)"
 folder_path = "$(homedir())/art_DATA/$(folder)/DATA/data_N_$(N)"
+folder_path = "$(homedir())/art_DATA/$(folder)/DATA/data_N_$(N)/eta_1.5"
 
 eta_folders = readdir(folder_path)
 
@@ -49,13 +50,18 @@ r = 6
 
 raw_data = reinterpret(Float64, read(data_path * "/pos_$(r).dat"))
 
+###==============###==============###==============###
+
 pos_data = transpose(reshape(raw_data, 3N, div(length(raw_data), 3N)))
 
 x = view(pos_data, :, 1:3:3N)
 y = view(pos_data, :, 2:3:3N)
 z = view(pos_data, :, 3:3:3N)
 
+###==============###==============###==============###
+
 pos_data = transpose(reshape(raw_data, 2N, div(length(raw_data), 2N)))
+
 x = view(pos_data, :, 1:2:2N)
 y = view(pos_data, :, 2:2:2N)
 
@@ -73,7 +79,7 @@ plt[:rc]("font", serif="New Century Schoolbook")
 fs = 10
 ls = 10
 
-sx = sy = 3
+sx = sy = 6
 
 ###==============###==============###==============###
 
@@ -104,7 +110,8 @@ ax = fig[:add_subplot](111)
 plt[:clf]()
 ###==============###==============###==============###
 
-for i in rand(1:N, 256)
+# for i in rand(1:N, 256)
+for i in 1:N
     plot3D(xs = x[:, i], ys= y[:, i], zs = z[:, i], zdir = "z", lw = 0.5)
     # plot3D(x[:, i], y[:, i], color = "0.5" ,zdir="z", zs=minimum(z), lw = 0.2)
 end
@@ -225,6 +232,16 @@ ax[:set_yticklabels](["-5e+4", "0", "5e+4"])
 ax[:text](5.3exp10(4), -6.5exp10(4), L"x", ha="center", va="center", size=fs)
 ax[:text](-7.5exp10(4), 5exp10(4), L"y", ha="center", va="center", size=fs)
 
+### K = 5.0, r = 5 top
+ax[:set_xticks]([0, 5exp10(4), 1exp10(5)])
+ax[:set_yticks]([0, 1exp10(5), 2exp10(5)])
+
+ax[:set_xticklabels](["0", "5e+4", "1e+5"])
+ax[:set_yticklabels](["0", "1e+5", "2e+5"])
+
+ax[:text](1.15exp10(5), 5exp10(3), L"x", ha="center", va="center", size=fs)
+ax[:text](1, 2exp10(5), L"y", ha="center", va="center", size=fs)
+
 plt[:tight_layout]()
 ###==============###==============###==============###
 
@@ -238,6 +255,11 @@ fig[:savefig]("2D_met_k_1.eps", format = "eps", bbox_inches = "tight")
 fig[:savefig]("2D_top_k_0.eps", format = "eps", bbox_inches = "tight")
 fig[:savefig]("2D_top_k_025.eps", format = "eps", bbox_inches = "tight")
 fig[:savefig]("2D_top_k_1.eps", format = "eps", bbox_inches = "tight")
+fig[:savefig]("2D_met_k_5.eps", format = "eps", bbox_inches = "tight")
+
+fig[:savefig]("interial_nloc_k_0.eps", format = "eps", bbox_inches = "tight")
+fig[:savefig]("interial_nloc_k_005.eps", format = "eps", bbox_inches = "tight")
+fig[:savefig]("interial_nloc_k_075.eps", format = "eps", bbox_inches = "tight")
 
 ###==============###==============###==============###
 

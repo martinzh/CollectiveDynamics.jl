@@ -156,7 +156,7 @@ plt[:rc]("text", usetex=true)
 plt[:rc]("font", family="serif")
 plt[:rc]("font", serif="New Century Schoolbook")
 
-fs = 12
+fs = 10
 ls = 10
 
 plt[:clf]()
