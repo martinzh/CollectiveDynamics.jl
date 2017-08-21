@@ -67,7 +67,7 @@ k = ARGS[3]
 ### ================================== ###
 
 # data_folder_path   = "$(homedir())/art_DATA/$(folder)/DATA/data_N_$(N)/data_N_$(N)_k_$(k)_w_0.5"
-data_folder_path   = "$(homedir())/art_DATA/$(folder)/DATA/data_N_$(N)/eta_1.5/eta_1.5_T_0.01_n_l_$(k)"
+data_folder_path   = "$(homedir())/art_DATA/$(folder)/DATA/data_N_$(N)/eta_1.5/eta_1.5_T_0.01_nl_$(k)"
 # data_folder_path   = "$(homedir())/art_DATA/$(folder)/DATA/data_N_$(N)/data_N_$(N)_rho_$(k)"
 
 output_folder_path = "$(homedir())/art_DATA/$(folder)/EXP"
