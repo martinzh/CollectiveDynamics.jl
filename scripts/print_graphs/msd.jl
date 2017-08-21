@@ -353,7 +353,7 @@ plt[:clf]()
 ## diffsion exponents BOTH
 
 vals_t = readcsv("top_diff_vals.csv")
-vals_m = readcsv("met_diff_vals.csv")
+vals_m = readcsv("3D_met_diff_vals.csv")
 
 ax = fig[:add_subplot](111)
 
@@ -489,6 +489,22 @@ plt[:tight_layout]()
 fig[:savefig]("delta_rnn_top.eps", dpi = 300, format = "eps", bbox_inches = "tight" , pad_inches = 0.1)
 
 fig[:savefig]("2D_delta_rnn_top.eps", dpi = 300, format = "eps", bbox_inches = "tight" , pad_inches = 0.1)
+
+### ================================== ###
+
+ax = fig[:add_subplot](111)
+
+ax[:plot](times, orders[:,1], "-s", color = "#ffa500", ms = 0.1, lw = 0.5)
+plt[:xscale]("log")
+
+plt[:tick_params](which = "both", labelsize = ls, direction = "in", pad = 1.5)
+
+ax[:set_xlabel](L"t", labelpad =0)
+ax[:set_ylabel](L"\Psi(t)", labelpad =0)
+
+plt[:tight_layout]()
+
+fig[:savefig]("psi_vicsek_3D.png", dpi = 300, format = "png", bbox_inches = "tight" , pad_inches = 0.1)
 
 ### ================================== ###
 
