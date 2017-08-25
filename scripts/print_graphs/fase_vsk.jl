@@ -60,8 +60,10 @@ std_means = zeros(length(times), length(order_files))
 capt = [match(r"_(\d+\.\d+)\.\w+$|_(\d+\.\d+e-5)\.\w+$", f).captures for f in order_files]
 vals = [parse(Float64, vcat(capt...)[i]) for i in find(x -> x != nothing, vcat(capt...))]
 
-
 # para NLOC
+vals = [ parse(Float64, match(r"^\w+_(\d+\.\d+)", x).captures[1]) for x in order_files ]
+
+# para TFLOCK
 vals = [ parse(Float64, match(r"^\w+_(\d+\.\d+)", x).captures[1]) for x in order_files ]
 
 # 1,2,3,6
@@ -107,7 +109,8 @@ writecsv("2D_vsk_order", hcat(vals[sortperm(vals)], orders[end, sortperm(vals)])
 f = plot(vals[sortperm(vals)], orders[end, sortperm(vals)], marker = :o, leg = false, xscale = :log10, xlims = [0.1, 5.5])
 plot!(f, fill(0.3, 10), collect(0.0:0.1:1.0))
 
-plot(vals[sortperm(vals)], orders[end, sortperm(vals)], marker = :o, leg = false, xscale = :log10, xlims = [0.001, 1.5])
+plot(vals[sortperm(vals)], orders[end, sortperm(vals)], marker = :o, leg = false, xscale = :log10, xlims = [0.01, 5.5])
+plot(vals[sortperm(vals)], orders[end, sortperm(vals)], marker = :o, leg = false, xscale = :log10, xlims = [0.01, 1.0])
 
 plot(vals[sortperm(vals)], orders[end, sortperm(vals)], leg = false, xscale = :log10, xlims = [0.01, 1.5])
 
