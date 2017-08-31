@@ -38,6 +38,7 @@ folder = "TFLOCK_DATA"
 folder = "SVM_GRID_FN_3D"
 folder = "SVM_GRID_FN_2D"
 
+folder_path = "$(homedir())/art_DATA/$(folder)/EXP/exp_data_N_$(N)/eta_1.5"
 folder_path = "$(homedir())/art_DATA/$(folder)/EXP/exp_data_N_$(N)"
 folder_path = "$(homedir())/art_DATA/$(folder)/DATA/data_N_$(N)"
 
@@ -63,8 +64,11 @@ vals = [parse(Float64, vcat(capt...)[i]) for i in find(x -> x != nothing, vcat(c
 # para NLOC
 vals = [ parse(Float64, match(r"^\w+_(\d+\.\d+)", x).captures[1]) for x in order_files ]
 
-# para TFLOCK
+# para TFLOCK NLOC
 vals = [ parse(Float64, match(r"^\w+_(\d+\.\d+)", x).captures[1]) for x in order_files ]
+
+# para TFLOCK
+vals = [ parse(Float64, match(r"(\d+\.\d+)\.\w+$", x).captures[1]) for x in order_files ]
 
 # 1,2,3,6
 # [order_files[i] for i in [4,5,7,10,13,15]]
@@ -169,6 +173,8 @@ ax[:plot](top_vals[:, 1], top_vals[:, 2], "-^", color = "#F6883D", ms = 2, lw = 
 
 ax[:plot](vcat(vsk_vals, [1.0 0.98])[:, 1], vcat(vsk_vals, [1.0 0.98])[:, 2], "-s", color = "#423b3b", ms = 2, lw = 0.5)
 
+###==============###==============###==============###
+ax[:plot](vals[sortperm(vals)], orders[end, sortperm(vals)], "-s", color = "#000000", ms = 2, lw = 0.5)
 ###==============###==============###==============###
 
 ax[:plot](vsk_vals_2D[:, 1], vsk_vals_2D[:, end], "-s", color = "#423b3b", ms = 2, lw = 0.5)
