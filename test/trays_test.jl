@@ -261,6 +261,15 @@ fig[:savefig]("interial_nloc_k_0.eps", format = "eps", bbox_inches = "tight")
 fig[:savefig]("interial_nloc_k_005.eps", format = "eps", bbox_inches = "tight")
 fig[:savefig]("interial_nloc_k_075.eps", format = "eps", bbox_inches = "tight")
 
+fig[:savefig]("3D_top_k_0.eps", format = "eps", bbox_inches = "tight")
+fig[:savefig]("3D_top_k_0.png", format = "png", bbox_inches = "tight")
+
+fig[:savefig]("3D_top_k_001.eps", format = "eps", bbox_inches = "tight")
+fig[:savefig]("3D_top_k_001.png", format = "png", bbox_inches = "tight")
+
+fig[:savefig]("3D_top_k_01.eps", format = "eps", bbox_inches = "tight")
+fig[:savefig]("3D_top_k_01.png", format = "png", bbox_inches = "tight")
+
 ###==============###==============###==============###
 
 plt[:clf]()
