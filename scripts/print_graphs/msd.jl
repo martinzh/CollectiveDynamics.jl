@@ -131,6 +131,7 @@ r_nn_vals = broadcast(x -> log10(x), d_nn_means)
 
 x_l = 320
 x_l = 330
+x_l = 455
 
 # tflock
 r_fit_vals = [polyfit(dt .* x_vals[x_l:end], r_vals[x_l:end, i], 1) for i in sortperm(vals)]
@@ -234,7 +235,7 @@ ax[:text](3.5exp10(1), exp10(7), L"\langle \Delta^2 r_{ij} \rangle_{\kappa}", ha
 
 # tflock
 # ax[:text](6exp10(4), exp10(-13), L"\tau", ha="center", va="center", size=fs) # 2D met
-ax[:text](6exp10(4), exp10(-13), L"t", ha="center", va="center", size=fs) # 2D met
+ax[:text](5.8exp10(4), exp10(-12), L"t", ha="center", va="center", size=fs) # 2D met
 ax[:text](3exp10(0), exp10(6), L"\langle \Delta^2 r_{ij} \rangle_{\kappa}", ha="center", va="center", size=fs)  # 3D
 
 # ax[:text](1.5exp10(3), 1.8exp10(7), L"\kappa", ha="center", va="center", size=0.8fs)
@@ -277,7 +278,7 @@ plt[:xscale]("log")
 plt[:yscale]("log")
 
 plt[:xlim](exp10(1), exp10(5)) # tflock
-plt[:ylim](exp10(-9), exp10(0)) # tflock
+plt[:ylim](exp10(-10), exp10(0)) # tflock
 
 plt[:xlim](10, 1.5exp10(6))
 plt[:ylim](exp10(-3), exp10(7)) # 3D
@@ -292,7 +293,7 @@ plt[:yticks]([exp10(-3), exp10(0), exp10(3), exp10(6)])
 plt[:yticks]([exp10(-4), exp10(-1), exp10(2), exp10(5)]) # 2d met
 # plt[:yticklabels](["10", "10^{2}", "10^{5}", "10^{8}"])
 
-ax[:text](0.7exp10(5), 3exp10(-9), L"t", ha="center", va="center", size=fs) # tflock
+ax[:text](0.7exp10(5), 3exp10(-12), L"t", ha="center", va="center", size=fs) # tflock
 ax[:text](exp10(6), 7exp10(-3), L"t", ha="center", va="center", size=fs) # 3D met
 ax[:text](exp10(6), 8exp10(-7), L"t", ha="center", va="center", size=fs) # 2D met
 
@@ -304,7 +305,7 @@ ax[:text](exp10(2), 0.5exp10(5), L"\langle \Delta^2 r_{\mathrm{nn}} \rangle_{\ka
 
 ax[:annotate](L"\kappa", xy = (1.5exp10(4), 0.4exp10(1)), xycoords = "data", xytext = (1.5exp10(3), 0.6exp10(5)), arrowprops = Dict(:facecolor => "#423b3b", :edgecolor => "#423b3b", :width => 0.1, :headwidth => 2, :headlength => 3) ) # 3D met
 ax[:annotate](L"\kappa", xy = (0.8exp10(4), 5exp10(-1)), xycoords = "data", xytext = (1.5exp10(3), 0.6exp10(4)), arrowprops = Dict(:facecolor => "#423b3b", :edgecolor => "#423b3b", :width => 0.1, :headwidth => 2, :headlength => 3) ) # 2D met
-ax[:annotate](L"\kappa", xy = (1.2exp10(3), exp10(-5)), xycoords = "data", xytext = (exp10(3), 1.2exp10(-1)), arrowprops = Dict(:facecolor => "#423b3b", :edgecolor => "#423b3b", :width => 0.1, :headwidth => 2, :headlength => 3) ) # tflock
+ax[:annotate](L"\kappa", xy = (1.2exp10(3), exp10(-7)), xycoords = "data", xytext = (exp10(3), 1.2exp10(-1)), arrowprops = Dict(:facecolor => "#423b3b", :edgecolor => "#423b3b", :width => 0.1, :headwidth => 2, :headlength => 3) ) # tflock
 
 plt[:tight_layout]()
 
