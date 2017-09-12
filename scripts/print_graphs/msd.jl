@@ -250,8 +250,7 @@ plt[:tight_layout]()
 
 fig[:savefig]("tflock_delta_rij_met.eps", dpi = 300, format = "eps", bbox_inches = "tight" , pad_inches = 0.1) # 3D met
 fig[:savefig]("t_flock_delta_rij_met.png", dpi = 300, format = "png", bbox_inches = "tight" , pad_inches = 0.1) # 3D met
-f
-ig[:savefig]("delta_rij_met.eps", dpi = 300, format = "eps", bbox_inches = "tight" , pad_inches = 0.1) # 3D met
+fig[:savefig]("delta_rij_met.eps", dpi = 300, format = "eps", bbox_inches = "tight" , pad_inches = 0.1) # 3D met
 fig[:savefig]("delta_rij_met.png", dpi = 300, format = "png", bbox_inches = "tight" , pad_inches = 0.1) # 3D met
 
 fig[:savefig]("2D_delta_rij_met.eps", dpi = 300, format = "eps", bbox_inches = "tight" , pad_inches = 0.1) # 2D met
