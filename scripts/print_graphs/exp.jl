@@ -204,9 +204,9 @@ ax = fig[:add_subplot](111)
 
 # tflock
 ax[:plot](dt .* times, d_means[:, sortperm(vals)], "-", ms = 2, lw = 0.5)
+ax[:plot](dt .* times, means[:, sortperm(vals)], "-", ms = 2, lw = 0.5)
 
 ax[:plot](times, d_means[:, sortperm(vals)], "-", ms = 2, lw = 0.5)
-
 ax[:plot](times, means[:, sortperm(vals)], "-", ms = 2, lw = 0.5)
 
 x_f = 300
@@ -214,26 +214,25 @@ x_f = 300
 # ax[:plot](times[x_f:end], broadcast(x-> 0.02exp10(-2)x , times[x_f:end]), "r--", lw = 0.8) # 3D met
 # ax[:plot](times[x_f:end], broadcast(x-> 0.05exp10(-2)x , times[x_f:end]), "r--", lw = 0.8) # 2D met
 
-ax[:plot](times[x_f:end], broadcast(x-> 35*sqrt(x) , times[x_f:end]), "r--", lw = 0.8) # 3D met
+# ax[:plot](times[x_f:end], broadcast(x-> 35*sqrt(x) , times[x_f:end]), "r--", lw = 0.8) # 3D met
 ax[:plot](times[x_f:end], broadcast(x-> 0.2*sqrt(x) , times[x_f:end]), "r--", lw = 0.8) # 3D met
 
-ax[:plot](times[x_f:end], broadcast(x-> 0.05exp10(-2)x , times[x_f:end]), "r--", lw = 0.8) # 2D met
-ax[:plot](times[x_f:end], broadcast(x-> 0.2*sqrt(x) , times[x_f:end]), "r--", lw = 0.8) # 3D met
+# ax[:plot](times[x_f:end], broadcast(x-> 0.05exp10(-2)x , times[x_f:end]), "r--", lw = 0.8) # 2D met
+ax[:plot](times[x_f:end], broadcast(x-> 0.2*sqrt(x) , times[x_f:end]), "r--", lw = 0.8) # 2D met
 
 plt[:xscale]("log")
 plt[:yscale]("log")
 
 # tflock
-plt[:xlim](0.3, 9exp10(4))
-
-plt[:xlim](2, 1.5exp10(6))
+plt[:xlim](10, exp10(5))
+# plt[:xlim](2, 1.5exp10(6))
 
 plt[:tick_params](which = "both", labelsize = ls, direction = "in", pad = 2)
 ax[:tick_params](axis="x",which="minor",bottom="off")
 ax[:tick_params](axis="y",which="minor",left="off")
 
 # tflock
-plt[:xticks]([exp10(0), exp10(1), exp10(2), exp10(3), exp10(4)])
+plt[:xticks]([exp10(1), exp10(2), exp10(3), exp10(4)])
 
 plt[:xticks]([exp10(1), exp10(2), exp10(3), exp10(4), exp10(5), exp10(6)])
 
@@ -245,33 +244,26 @@ plt[:yticks]([exp10(1), exp10(2), exp10(3), exp10(4)])
 # ax[:text](exp10(6), 0.8exp10(-3), L"t", ha="center", va="center", size=fs) # 2D met
 
 ax[:text](exp10(6), 1.8exp10(1), L"t", ha="center", va="center", size=fs) # 3D met
-ax[:text](exp10(6), 0.8exp10(-3), L"t", ha="center", va="center", size=fs) # 2D met
+ax[:text](exp10(6), 5exp10(1), L"t", ha="center", va="center", size=fs) # 2D met
+ax[:text](0.8exp10(5), 8, L"t", ha="center", va="center", size=fs) # tflock
 
 # ax[:text](4exp10(1), exp10(8), L"\langle \Delta^2 r_{ij} \rangle_{\kappa}", ha="center", va="center", size=fs)  # 3D
 # ax[:text](3.5exp10(1), exp10(7), L"\langle \Delta^2 r_{ij} \rangle_{\kappa}", ha="center", va="center", size=fs)  # 2D
 
 ax[:text](exp10(1), 1.5exp10(4), L"\langle \Delta r \rangle_{\kappa}", ha="center", va="center", size=fs)  # 3D
-ax[:text](3.5exp10(1), exp10(7), L"\langle \Delta^2 r_{ij} \rangle_{\kappa}", ha="center", va="center", size=fs)  # 2D
+ax[:text](1.5exp10(1), 0.75exp10(4), L"\langle \Delta r \rangle_{\kappa}", ha="center", va="center", size=fs)  # 2D
+ax[:text](3.5exp10(1), 2.5exp10(3), L"\langle \Delta r \rangle_{\kappa}", ha="center", va="center", size=fs)  # tflock
 
-# tflock
-# ax[:text](6exp10(4), exp10(-13), L"\tau", ha="center", va="center", size=fs) # 2D met
-ax[:text](5.8exp10(4), exp10(-12), L"t", ha="center", va="center", size=fs) # 2D met
-ax[:text](3exp10(0), exp10(6), L"\langle \Delta^2 r_{ij} \rangle_{\kappa}", ha="center", va="center", size=fs)  # 3D
-
-# ax[:text](1.5exp10(3), 1.8exp10(7), L"\kappa", ha="center", va="center", size=0.8fs)
-
-ax[:annotate](L"\kappa", xy = (2exp10(2), 1.5exp10(-5)), xycoords = "data", xytext = (2exp10(2), exp10(4)), arrowprops = Dict(:facecolor => "#423b3b", :edgecolor => "#423b3b", :width => 0.1, :headwidth => 2, :headlength => 3) ) # tflock
-
-# ax[:annotate](L"\kappa", xy = (1.5exp10(4), 1.5exp10(2)), xycoords = "data", xytext = (1.5exp10(3), 5exp10(6)), arrowprops = Dict(:facecolor => "#423b3b", :edgecolor => "#423b3b", :width => 0.1, :headwidth => 2, :headlength => 3) ) # 3D met
+ax[:annotate](L"\kappa", xy = (2exp10(3), 2exp10(1)), xycoords = "data", xytext = (1.2exp10(3), 0.2exp10(3)), arrowprops = Dict(:facecolor => "#423b3b", :edgecolor => "#423b3b", :width => 0.1, :headwidth => 2, :headlength => 3) ) # tflock
 
 ax[:annotate](L"\kappa", xy = (2exp10(4), 5exp10(1)), xycoords = "data", xytext = (1.5exp10(3), 2.5exp10(3)), arrowprops = Dict(:facecolor => "#423b3b", :edgecolor => "#423b3b", :width => 0.1, :headwidth => 2, :headlength => 3) ) # 3D met
 
-ax[:annotate](L"\kappa", xy = (exp10(4), 3exp10(2)), xycoords = "data", xytext = (1.5exp10(3), 3exp10(6)), arrowprops = Dict(:facecolor => "#423b3b", :edgecolor => "#423b3b", :width => 0.1, :headwidth => 2, :headlength => 3) ) # 2D met
+ax[:annotate](L"\kappa", xy = (2exp10(4), 5exp10(1)), xycoords = "data", xytext = (1.2exp10(3), 0.7exp10(3)), arrowprops = Dict(:facecolor => "#423b3b", :edgecolor => "#423b3b", :width => 0.1, :headwidth => 2, :headlength => 3) ) # 3D met
 
 plt[:tight_layout]()
 
-fig[:savefig]("tflock_delta_rij_met.eps", dpi = 300, format = "eps", bbox_inches = "tight" , pad_inches = 0.1) # 3D met
-fig[:savefig]("t_flock_delta_rij_met.png", dpi = 300, format = "png", bbox_inches = "tight" , pad_inches = 0.1) # 3D met
+fig[:savefig]("tflock_delta_r.eps", dpi = 300, format = "eps", bbox_inches = "tight" , pad_inches = 0.1) # 3D met
+fig[:savefig]("tflock_delta_r.png", dpi = 300, format = "png", bbox_inches = "tight" , pad_inches = 0.1) # 3D met
 
 fig[:savefig]("delta_rij_met.eps", dpi = 300, format = "eps", bbox_inches = "tight" , pad_inches = 0.1) # 3D met
 fig[:savefig]("delta_rij_met.png", dpi = 300, format = "png", bbox_inches = "tight" , pad_inches = 0.1) # 3D met
@@ -279,8 +271,8 @@ fig[:savefig]("delta_rij_met.png", dpi = 300, format = "png", bbox_inches = "tig
 fig[:savefig]("delta_r_met.eps", dpi = 300, format = "eps", bbox_inches = "tight" , pad_inches = 0.1) # 3D met
 fig[:savefig]("delta_r_met.png", dpi = 300, format = "png", bbox_inches = "tight" , pad_inches = 0.1) # 3D met
 
-fig[:savefig]("2D_delta_rij_met.eps", dpi = 300, format = "eps", bbox_inches = "tight" , pad_inches = 0.1) # 2D met
-fig[:savefig]("2D_delta_rij_met.png", dpi = 300, format = "png", bbox_inches = "tight" , pad_inches = 0.1) # 2D met
+fig[:savefig]("2D_delta_r_met.eps", dpi = 300, format = "eps", bbox_inches = "tight" , pad_inches = 0.1) # 2D met
+fig[:savefig]("2D_delta_r_met.png", dpi = 300, format = "png", bbox_inches = "tight" , pad_inches = 0.1) # 2D met
 
 plt[:clf]()
 
@@ -291,6 +283,7 @@ ax = fig[:add_subplot](111)
 
 # tflock
 ax[:plot](dt * times, d_nn_means[:, sortperm(vals)], "-", ms = 2, lw = 0.5)
+ax[:plot](dt * times, nn_means[:, sortperm(vals)], "-", ms = 2, lw = 0.5)
 
 ax[:plot](times, d_nn_means[:, sortperm(vals)], "-", ms = 2, lw = 0.5)
 ax[:plot](times, nn_means[:, sortperm(vals)], "-", ms = 2, lw = 0.5)
@@ -301,7 +294,7 @@ ax[:plot](times[x_f:end], broadcast(x-> 0.1exp10(-4)x , times[x_f:end]), "r--", 
 
 ax[:plot](times[x_f:end], broadcast(x-> 2exp10(-2)sqrt(x) , times[x_f:end]), "r--", lw = 0.8) # 3D met
 
-ax[:plot](times[x_f:end], broadcast(x-> 0.1exp10(-4)x , times[x_f:end]), "r--", lw = 0.8) # 2D met
+ax[:plot](times[x_f:end], broadcast(x-> exp10(-2)sqrt(x) , times[x_f:end]), "r--", lw = 0.8) # 2D met
 
 plt[:xscale]("log")
 plt[:yscale]("log")
@@ -309,47 +302,44 @@ plt[:yscale]("log")
 plt[:xlim](exp10(1), exp10(5)) # tflock
 plt[:ylim](exp10(-10), exp10(0)) # tflock
 
-plt[:xlim](10, 1.5exp10(6))
+plt[:xlim](10, exp10(5))
 plt[:ylim](exp10(-3), exp10(7)) # 3D
 plt[:ylim](exp10(-7), exp10(6)) # 2D
 
-plt[:tick_params](which = "both", labelsize = ls, direction = "in", pad = 2)
+plt[:tick_params](which = "both", labelsize = ls, direction = "in", pad = 3)
 ax[:tick_params](axis="x",which="minor",bottom="off")
 ax[:tick_params](axis="y",which="minor",left="off")
 
-plt[:xticks]([exp10(1), exp10(2), exp10(3), exp10(4), exp10(5), exp10(6)])
 plt[:xticks]([exp10(1), exp10(2), exp10(3), exp10(4)])
 
 plt[:yticks]([exp10(-3), exp10(0), exp10(3), exp10(6)])
 plt[:yticks]([exp10(-4), exp10(-1), exp10(2), exp10(5)]) # 2d met
 # plt[:yticklabels](["10", "10^{2}", "10^{5}", "10^{8}"])
 
-ax[:text](0.7exp10(5), 3exp10(-12), L"t", ha="center", va="center", size=fs) # tflock
+ax[:text](0.7exp10(5), 1.64, L"t", ha="center", va="center", size=fs) # tflock
+ax[:text](5exp10(1), 2.28, L"\langle \Delta r_{\mathrm{nn}} \rangle_{\kappa}", ha="center", va="center", size=fs) # tflock
 
 # ax[:text](exp10(6), 7exp10(-3), L"t", ha="center", va="center", size=fs) # 3D met
 ax[:text](exp10(6), 2, L"t", ha="center", va="center", size=fs) # 3D met
+ax[:text](exp10(6), 2.1exp10(0), L"t", ha="center", va="center", size=fs) # 2D met
 
-ax[:text](exp10(6), 8exp10(-7), L"t", ha="center", va="center", size=fs) # 2D met
 
-ax[:text](0.7exp10(2), exp10(-1), L"\langle \Delta^2 r_{\mathrm{nn}} \rangle_{\kappa}", ha="center", va="center", size=fs) # tflock
-
-# ax[:text](1.2exp10(2), exp10(6), L"\langle \Delta^2 r_{\mathrm{nn}} \rangle_{\kappa}", ha="center", va="center", size=fs) # 3D met
 ax[:text](7exp10(1), 2exp10(3), L"\langle \Delta r_{\mathrm{nn}} \rangle_{\kappa}", ha="center", va="center", size=fs) # 3D met
-
-ax[:text](exp10(2), 0.5exp10(5), L"\langle \Delta^2 r_{\mathrm{nn}} \rangle_{\kappa}", ha="center", va="center", size=fs) # 2D met
+ax[:text](4exp10(1), 4exp10(2), L"\langle \Delta r_{\mathrm{nn}} \rangle_{\kappa}", ha="center", va="center", size=fs) # 2D met
 
 # ax[:text](1.5exp10(3), 1.8exp10(5), L"\kappa", ha="center", va="center", size=0.8fs)
 
 # ax[:annotate](L"\kappa", xy = (1.5exp10(4), 0.4exp10(1)), xycoords = "data", xytext = (1.5exp10(3), 0.6exp10(5)), arrowprops = Dict(:facecolor => "#423b3b", :edgecolor => "#423b3b", :width => 0.1, :headwidth => 2, :headlength => 3) ) # 3D met
 ax[:annotate](L"\kappa", xy = (2exp10(4), 0.4exp10(1)), xycoords = "data", xytext = (1.5exp10(3), 0.3exp10(3)), arrowprops = Dict(:facecolor => "#423b3b", :edgecolor => "#423b3b", :width => 0.1, :headwidth => 2, :headlength => 3) ) # 3D met
 
-ax[:annotate](L"\kappa", xy = (0.8exp10(4), 5exp10(-1)), xycoords = "data", xytext = (1.5exp10(3), 0.6exp10(4)), arrowprops = Dict(:facecolor => "#423b3b", :edgecolor => "#423b3b", :width => 0.1, :headwidth => 2, :headlength => 3) ) # 2D met
-ax[:annotate](L"\kappa", xy = (1.2exp10(3), exp10(-7)), xycoords = "data", xytext = (exp10(3), 1.2exp10(-1)), arrowprops = Dict(:facecolor => "#423b3b", :edgecolor => "#423b3b", :width => 0.1, :headwidth => 2, :headlength => 3) ) # tflock
+ax[:annotate](L"\kappa", xy = (2exp10(4), 0.3exp10(1)), xycoords = "data", xytext = (1.5exp10(3), 0.7exp10(2)), arrowprops = Dict(:facecolor => "#423b3b", :edgecolor => "#423b3b", :width => 0.1, :headwidth => 2, :headlength => 3) ) # 2D met
+
+ax[:annotate](L"\kappa", xy = (exp10(3), 1.71), xycoords = "data", xytext = (exp10(3), 1.95), arrowprops = Dict(:facecolor => "#423b3b", :edgecolor => "#423b3b", :width => 0.1, :headwidth => 2, :headlength => 3) ) # tflock
 
 plt[:tight_layout]()
 
-fig[:savefig]("tflock_delta_rnn_met.eps", dpi = 300, format = "eps", bbox_inches = "tight" , pad_inches = 0.1)
-fig[:savefig]("tflock_delta_rnn_met.png", dpi = 300, format = "png", bbox_inches = "tight" , pad_inches = 0.1)
+fig[:savefig]("tflock_delta_rnn.eps", dpi = 300, format = "eps", bbox_inches = "tight" , pad_inches = 0.1)
+fig[:savefig]("tflock_delta_rnn.png", dpi = 300, format = "png", bbox_inches = "tight" , pad_inches = 0.1)
 
 fig[:savefig]("delta_rnn_met.eps", dpi = 300, format = "eps", bbox_inches = "tight" , pad_inches = 0.1)
 fig[:savefig]("delta_rnn_met.png", dpi = 300, format = "png", bbox_inches = "tight" , pad_inches = 0.1)
@@ -373,14 +363,15 @@ ax[:plot](vals[sortperm(vals)][2:end], [exp10(r_nn_fit_vals[i][0]) for i in 2:le
 plt[:xscale]("log")
 plt[:yscale]("log")
 
-plt[:tick_params](which = "both", labelsize = ls, direction = "in", pad = 3)
+plt[:tick_params](which = "both", labelsize = ls, direction = "in", pad = 2)
 ax[:tick_params](axis="x",which="minor",bottom="off")
 ax[:tick_params](axis="y",which="minor",left="off")
 
-plt[:xlim](0.5exp10(-2), 2exp10(1))
+plt[:xlim](0.5exp10(-2), exp10(1))
 plt[:ylim](exp10(-3), exp10(3))
 
 plt[:yticks]([exp10(-3), exp10(-2), exp10(-1), exp10(0), exp10(1), exp10(2)])
+plt[:yticks]([exp10(-1), exp10(0)])
 plt[:xticks]([exp10(-2), exp10(-1), exp10(0), exp10(1)])
 
 # ax[:text](2exp10(-3), 4.5exp10(2), L"D(\kappa)", ha="center", va="center", size=fs) # 3D
@@ -389,8 +380,8 @@ plt[:xticks]([exp10(-2), exp10(-1), exp10(0), exp10(1)])
 ax[:text](3.5exp10(-3), 2exp10(1), L"D(\kappa)", ha="center", va="center", size=fs) # 3D
 ax[:text](22, 0.5exp10(-1), L"\kappa", ha="center", va="center", size=fs) # 3D
 
-ax[:text](4exp10(-3), 7exp10(1), L"D(\kappa)", ha="center", va="center", size=fs) # 2D
-ax[:text](6, 0.3exp10(-4), L"\kappa", ha="center", va="center", size=fs) # 2D
+ax[:text](2.5exp10(-3), 0.8exp10(1), L"D(\kappa)", ha="center", va="center", size=fs) # 2D
+ax[:text](7.5, 0.5exp10(-1), L"\kappa", ha="center", va="center", size=fs) # 2D
 
 # plt[:legend](fontsize = "x-small")
 
@@ -445,6 +436,10 @@ ax[:text](20, 6exp10(-4), L"\kappa", ha="center", va="center", size=fs)
 
 ax[:text](3.5exp10(-4), 5exp10(1), L"D(\kappa)", ha="center", va="center", size=fs)
 ax[:text](2, 2.5exp10(-2), L"\kappa", ha="center", va="center", size=fs)
+
+# 2D top
+ax[:text](0.25exp10(-4), 3exp10(1), L"D(\kappa)", ha="center", va="center", size=fs)
+ax[:text](1, 2.2exp10(-2), L"\kappa", ha="center", va="center", size=fs)
 
 plt[:legend](bbox_to_anchor=(0., 1.02, 1., .102), loc=3,
            ncol=2, mode="expand", borderaxespad=0., fontsize = 8.5)
@@ -585,11 +580,11 @@ ax[:text](exp10(1), 3exp10(4), L"\langle \Delta r \rangle_{\kappa}", ha="center"
 ax[:annotate](L"\kappa", xy = (2exp10(4), 0.5exp10(2)), xycoords = "data", xytext = (1.2exp10(3), 0.5exp10(4)), arrowprops = Dict(:facecolor => "#423b3b", :edgecolor => "#423b3b", :width => 0.1, :headwidth => 2, :headlength => 3) )
 
 # 2D
-ax[:text](exp10(6), 0.2exp10(-3), L"t", ha="center", va="center", size=fs)
-ax[:text](3exp10(1), 0.8exp10(8), L"\langle \Delta^2 r_{ij} \rangle_{\kappa}", ha="center", va="center", size=fs)
+ax[:text](exp10(6), 5exp10(1), L"t", ha="center", va="center", size=fs)
+ax[:text](exp10(1), 2exp10(4), L"\langle \Delta r \rangle_{\kappa}", ha="center", va="center", size=fs)
 # ax[:text](1.5exp10(3), exp10(8), L"\kappa", ha="center", va="center", size=0.8fs)
 
-ax[:annotate](L"\kappa", xy = (exp10(4), 0.7exp10(3)), xycoords = "data", xytext = (1.5exp10(3), 0.2exp10(8)), arrowprops = Dict(:facecolor => "#423b3b", :edgecolor => "#423b3b", :width => 0.1, :headwidth => 2, :headlength => 3) )
+ax[:annotate](L"\kappa", xy = (2exp10(4), 0.6exp10(2)), xycoords = "data", xytext = (1.2exp10(3), 0.3exp10(4)), arrowprops = Dict(:facecolor => "#423b3b", :edgecolor => "#423b3b", :width => 0.1, :headwidth => 2, :headlength => 3) )
 
 plt[:tight_layout]()
 
@@ -599,8 +594,8 @@ plt[:tight_layout]()
 fig[:savefig]("delta_r_top.eps", dpi = 300, format = "eps", bbox_inches = "tight" , pad_inches = 0.1)
 fig[:savefig]("delta_r_top.png", dpi = 300, format = "png", bbox_inches = "tight" , pad_inches = 0.1)
 
-fig[:savefig]("2D_delta_rij_top.eps", dpi = 300, format = "eps", bbox_inches = "tight" , pad_inches = 0.1)
-fig[:savefig]("2D_delta_rij_top.png", dpi = 300, format = "png", bbox_inches = "tight" , pad_inches = 0.1)
+fig[:savefig]("2D_delta_r_top.eps", dpi = 300, format = "eps", bbox_inches = "tight" , pad_inches = 0.1)
+fig[:savefig]("2D_delta_r_top.png", dpi = 300, format = "png", bbox_inches = "tight" , pad_inches = 0.1)
 
 plt[:clf]()
 
@@ -614,7 +609,7 @@ ax[:plot](times, nn_means[:, sortperm(vals)], "-", ms = 2, lw = 0.5)
 x_f = 300
 
 # ax[:plot](times[x_f:end], broadcast(x-> 0.02exp10(-4)x , times[x_f:end]), "r--", lw = 0.8)
-ax[:plot](times[x_f:end], broadcast(x-> 0.05*sqrt(x) , times[x_f:end]), "r--", lw = 0.8) # 3D met
+ax[:plot](times[x_f:end], broadcast(x-> 0.015*sqrt(x) , times[x_f:end]), "r--", lw = 0.8) # 3D met
 
 plt[:xscale]("log")
 plt[:yscale]("log")
@@ -639,11 +634,17 @@ ax[:text](2exp10(1), 1.5exp10(2), L"\langle \Delta r_{\mathrm{nn}} \rangle_{\kap
 
 ax[:annotate](L"\kappa", xy = (2exp10(4), 6), xycoords = "data", xytext = (2exp10(3), 2exp10(1)), arrowprops = Dict(:facecolor => "#423b3b", :edgecolor => "#423b3b", :width => 0.1, :headwidth => 2, :headlength => 3) )
 
-# 2D
+# 2D met
 ax[:text](exp10(6), 3exp10(-8), L"t", ha="center", va="center", size=fs)
-ax[:text](7.5exp10(1), 4exp10(3), L"\langle \Delta^2 r_{\mathrm{nn}} \rangle_{\kappa}", ha="center", va="center", size=fs)
+ax[:text](7.5exp10(1), 4exp10(3), L"\langle \Delta r_{\mathrm{nn}} \rangle_{\kappa}", ha="center", va="center", size=fs)
 
 ax[:annotate](L"\kappa", xy = (0.5exp10(4), 2exp10(0)), xycoords = "data", xytext = (1.5exp10(3), 5exp10(2)), arrowprops = Dict(:facecolor => "#423b3b", :edgecolor => "#423b3b", :width => 0.1, :headwidth => 2, :headlength => 3) )
+
+# 2D top
+ax[:text](exp10(6), 2exp10(0), L"t", ha="center", va="center", size=fs)
+ax[:text](2.5exp10(1), exp10(2), L"\langle \Delta r_{\mathrm{nn}} \rangle_{\kappa}", ha="center", va="center", size=fs)
+
+ax[:annotate](L"\kappa", xy = (2.5exp10(4), 5), xycoords = "data", xytext = (2exp10(3), 2exp10(1)), arrowprops = Dict(:facecolor => "#423b3b", :edgecolor => "#423b3b", :width => 0.1, :headwidth => 2, :headlength => 3) )
 
 plt[:tight_layout]()
 
