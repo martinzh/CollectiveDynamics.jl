@@ -134,8 +134,8 @@ for r in reps
 
     for j in 1:size(pos_data, 2)
 
-        if d == "2" calc_Rij_2D(pos_data[:, j], Rij)
-        if d == "3" calc_Rij_3D(pos_data[:, j], Rij)
+        if d == "2" calc_Rij_2D(pos_data[:, j], Rij) end
+        if d == "3" calc_Rij_3D(pos_data[:, j], Rij) end
 
         nn_time[j] = mean([sort(Rij[:, i])[2] for i in 1:N])
 

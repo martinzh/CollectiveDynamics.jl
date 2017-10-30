@@ -29,6 +29,7 @@ folder = "NLOC_TOP_3D_MEAN"
 folder = "TFLOCK_NLOC_DATA"
 folder = "TFLOCK_DATA"
 
+folder_path = "$(homedir())/art_DATA/$(folder)/EXP_N/exp_data_N_$(N)"
 folder_path = "$(homedir())/art_DATA/$(folder)/EXP/exp_data_N_$(N)"
 folder_path = "$(homedir())/art_DATA/$(folder)/DATA/data_N_$(N)"
 
@@ -47,8 +48,11 @@ nn_means = zeros(length(times), length(order_files))
 std_means = zeros(length(times), length(order_files))
 
 ### ================================== ###
-# para NLOC
+# para NLOC, valores de K
 vals = [ parse(Float64, match(r"^\w+_(\d+\.\d+)", x).captures[1]) for x in order_files ]
+
+# para NLOC, valores de w
+vals = [ parse(Float64, match(r"(\d+\.\d+)\.dat$", x).captures[1]) for x in order_files ]
 
 ### ================================== ###
 
@@ -94,6 +98,10 @@ plot(hcat(met_vals[2:end, 1], top_vals[2:end, 1]),  hcat(met_vals[2:end, 2], top
 savefig("test_gr.png")
 
 tickfont = font(GR.FONT_TIMES_ROMAN)
+### ================================== ###
+
+
+
 ### ================================== ###
 ### GR
 ### ================================== ###
