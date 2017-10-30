@@ -45,7 +45,8 @@ end
 folder = ARGS[1]
 N = parse(Int, ARGS[2])
 k = ARGS[3]
-d = ARGS[4]
+w = ARGS[4]
+d = ARGS[5]
 
 # folder = "NLOC_MET_3D"
 # folder = "NLOC_TOP_3D"
@@ -67,7 +68,7 @@ d = ARGS[4]
 
 ### ================================== ###
 
-data_folder_path   = "$(homedir())/art_DATA/$(folder)/DATA/data_N_$(N)/data_N_$(N)_k_$(k)_w_0.5"
+data_folder_path   = "$(homedir())/art_DATA/$(folder)/DATA/data_N_$(N)/data_N_$(N)_k_$(k)_w_$(w)"
 # data_folder_path   = "$(homedir())/art_DATA/$(folder)/DATA/data_N_$(N)/eta_1.5/eta_1.5_T_0.01_nl_$(k)"
 # data_folder_path   = "$(homedir())/art_DATA/$(folder)/DATA/data_N_$(N)/data_N_$(N)_rho_$(k)"
 
@@ -75,7 +76,7 @@ output_folder_path = "$(homedir())/art_DATA/$(folder)/EXP_N"
 
 folders = readdir(data_folder_path)
 
-params = "_k_$(k)_w_0.5"
+params = "_k_$(k)_w_$(w)"
 # params = "_eta_1.5_T_0.01_n_l_$(k)"
 # params = "_rho_$(k)"
 
@@ -101,7 +102,7 @@ exp_file   = open(output_folder_path * "/exp_data_N_$(N)" * "/exp" * params * ".
 nn_mean_file = open(output_folder_path * "/exp_data_N_$(N)" * "/nn_mean" * params * ".dat", "w+")
 
 order_file = open(output_folder_path * "/exp_data_N_$(N)" * "/order" * params * ".dat", "w+")
-vel_mean_file = open(output_folder_path * "/exp_data_N_$(N)" * "/vel_mean" * params * ".dat", "w+")
+# vel_mean_file = open(output_folder_path * "/exp_data_N_$(N)" * "/vel_mean" * params * ".dat", "w+")
 
 ### ================================== ###
 
@@ -150,13 +151,13 @@ for r in reps
         vel_data = reshape(raw_data, 2N, div(length(raw_data), 2N))
 
         push!(psi, [norm(mean([[vel_data[i, j], vel_data[i+1, j]] for i in 1:2:2N])) for j in 1:size(vel_data, 2)])
-        push!(vel_means, vcat([mean([[vel_data[i, j], vel_data[i+1, j]] for i in 1:2:2N]) for j in 1:size(vel_data, 2)]...))
+        # push!(vel_means, vcat([mean([[vel_data[i, j], vel_data[i+1, j]] for i in 1:2:2N]) for j in 1:size(vel_data, 2)]...))
 
     elseif d == "3"
         vel_data = reshape(raw_data, 3N, div(length(raw_data), 3N))
 
         push!(psi, [norm(mean([[vel_data[i, j], vel_data[i+1, j], vel_data[i+2, j]] for i in 1:3:3N])) for j in 1:size(vel_data, 2)])
-        push!(vel_means, vcat([mean([[vel_data[i, j], vel_data[i+1, j], vel_data[i+2, j]] for i in 1:3:3N]) for j in 1:size(vel_data, 2)]...))
+        # push!(vel_means, vcat([mean([[vel_data[i, j], vel_data[i+1, j], vel_data[i+2, j]] for i in 1:3:3N]) for j in 1:size(vel_data, 2)]...))
     end
 
     println("pass vel and psi")
@@ -167,13 +168,13 @@ write(exp_file, hcat(means...))
 write(nn_mean_file, hcat(nn_means...))
 
 write(order_file, hcat(psi...))
-write(vel_mean_file, hcat(vel_means...))
+# write(vel_mean_file, hcat(vel_means...))
 
 close(exp_file)
 close(nn_mean_file)
 
 close(order_file)
-close(vel_mean_file)
+# close(vel_mean_file)
 
 println("Done")
 
