@@ -46,7 +46,7 @@ for r in reps
 
     println(r)
 
-    raw_data = reinterpret(Float64, read(data_path * "/pos_$(r).dat"))
+    raw_data = reinterpret(Float64, read(data_folder_path * "/pos_$(r).dat"))
     pos_data = transpose(reshape(raw_data, 3N, div(length(raw_data), 3N)))
     # pos_data = reshape(raw_data, 3N, div(length(raw_data), 3N))
 
