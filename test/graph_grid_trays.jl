@@ -58,5 +58,5 @@ for r in reps
 
 end
 
-plot(trays_plots...,  size = (1270,820))
+plot(trays_plots...,  size = (1800,1800))
 savefig(output_folder_path * "/reps_trays_N_$(N)$(params).png")
