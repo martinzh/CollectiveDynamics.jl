@@ -77,7 +77,6 @@ for i in sortperm(vals)
 end
 
 writecsv("3D_met_order", hcat(vals[sortperm(vals)], orders[end, sortperm(vals)]))
-
 writecsv("3D_top_order", hcat(vals[sortperm(vals)], orders[end, sortperm(vals)]))
 
 ### ================================== ###
@@ -100,7 +99,9 @@ savefig("test_gr.png")
 tickfont = font(GR.FONT_TIMES_ROMAN)
 ### ================================== ###
 
-
+plot(times, orders, label = reshape(vals, (length(vals), 1)), xscale = :log10)
+plot(times, orders, label=[repr(v) for v in vals], xscale = :log10)
+plot(times, orders, xscale = :log10)
 
 ### ================================== ###
 ### GR
