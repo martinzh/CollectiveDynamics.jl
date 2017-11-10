@@ -141,8 +141,11 @@ ax[:plot](vals[sortperm(vals)], inv(0.1) .* orders[end, sortperm(vals)], "-o", c
 met_vals_2D = readcsv("2D_met_order.csv")
 top_vals_2D = readcsv("2D_top_order.csv")
 
-met_vals = readcsv("3D_met_order.csv")
-top_vals = readcsv("3D_top_order.csv")
+met_vals = readcsv("$(homedir())/GitRepos/CollectiveDynamics.jl/data/3D_met_order.csv")
+top_vals = readcsv("$(homedir())/GitRepos/CollectiveDynamics.jl/data/3D_top_order.csv")
+
+met_vals = readcsv("$(homedir())/GitRepos/CollectiveDynamics.jl/data/2D_met_order.csv")
+top_vals = readcsv("$(homedir())/GitRepos/CollectiveDynamics.jl/data/2D_top_order.csv")
 
 tflock_vals = readcsv("tflock_order.csv")
 
@@ -186,6 +189,11 @@ ax = fig[:add_subplot](111)
 ax[:plot](met_vals[:, 1], met_vals[:, 2], "-o", color = "#7C98AB", ms = 2, lw = 0.5, label = "metric")
 ax[:plot](top_vals[:, 1], top_vals[:, 2], "-^", color = "#F6883D", ms = 2, lw = 0.5, label = "topological")
 
+ax[:plot](met_vals[:, 1], met_vals[:, 2], "-o", color = "#000000", ms = 2, lw = 0.5, label = "metric")
+ax[:plot](top_vals[:, 1], top_vals[:, 2], "-^", color = "#BB0407", ms = 2, lw = 0.5, label = "topological")
+
+ax[:plot](hvcat((1,1), top_vals, [5 0.953])[:, 1], hvcat((1,1), top_vals, [5 0.953])[:, 2], "-^", color = "#BB0407", ms = 2, lw = 0.5, label = "topological")
+
 ax[:plot](met_vals_2D[:, 1], met_vals_2D[:, 2], "-o", color = "#7C98AB", ms = 2, lw = 0.5, label = "metric")
 ax[:plot](vcat(top_vals_2D[:, 1], 10.0), vcat(top_vals_2D[:, 2], 0.953), "-^", color = "#F6883D", ms = 2, lw = 0.5, label = "topological")
 ax[:plot](met_vals[:, 1], met_vals[:, 2], "-o", color = "#000000", ms = 2, lw = 0.5)
@@ -216,6 +224,7 @@ plt[:xscale]("log")
 
 met_vals[1,1] = 0.001
 top_vals[1,1] = 0.0001
+top_vals[1,1] = 0.00001
 
 println(met_vals)
 println(top_vals)
@@ -244,14 +253,15 @@ plt[:xticks]([exp10(-4), exp10(-3), exp10(-2), exp10(-1)])
 # 2D MET, TOP
 ax[:text](18, 0.05, L"\kappa", ha="center", va="center", size=fs)
 ax[:text](2exp10(-4), 0.9, L"\Psi(\kappa)", ha="center", va="center", size=fs)
+ax[:text](3exp10(-5), 0.9, L"\Psi(\kappa)", ha="center", va="center", size=fs)
 
 # TFLOCK
 ax[:text](0.4, 0.3, L"\kappa", ha="center", va="center", size=fs)
 ax[:text](2.8exp10(-5), 0.97, L"\Psi(\kappa)", ha="center", va="center", size=fs)
 
 # 3D
-ax[:text](11, 0.05, L"\kappa", ha="center", va="center", size=fs)
-ax[:text](0.00025, 0.94, L"\Psi(\kappa)", ha="center", va="center", size=fs)
+ax[:text](11, 0.07, L"\kappa", ha="center", va="center", size=fs)
+ax[:text](0.0003, 0.94, L"\Psi(\kappa)", ha="center", va="center", size=fs)
 
 ax[:text](0.3, -0.2, L"\rho_0", ha="center", va="center", size=0.75*fs) # 3D
 ax[:text](0.2, 0.08, L"\rho_0", ha="center", va="center", size=0.75*fs) # 2D

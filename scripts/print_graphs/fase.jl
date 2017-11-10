@@ -2,7 +2,6 @@ using PyPlot,CollectiveDynamics.DataAnalysis
 using GR, CollectiveDynamics.DataAnalysis
 using Plots, CollectiveDynamics.DataAnalysis
 
-
 ### ================================== ###
 
 N = 1024
@@ -99,9 +98,16 @@ savefig("test_gr.png")
 tickfont = font(GR.FONT_TIMES_ROMAN)
 ### ================================== ###
 
-plot(times, orders, label = reshape(vals, (length(vals), 1)), xscale = :log10)
 plot(times, orders, label=[repr(v) for v in vals], xscale = :log10)
-plot(times, orders, xscale = :log10)
+plot(times, orders, label=[repr(v) for v in vals], xscale = :log10, legend=:topleft)
+png("$(homedir())/graphs/fase_w_met")
+
+plot(times, means, label=[repr(v) for v in vals], xscale = :log10, yscale = :log10, legend = :topleft)
+png("$(homedir())/graphs/r_w_met")
+
+plot(times, nn_means, label=[repr(v) for v in vals], xscale = :log10, yscale = :log10, legend = :topleft)
+png("$(homedir())/graphs/rnn_w_met")
+
 
 ### ================================== ###
 ### GR
@@ -124,6 +130,39 @@ updategks()
 plt[:rc]("text", usetex=true)
 plt[:rc]("font", family="serif")
 plt[:rc]("font", serif="Palatino")
+
+### ================================== ###
+
+plt[:clf]()
+
+for i in 1:size(orders, 2)
+    plt[:plot](times, orders[:, i], label=vals[i])
+    # plt[:plot](times, means[:, i], label=vals[i])
+    # plt[:plot](times, nn_means[:, i], label=vals[i])
+end
+
+plt[:plot](vals,orders[end, :], marker="o")
+plt[:xlabel](L"\omega", fontsize=16)
+plt[:ylabel](L"\Psi (\omega)", fontsize=16)
+
+
+plt[:legend](bbox_to_anchor=(1.05, 1), loc=2)
+plt[:xscale]("log")
+plt[:yscale]("log")
+
+plt[:xlabel](L"t", fontsize=12)
+plt[:ylabel](L"\Psi (t)", fontsize=12)
+plt[:ylabel](L"\langle r(t) \rangle", fontsize=12)
+plt[:ylabel](L"\langle r_{\mathrm{nn}}(t) \rangle", fontsize=12)
+
+plt[:savefig]("$(homedir())/graphs/psi_top_w.png", dpi = 300, format = "png", bbox_inches = "tight")
+plt[:savefig]("$(homedir())/graphs/trans_psi_top_w.png", dpi = 300, format = "png", bbox_inches = "tight")
+plt[:savefig]("$(homedir())/graphs/r_top_w.png", dpi = 300, format = "png", bbox_inches = "tight")
+plt[:savefig]("$(homedir())/graphs/rnn_top_w.png", dpi = 300, format = "png", bbox_inches = "tight")
+
+plt[:savefig]("$(homedir())/graphs/psi_met_w.png", dpi = 300, format = "png", bbox_inches = "tight")
+plt[:savefig]("$(homedir())/graphs/r_met_w.png", dpi = 300, format = "png", bbox_inches = "tight")
+plt[:savefig]("$(homedir())/graphs/rnn_met_w.png", dpi = 300, format = "png", bbox_inches = "tight")
 
 ### ================================== ###
 
