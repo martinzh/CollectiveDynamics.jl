@@ -40,13 +40,13 @@ folder_path = "$(homedir())/art_DATA/$(folder)/DATA/data_N_$(N)/eta_1.5"
 
 eta_folders = readdir(folder_path)
 
-f = 7
+f = 12
 data_path = folder_path * "/" * eta_folders[f]
 
 reps = [match(r"\w+(\d+).\w+", x).captures[1]  for x in filter(x -> ismatch(r"^pos_", x), readdir(data_path))]
 
 r = rand(reps)
-r = 6
+r = 4
 
 raw_data = reinterpret(Float64, read(data_path * "/pos_$(r).dat"))
 
@@ -139,6 +139,10 @@ ax[:set_xlabel](L"\mathrm{x}", labelpad =0)
 ax[:set_ylabel](L"\mathrm{y}", labelpad =0)
 ax[:set_zlabel](L"\mathrm{z}", labelpad =0)
 
+ax[:set_xlabel](L"\mathrm{x \times 10^4}", labelpad =2)
+ax[:set_ylabel](L"\mathrm{y \times 10^4}", labelpad =2)
+ax[:set_zlabel](L"\mathrm{z \times 10^4}", labelpad =2)
+
 ax[:relim]()
 ax[:autoscale_view](tight = true)
 fig[:subplots_adjust](top=1.05)
@@ -155,6 +159,18 @@ ax[:set_zticks](collect(linspace(-1exp10(4),2exp10(4),5)))
 ax[:set_xticklabels](collect(-2:1:2))
 ax[:set_yticklabels](collect(-2:1:2))
 ax[:set_zticklabels](collect(-2:1:2))
+
+ax[:set_xticklabels](["-2", "0", "2", "4", "6"])
+ax[:set_yticklabels](["-6", "-4", "-2", "0", "2", "4"])
+ax[:set_zticklabels](["-4", "-3", "-2", "-1", "0", "1", "2", "3", "4"])
+
+ax[:set_xticklabels](collect(-16:2:0))
+ax[:set_yticklabels](collect(-10:2:7))
+ax[:set_zticklabels](collect(2.5:2.5:17.5))
+
+ax[:set_xticklabels](collect(0:2:12))
+ax[:set_yticklabels](collect(3:2:22))
+ax[:set_zticklabels](collect(0:2:12))
 
 ax[:set_xticklabels](["-1e+4", "0", "1e+4"])
 ax[:set_yticklabels](["-1e+4", "0", "1e+4"])
@@ -183,21 +199,31 @@ plt[:tick_params](which = "both", labelsize = ls, direction = "in", pad = 1.5)
 ax[:set_xticks]([-1exp10(4), 0 , exp10(4)])
 ax[:set_yticks]([-1exp10(4), 0 , exp10(4)])
 
-ax[:set_xticklabels](["-1e+4", "0", "1e+4"])
-ax[:set_yticklabels](["-1e+4", "0", "1e+4"])
+ax[:set_xticklabels](["-1", "0", "1"])
+ax[:set_yticklabels](["-1", "0", "1"])
 
-ax[:text](1.6exp10(4), -1.5exp10(4), L"x", ha="center", va="center", size=fs)
-ax[:text](-1.5exp10(4), 1.7exp10(4), L"y", ha="center", va="center", size=fs)
+ax[:text](exp10(4), -1.2exp10(4), L"x \times 10^4", ha="center", va="center", size=fs)
+ax[:text](-0.8exp10(4), exp10(4), L"y \times 10^4", ha="center", va="center", size=fs)
 
 ### K = 1.0, r = 4
 ax[:set_xticks]([0 , 2exp10(4), 4exp10(4)])
 ax[:set_yticks]([0 , 2exp10(4), 4exp10(4)])
 
-ax[:set_xticklabels](["0", "2e+4", "4e+4"])
-ax[:set_yticklabels](["0", "2e+4", "4e+4"])
+ax[:set_xticklabels](["0", "2", "4"])
+ax[:set_yticklabels](["0", "2", "4"])
 
-ax[:text](4.2exp10(4), -exp10(4), L"x", ha="center", va="center", size=fs)
-ax[:text](exp10(2), 3.6exp10(4), L"y", ha="center", va="center", size=fs)
+ax[:text](3.8exp10(4), -1.1exp10(4), L"x \times 10^4", ha="center", va="center", size=fs)
+ax[:text](4.2exp10(3), 3.6exp10(4), L"y \times 10^4", ha="center", va="center", size=fs)
+
+### K = 5.0, r = 7
+ax[:set_xticks]([0 , 5exp10(4), 1exp10(5)])
+ax[:set_yticks]([0 , 1exp10(5), 2exp10(5)])
+
+ax[:set_xticklabels](["0", "5", "10"])
+ax[:set_yticklabels](["0", "10", "20"])
+
+ax[:text](exp10(5), exp10(4), L"x \times 10^4", ha="center", va="center", size=fs)
+ax[:text](exp10(4), 2exp10(5), L"y \times 10^4", ha="center", va="center", size=fs)
 
 ### K = 0.0, r = 2 top
 ax[:set_xticks]([-4exp10(4), 0, 4exp10(4)])
@@ -251,13 +277,15 @@ fig[:savefig]("fase_test1.eps", dpi = 600, format = "eps", bbox_inches = "tight"
 
 fig[:savefig]("fase_test1.eps", format = "eps", bbox_inches = "tight")
 
+fig[:savefig]("2D_met_k_0.eps", format = "eps", bbox_inches = "tight")
 fig[:savefig]("2D_met_k_1.eps", format = "eps", bbox_inches = "tight")
+fig[:savefig]("2D_met_k_5.eps", format = "eps", bbox_inches = "tight")
+
 fig[:savefig]("2D_top_k_0.eps", format = "eps", bbox_inches = "tight")
 fig[:savefig]("2D_top_k_025.eps", format = "eps", bbox_inches = "tight")
 fig[:savefig]("2D_top_k_1.eps", format = "eps", bbox_inches = "tight")
-fig[:savefig]("2D_met_k_5.eps", format = "eps", bbox_inches = "tight")
 
-fig[:savefig]("interial_nloc_k_0.eps", format = "eps", bbox_inches = "tight")
+fig[:savefig]("interial_nloc_k_0.eps", format = "eps", bbox_inches = "tight")6
 fig[:savefig]("interial_nloc_k_005.eps", format = "eps", bbox_inches = "tight")
 fig[:savefig]("interial_nloc_k_075.eps", format = "eps", bbox_inches = "tight")
 
@@ -267,7 +295,7 @@ fig[:savefig]("3D_top_k_0.png", format = "png", bbox_inches = "tight")
 fig[:savefig]("3D_top_k_001.eps", format = "eps", bbox_inches = "tight")
 fig[:savefig]("3D_top_k_001.png", format = "png", bbox_inches = "tight")
 
-fig[:savefig]("3D_top_k_01.eps", format = "eps", bbox_inches = "tight")
+fig[:savefig]("3D_top_k_01_r8.eps", format = "eps", bbox_inches = "tight")
 fig[:savefig]("3D_top_k_01.png", format = "png", bbox_inches = "tight")
 
 ###==============###==============###==============###
