@@ -360,6 +360,12 @@ ax = fig[:add_subplot](111)
 ax[:plot](vals[sortperm(vals)][2:end], [exp10(r_fit_vals[i][0]) for i in 2:length(r_fit_vals)], "-<", color = "#00ae88", ms = 3, lw = 0.5, label = L"\langle \Delta r \rangle_{\kappa}"  )
 ax[:plot](vals[sortperm(vals)][2:end], [exp10(r_nn_fit_vals[i][0]) for i in 2:length(r_fit_vals)], "-x", color = "#ffa500", ms = 3, lw = 0.5, label = L"\langle \Delta r_{\mathrm{nn}} \rangle_{\kappa}")
 
+ax[:plot](vals[sortperm(vals)][2:end], [exp10(r_fit_vals[i][0]) for i in 2:length(r_fit_vals)], "-<", color = "#000000", ms = 3, lw = 0.5, label = L"\langle \Delta r \rangle_{\kappa}"  )
+ax[:plot](vals[sortperm(vals)][2:end], [exp10(r_nn_fit_vals[i][0]) for i in 2:length(r_fit_vals)], "-x", color = "#BB0407", ms = 3, lw = 0.5, label = L"\langle \Delta r_{\mathrm{nn}} \rangle_{\kappa}")
+
+ax[:plot](vals[sortperm(vals)][2:end], [exp10(r_fit_vals[i][0]) for i in 2:length(r_fit_vals)], "-o", color = "#000000", ms = 3, lw = 0.5, label = L"\langle \Delta r \rangle_{\kappa}"  )
+ax[:plot](vals[sortperm(vals)][2:end], [exp10(r_nn_fit_vals[i][0]) for i in 2:length(r_fit_vals)], "-x", color = "#BB0407", ms = 3, lw = 0.5, label = L"\langle \Delta r_{\mathrm{nn}} \rangle_{\kappa}")
+
 plt[:xscale]("log")
 plt[:yscale]("log")
 
@@ -383,6 +389,9 @@ ax[:text](22, 0.5exp10(-1), L"\kappa", ha="center", va="center", size=fs) # 3D
 ax[:text](2.5exp10(-3), 0.8exp10(1), L"D(\kappa)", ha="center", va="center", size=fs) # 2D
 ax[:text](7.5, 0.5exp10(-1), L"\kappa", ha="center", va="center", size=fs) # 2D
 
+ax[:text](2.3exp10(-5), 0.3exp10(2), L"D(\kappa)", ha="center", va="center", size=fs) # 2D top
+ax[:text](1.2, 0.25exp10(-1), L"\kappa", ha="center", va="center", size=fs) # 2D top
+
 # plt[:legend](fontsize = "x-small")
 
 plt[:legend](bbox_to_anchor=(0., 1.02, 1., .102), loc=3,
@@ -392,6 +401,7 @@ plt[:tight_layout]()
 
 fig[:savefig]("coef_diff_met.eps", dpi = 300, format = "eps", bbox_inches = "tight" , pad_inches = 0.1)
 fig[:savefig]("2D_coef_diff_met.eps", dpi = 300, format = "eps", bbox_inches = "tight" , pad_inches = 0.1)
+fig[:savefig]("2D_coef_diff_top.eps", dpi = 300, format = "eps", bbox_inches = "tight" , pad_inches = 0.1)
 fig[:savefig]("2D_coef_diff_met.png", dpi = 300, format = "png", bbox_inches = "tight" , pad_inches = 0.1)
 
 plt[:clf]()
@@ -413,6 +423,9 @@ ax[:plot](vals[sortperm(vals)][2:end], [exp10(r_nn_fit_vals[i][0]) for i in 2:le
 
 ax[:plot](vals_t[2:end, 1], vals_t[2:end, 2], "-o", color = "#552299", ms = 3, lw = 0.5, label = L"\langle \Delta r \rangle")
 ax[:plot](vals_t[2:end, 1], vals_t[2:end, 4], "-x", color = "#d24760", ms = 3, lw = 0.5, label = L"\langle \Delta r_{\mathrm{nn}} \rangle")
+
+ax[:plot](vals_t[2:end, 1], vals_t[2:end, 2], "-o", color = "#000000", ms = 3, lw = 0.5, label = L"\langle \Delta r \rangle")
+ax[:plot](vals_t[2:end, 1], vals_t[2:end, 4], "-x", color = "#BB0407", ms = 3, lw = 0.5, label = L"\langle \Delta r_{\mathrm{nn}} \rangle")
 
 plt[:xscale]("log")
 plt[:yscale]("log")

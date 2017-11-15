@@ -25,10 +25,11 @@ folder = "NLOC_DATA"
 folder = "NLOC_DATA_3D"
 
 folder = "NLOC_MET_2D"
-folder = "NLOC_MET_3D"
-
 folder = "NLOC_TOP_2D"
+
+folder = "NLOC_MET_3D"
 folder = "NLOC_TOP_3D"
+
 folder = "NLOC_TOP_3D_MEAN"
 
 folder = "TFLOCK_NLOC_DATA"
@@ -40,13 +41,13 @@ folder_path = "$(homedir())/art_DATA/$(folder)/DATA/data_N_$(N)/eta_1.5"
 
 eta_folders = readdir(folder_path)
 
-f = 12
+f = 3
 data_path = folder_path * "/" * eta_folders[f]
 
 reps = [match(r"\w+(\d+).\w+", x).captures[1]  for x in filter(x -> ismatch(r"^pos_", x), readdir(data_path))]
 
 r = rand(reps)
-r = 4
+r = 8
 
 raw_data = reinterpret(Float64, read(data_path * "/pos_$(r).dat"))
 
@@ -75,9 +76,14 @@ plt[:rc]("font", serif="New Century Schoolbook")
 # plt[:rc]("figure.autolayout")
 # plt[:rcParams]["figure.autolayout"] = true
 
+plt[:clf]()
+
 ###==============###==============###==============###
+fs = 8
+ls = 6
+
 fs = 10
-ls = 10
+ls = 8
 
 sx = sy = 6
 
@@ -135,58 +141,42 @@ ax[:xaxis][:pane][:fill] = false
 ax[:yaxis][:pane][:fill] = false
 ax[:zaxis][:pane][:fill] = true
 
-ax[:set_xlabel](L"\mathrm{x}", labelpad =0)
-ax[:set_ylabel](L"\mathrm{y}", labelpad =0)
-ax[:set_zlabel](L"\mathrm{z}", labelpad =0)
+ax[:set_xlabel](L"\mathrm{x \times 10^4}", labelpad =-8, fontsize = fs)
+ax[:set_ylabel](L"\mathrm{y \times 10^4}", labelpad =-8, fontsize = fs)
+ax[:set_zlabel](L"\mathrm{z \times 10^4}", labelpad =-8, fontsize = fs)
 
-ax[:set_xlabel](L"\mathrm{x \times 10^4}", labelpad =2)
-ax[:set_ylabel](L"\mathrm{y \times 10^4}", labelpad =2)
-ax[:set_zlabel](L"\mathrm{z \times 10^4}", labelpad =2)
+ax[:set_xlabel](L"\mathrm{x \times 10^3}", labelpad =-8, fontsize = fs)
+ax[:set_ylabel](L"\mathrm{y \times 10^3}", labelpad =-8, fontsize = fs)
+ax[:set_zlabel](L"\mathrm{z \times 10^3}", labelpad =-8, fontsize = fs)
+
+ax[:set_xlabel](L"\mathrm{x \times 10^4}", labelpad =0, fontsize = fs)
+ax[:set_ylabel](L"\mathrm{y \times 10^4}", labelpad = 2, fontsize = fs)
 
 ax[:relim]()
 ax[:autoscale_view](tight = true)
-fig[:subplots_adjust](top=1.05)
+
+fig[:subplots_adjust](top=1.1)
+fig[:subplots_adjust](bottom=0)
+fig[:subplots_adjust](right=0.9)
+fig[:subplots_adjust](left=0)
+
+ax[:elev] = 16
+ax[:azim] = -45
+
 ###==============###==============###==============###
 
-plt[:tick_params](which = "both", labelsize = ls, direction = "in", pad = 1.5)
+plt[:tick_params](which = "both", labelsize = ls, direction = "in", pad = -3)
+plt[:tick_params](which = "both", labelsize = ls, direction = "in", pad = 2)
 
 ### K = 0
 
-ax[:set_xticks](collect(linspace(-2exp10(4),2exp10(4),5)))
-ax[:set_yticks](collect(linspace(0, exp10(5),4)))
-ax[:set_zticks](collect(linspace(-1exp10(4),2exp10(4),5)))
+ax[:set_xticks](collect(linspace(-15exp10(4),0, 4)))
+ax[:set_yticks](collect(linspace(-2exp10(4),8exp10(4), 6)))
+ax[:set_zticks](collect(linspace(-3exp10(3),0,4)))
 
-ax[:set_xticklabels](collect(-2:1:2))
-ax[:set_yticklabels](collect(-2:1:2))
-ax[:set_zticklabels](collect(-2:1:2))
-
-ax[:set_xticklabels](["-2", "0", "2", "4", "6"])
-ax[:set_yticklabels](["-6", "-4", "-2", "0", "2", "4"])
-ax[:set_zticklabels](["-4", "-3", "-2", "-1", "0", "1", "2", "3", "4"])
-
-ax[:set_xticklabels](collect(-16:2:0))
-ax[:set_yticklabels](collect(-10:2:7))
-ax[:set_zticklabels](collect(2.5:2.5:17.5))
-
-ax[:set_xticklabels](collect(0:2:12))
-ax[:set_yticklabels](collect(3:2:22))
-ax[:set_zticklabels](collect(0:2:12))
-
-ax[:set_xticklabels](["-1e+4", "0", "1e+4"])
-ax[:set_yticklabels](["-1e+4", "0", "1e+4"])
-ax[:set_zticklabels](["-1e+4", "0", "1e+4"])
-
-ax[:set_xticks]([0, 5exp10(4), 1exp10(5)])
-ax[:set_yticks]([0, -5exp10(4), -1.5exp10(5)])
-ax[:set_zticks]([0, -4exp10(4), -8exp10(4), -1.2exp10(5)])
-
-ax[:set_xticklabels](["-1.5e+5", "-1e+5", "-5e+4", "0"])
-ax[:set_yticklabels](["0", "4e+4", "8e+4", "1.2e+5"])
-ax[:set_zticklabels](["0", "5e+4", "1e+5"])
-
-ax[:set_xticklabels](["-5e+4", "0", "5e+4"])
-ax[:set_yticklabels](["0", "-5e+4", "-1.5e+5"])
-ax[:set_zticklabels](["-6e+4", "-4e+4", "-2e+4", "0"])
+ax[:set_xticklabels](collect(-15:5:0))
+ax[:set_yticklabels](collect(-2:2:8))
+ax[:set_zticklabels](collect(-3:0))
 
 ax[:set_zlim]([-1.2exp10(5), 0.0])
 ax[:set_ylim]([-2.25exp10(5), 0.0])
@@ -269,6 +259,10 @@ ax[:text](1.15exp10(5), 5exp10(3), L"x", ha="center", va="center", size=fs)
 ax[:text](1, 2exp10(5), L"y", ha="center", va="center", size=fs)
 
 plt[:tight_layout]()
+ax[:set_aspect]("equal")
+ax[:set_aspect](1.5)
+plt[:clf]()
+
 ###==============###==============###==============###
 
 fig[:savefig]("fase_test2.eps", dpi = 100, format = "eps", bbox_inches = "tight" , pad_inches = 0.27)
@@ -284,15 +278,19 @@ fig[:savefig]("2D_met_k_5.eps", format = "eps", bbox_inches = "tight")
 fig[:savefig]("2D_top_k_0.eps", format = "eps", bbox_inches = "tight")
 fig[:savefig]("2D_top_k_025.eps", format = "eps", bbox_inches = "tight")
 fig[:savefig]("2D_top_k_1.eps", format = "eps", bbox_inches = "tight")
+fig[:savefig]("2D_top_k_005.eps", format = "eps", bbox_inches = "tight")
 
-fig[:savefig]("interial_nloc_k_0.eps", format = "eps", bbox_inches = "tight")6
-fig[:savefig]("interial_nloc_k_005.eps", format = "eps", bbox_inches = "tight")
-fig[:savefig]("interial_nloc_k_075.eps", format = "eps", bbox_inches = "tight")
+fig[:savefig]("inertial_nloc_k_0.eps", format = "eps")
+fig[:savefig]("inertial_nloc_k_005.eps", format = "eps")
+fig[:savefig]("inertial_nloc_k_075.eps", format = "eps")
 
 fig[:savefig]("3D_top_k_0.eps", format = "eps", bbox_inches = "tight")
+fig[:savefig]("3D_top_k_0.eps", format = "eps")
 fig[:savefig]("3D_top_k_0.png", format = "png", bbox_inches = "tight")
 
-fig[:savefig]("3D_top_k_001.eps", format = "eps", bbox_inches = "tight")
+fig[:savefig]("3D_top_k_001_r9.eps", format = "eps", bbox_inches = "tight")
+fig[:savefig]("3D_top_k_001_r9.eps", format = "eps")
+fig[:savefig]("3D_top_k_01_r8.eps", format = "eps")
 fig[:savefig]("3D_top_k_001.png", format = "png", bbox_inches = "tight")
 
 fig[:savefig]("3D_top_k_01_r8.eps", format = "eps", bbox_inches = "tight")
@@ -300,6 +298,5 @@ fig[:savefig]("3D_top_k_01.png", format = "png", bbox_inches = "tight")
 
 ###==============###==============###==============###
 
-plt[:clf]()
 
 ###==============###==============###==============###
