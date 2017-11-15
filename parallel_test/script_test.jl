@@ -171,11 +171,13 @@ function evolve_system(pos::SharedArray, vel::SharedArray, v_r::SharedArray, v_n
     calc_Rij(R_ij, pos)
 
     for p in workers()
-        remotecall_fetch(compute_metric_interactions, p, vel, v_r, v_n, R_ij)
+        # remotecall_fetch(compute_metric_interactions, p, vel, v_r, v_n, R_ij)
+        @spawnat p compute_metric_interactions(vel, v_r, v_n, R_ij)
     end
 
     for p in workers()
-        remotecall_fetch(update_particles, p, pos, vel, v_r, v_n)
+        # remotecall_fetch(update_particles, p, pos, vel, v_r, v_n)
+        @spawnat p update_particles(pos, vel, v_r, v_n)
     end
 end
 
