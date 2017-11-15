@@ -107,9 +107,9 @@ end
         # println(k_ln)
 
         # possible long range
-        # if isempty(ln_n) == false && k_ln != 0.0
-        if k_ln != 0.0
-            for j in rand(ln_n, 3)
+        # if k_ln != 0.0
+        if isempty(ln_n) == false && k_ln > 0
+            for j in rand(ln_n, k_ln)
                 # print(j,"\t")
                 v_n[3i+1] += vel[3(j-1)+1] / k_ln
                 v_n[3i+2] += vel[3(j-1)+2] / k_ln
