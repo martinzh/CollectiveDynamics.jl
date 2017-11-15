@@ -33,16 +33,15 @@ folder_path = "$(homedir())/art_DATA/$(folder)/EXP/exp_data_N_$(N)"
 
 eta_folders = readdir(folder_path)
 
-folders = readdir(folder_path * "/" * eta_folders[1])
-
 ### ================================== ###
 
-f = 1
+f = 2
 data_path = folder_path * "/" * eta_folders[f]
 
 reps = [match(r"\w+(\d+).\w+", x).captures[1]  for x in filter(x -> ismatch(r"^pos_", x), readdir(data_path))]
 
 r = rand(reps)
+r = 2
 
 raw_data = reinterpret(Float64, read(data_path * "/pos_$(r).dat"))
 
