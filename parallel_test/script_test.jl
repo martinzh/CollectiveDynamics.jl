@@ -178,10 +178,17 @@ function evolve_system(pos::SharedArray, vel::SharedArray, v_r::SharedArray, v_n
     #     end
     # end
 
+    # @sync begin
+    #     for p in workers()
+    #         @async  remotecall_wait(compute_metric_interactions, p, vel, v_r, v_n, R_ij)
+    #         @async  remotecall_wait(update_particles, p, pos, vel, v_r, v_n)
+    #     end
+    # end
+
     @sync begin
         for p in workers()
-            @async  remotecall_wait(compute_metric_interactions, p, vel, v_r, v_n, R_ij)
-            @async  remotecall_wait(update_particles, p, pos, vel, v_r, v_n)
+            @async  remotecall(compute_metric_interactions, p, vel, v_r, v_n, R_ij)
+            @async  remotecall(update_particles, p, pos, vel, v_r, v_n)
         end
     end
 
