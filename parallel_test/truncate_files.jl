@@ -18,14 +18,16 @@ for (root, dirs, files) in walkdir(data_path)
         data = reinterpret(Float64, read(joinpath(root, file)))
         ln = length(data)
 
-        if tr_ln < ln
-            println(file,"\t", ln, "\t", tr_ln, "\t", tr_ln < ln)
-            write(joinpath(root,"cp_"*file), data[1:tr_ln])
-            rm(joinpath(root, file))
-            mv(joinpath(root,"cp_"*file),joinpath(root, file))
-        else
-            rm(joinpath(root, file))
-        end
+        println(file,"\t", ln, "\t", tr_ln, "\t", tr_ln <= ln)
+
+        # if tr_ln < ln
+        #     println(file,"\t", ln, "\t", tr_ln, "\t", tr_ln < ln)
+        #     write(joinpath(root,"cp_"*file), data[1:tr_ln])
+        #     rm(joinpath(root, file))
+        #     mv(joinpath(root,"cp_"*file),joinpath(root, file))
+        # else
+        #     rm(joinpath(root, file))
+        # end
 
 
     end
