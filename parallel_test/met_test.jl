@@ -14,13 +14,14 @@ addprocs(4)
 ω   = parse(Float64, ARGS[3]) # interactions relative weight
 T   = parse(Int, ARGS[4]) # integration time steps
 rep = parse(Int, ARGS[5])
+i_f = ARGS[6]
 
 ### ============== ### ============== ### ============== ###
 
 @everywhere N = 4096
 @everywhere N = 256
 
-@everywhere κ = 1.0
+@everywhere κ = 0.1
 @everywhere ω = 0.5
 
 @everywhere ρ = 0.3
@@ -29,6 +30,7 @@ rep = parse(Int, ARGS[5])
 @everywhere dt = 1.0
 @everywhere l = 0.5
 
+rep = 1
 
 @everywhere L  = cbrt(N / ρ) # size of box
 @everywhere r0 = (v0 * dt) / l # local interaction range
@@ -47,6 +49,29 @@ R_ij = SharedArray{Float64}(N,N)
 
 # k_r = SharedArray{Float64}(N) # local metric interactions
 # k_n = SharedArray{Float64}(N) # non local topological interactions
+
+### ============== ### ============== ### ============== ###
+### INITIALIZATION FROM FILE
+### ============== ### ============== ### ============== ###
+
+# pos_data = reshape(raw_data, 3N, div(length(raw_data), 3N))
+# vel_data = reshape(raw_data, 3N, div(length(raw_data), 3N))
+
+data_path = "$(homedir())/art_DATA/NLOC_P_MET_3D/DATA/data_N_$(N)/data_N_$(N)_k_$(κ)_w_$(ω)"
+
+raw_data = reinterpret(Float64, read(data_path * "/pos_$(rep).dat"))
+pos_data = raw_data[(end-3N+1):end]
+
+raw_data = reinterpret(Float64, read(data_path * "/vel_$(rep).dat"))
+vel_data = raw_data[(end-3N+1):end]
+
+@time for i in 1:length(pos)
+    pos[i] = pos_data[i]
+    vel[i] = vel_data[i]
+end
+
+pos
+vel
 
 ### ============== ### ============== ### ============== ###
 ### INITIALIZATION
@@ -321,3 +346,42 @@ findin(Symmetric(R_ij, :L)[(i*N)+1:(i+1)*N], sort(Symmetric(R_ij, :L)[(i*N)+1:(i
 
 # next neighbors
 rand(findin(Symmetric(R_ij, :L)[(i*N)+1:(i+1)*N], sort(Symmetric(R_ij, :L)[(i*N)+1:(i+1)*N])[n_nl+2:end]), 3)
+
+### ============== ### ============== ### ============== ###
+
+Ti = 0
+Tf = 5
+
+times = [convert(Int, exp10(i)) for i in Ti:Tf]
+
+tes = []
+
+for i in 1:(length(times) - 1)
+
+    if i > 1
+
+        println(i)
+
+        for t in (times[i]+1):times[i+1]
+
+            if t % times[i] == 0 || t % times[i-1] == 0
+                # println("//////// ", t)
+                push!(tes, t)
+            end
+        end
+
+    else
+
+        for t in (times[i]+1):times[i+1]
+
+            if t % times[i] == 0
+                # println("//////// ", t)
+                push!(tes, t)
+            end
+        end
+
+    end
+
+end
+
+length(tes)
