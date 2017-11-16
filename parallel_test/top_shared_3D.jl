@@ -71,7 +71,7 @@ if file == "f"
     # pos_data = reshape(raw_data, 3N, div(length(raw_data), 3N))
     # vel_data = reshape(raw_data, 3N, div(length(raw_data), 3N))
 
-    data_path = joinpath(homedir(),"art_DATA","NLOC_P_TOP_3D","DATA","data_N_$(N)","data_N_$(N)_k_$(κ)_w_$(ω)")
+    data_path = joinpath(homedir(),"art_DATA","NLOC_TOP_3D_CP","DATA","data_N_$(N)","data_N_$(N)_k_$(κ)_w_$(ω)")
 
     raw_data = reinterpret(Float64, read(joinpath(data_path,"pos_$(rep).dat")))
     pos_data = raw_data[(end-3N+1):end]
@@ -88,7 +88,7 @@ if file == "f"
     ### SET OUTPUT
     ### ============== ### ============== ### ============== ###
 
-    output_path = set_output_data_structure_lnl("NLOC_T_TOP_3D", N, κ, ω)
+    output_path = set_output_data_structure_lnl("NLOC_TOP_3D_EXT", N, κ, ω)
 
     cp(joinpath(data_path,"pos_$(rep).dat"), joinpath(output_path,"pos_$(rep).dat"), remove_destination = true)
     cp(joinpath(data_path,"vel_$(rep).dat"), joinpath(output_path,"vel_$(rep).dat"), remove_destination = true)
@@ -118,7 +118,7 @@ else
     ### SET OUTPUT
     ### ============== ### ============== ### ============== ###
 
-    output_path = set_output_data_structure_lnl("NLOC_P_TOP_3D", N, κ, ω)
+    output_path = set_output_data_structure_lnl("NLOC_TOP_3D_TEST", N, κ, ω)
 
     pos_file = open(joinpath(output_path,"pos_$(rep).dat"), "w+")
     vel_file = open(joinpath(output_path,"vel_$(rep).dat"), "w+")
