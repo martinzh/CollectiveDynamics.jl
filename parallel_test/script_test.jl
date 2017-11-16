@@ -156,12 +156,12 @@ end
 
         p_vel = [vel[3i+1] , vel[3i+2], vel[3i+3]]
 
-        norm(signal) != zero(Float64) ? signal_angle = acos(dot(p_vel, signal) / norm(signal)) : signal_angle = 0.0
+        # norm(signal) != zero(Float64) ? signal_angle = acos(dot(p_vel, signal) / norm(signal)) : signal_angle = 0.0
 
         q_r = Quaternion(zeros(Float64, 3))
 
         if norm(signal) != zero(Float64)
-            # signal_angle = acos(dot(p_vel, signal) / norm(signal))
+            signal_angle = acos(dot(p_vel, signal) / norm(signal))
             q_r = qrotation(cross(p_vel, signal), signal_angle + η * (2.0 * rand() * pi - pi)) * Quaternion(p_vel)
         else
             noise = randn(3)
@@ -286,6 +286,10 @@ for i in 1:3:length(vel)
     vel[i+1] /= norm
     vel[i+2] /= norm
 end
+
+# write initial conditions
+write(pos_file, pos)
+write(vel_file, vel)
 
 ### ============== ### ============== ### ============== ###
 
