@@ -15,6 +15,6 @@ for (root, dirs, files) in walkdir(data_path)
     for file in files
         # println(joinpath(root, file)) # path to files 
         ln = length(reinterpret(Float64, read(joinpath(root, file))))
-        println(ln, "\t", ln < tr_ln)
+        println(file, \"t", ln, "\t", ln < tr_ln)
     end
 end
