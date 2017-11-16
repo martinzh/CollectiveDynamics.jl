@@ -1,9 +1,12 @@
 
-@everywhere using Distributions, Quaternions
 
 ### ============== ### ============== ### ============== ###
 
 addprocs(4)
+
+### ============== ### ============== ### ============== ###
+
+@everywhere using Distributions, Quaternions
 
 ### ============== ### ============== ### ============== ###
 
@@ -16,19 +19,23 @@ rep = parse(Int, ARGS[5])
 
 @everywhere N = 4096
 @everywhere N = 256
+
+@everywhere κ = 1.0
+@everywhere ω = 0.5
+
 @everywhere ρ = 0.3
 @everywhere η = 0.15
 @everywhere v0 = 1.0
 @everywhere dt = 1.0
 @everywhere l = 0.5
 
-@everywhere ω = 0.5
 
 @everywhere L  = cbrt(N / ρ) # size of box
-
-@everywhere κ = 1.0
 @everywhere r0 = (v0 * dt) / l # local interaction range
+
 @everywhere κ_dist = Poisson(κ)
+
+@everywhere n_nl = 6
 
 pos = SharedArray{Float64}(3*N) # particles positions
 vel = SharedArray{Float64}(3*N) # array of particles' velocities
@@ -58,14 +65,23 @@ end
 end
 
 ### ============== ### ============== ### ============== ###
-### COMPUTE RELATIVE DISTANCES
+### COMPUTE RELATIVE DISTANCES WITH METRIC THRESHOLD
 ### ============== ### ============== ### ============== ###
 
 @time @parallel for i in 1:3:length(pos)
         for j in (i+3):3:length(pos)
-            R_ij[div(j,3)+1,div(i,3)+1] = 0.0
             d = (pos[i]-pos[j])^2 + (pos[i+1]-pos[j+1])^2 + (pos[i+2]-pos[j+2])^2
             d <= r0^2 && d > 0.0 ? R_ij[div(j,3)+1,div(i,3)+1] = 1.0 : R_ij[div(j,3)+1,div(i,3)+1] = -1.0
+        end
+end
+
+### ============== ### ============== ### ============== ###
+### COMPUTE RAW RELATIVE DISTANCES
+### ============== ### ============== ### ============== ###
+
+@time @parallel for i in 1:3:length(pos)
+        for j in (i+3):3:length(pos)
+            R_ij[div(j,3)+1,div(i,3)+1] = (pos[i]-pos[j])^2 + (pos[i+1]-pos[j+1])^2 + (pos[i+2]-pos[j+2])^2
         end
 end
 
@@ -73,7 +89,7 @@ R_ij
 Symmetric(R_ij, :L)
 
 ### ============== ### ============== ### ============== ###
-### COMPUTE SHORT AND LONG RANGE INTERACTIONS
+### COMPUTE SHORT AND LONG RANGE METRIC INTERACTIONS
 ### ============== ### ============== ### ============== ###
 
 @everywhere function compute_interactions(vel::SharedArray,v_r::SharedArray,v_n::SharedArray)
@@ -128,52 +144,57 @@ Symmetric(R_ij, :L)
 end
 
 ### ============== ### ============== ### ============== ###
+### COMPUTE SHORT AND LONG RANGE TOPOLOGICAL INTERACTIONS
+### ============== ### ============== ### ============== ###
 
-@time for i in 0:N-1
-# @time  for i in 0:N-1
+@everywhere function compute_interactions(vel::SharedArray,v_r::SharedArray,v_n::SharedArray)
 
-    # print(i+1,"|\t")
+    for id in first(localindexes(vel)):3:last(localindexes(vel))
 
-    v_r[3i+1] = 0.0
-    v_r[3i+2] = 0.0
-    v_r[3i+3] = 0.0
+        i = div(id, 3)
+        # print(i+1,"|\t")
 
-    v_n[3i+1] = 0.0
-    v_n[3i+2] = 0.0
-    v_n[3i+3] = 0.0
+        v_r[3i+1] = 0.0
+        v_r[3i+2] = 0.0
+        v_r[3i+3] = 0.0
 
-    sh_n = find(x -> x > zero(Float64), Symmetric(R_ij, :L)[i*N+1:(i+1)*N])
-    k_sh = length(sh_n)
+        v_n[3i+1] = 0.0
+        v_n[3i+2] = 0.0
+        v_n[3i+3] = 0.0
 
-    ln_n = find(x -> x < zero(Float64), Symmetric(R_ij, :L)[i*N+1:(i+1)*N])
 
-    # short-range
-    if isempty(sh_n) == false
+        # first neighbors
+        sh_n = findin(Symmetric(R_ij, :L)[(i*N)+1:(i+1)*N], sort(Symmetric(R_ij, :L)[(i*N)+1:(i+1)*N])[2:k_sh+1])
+
+        # next neighbors
+        ln_n = findin(Symmetric(R_ij, :L)[(i*N)+1:(i+1)*N], sort(Symmetric(R_ij, :L)[(i*N)+1:(i+1)*N])[k_sh+2:end])
+
+        # short-range
         for j in sh_n
             # print(j,"\t")
             v_r[3i+1] += vel[3(j-1)+1] / k_sh
             v_r[3i+2] += vel[3(j-1)+2] / k_sh
             v_r[3i+3] += vel[3(j-1)+3] / k_sh
         end
-    end
 
-    # println()
-    k_ln = rand(κ_dist)
-    # println(k_ln)
+        # println()
+        k_ln = rand(κ_dist)
+        # println(k_ln)
 
-    # possible long range
-    # if isempty(ln_n) == false && k_ln != 0.0
-    if k_ln != 0.0
-        for j in rand(ln_n, 3)
-            # print(j,"\t")
-            v_n[3i+1] += vel[3(j-1)+1] / k_ln
-            v_n[3i+2] += vel[3(j-1)+2] / k_ln
-            v_n[3i+3] += vel[3(j-1)+3] / k_ln
+        # possible long range
+        # if isempty(ln_n) == false && k_ln != 0.0
+        if k_ln != 0.0
+            for j in rand(ln_n, k_ln)
+                # print(j,"\t")
+                v_n[3i+1] += vel[3(j-1)+1] / k_ln
+                v_n[3i+2] += vel[3(j-1)+2] / k_ln
+                v_n[3i+3] += vel[3(j-1)+3] / k_ln
+            end
         end
+
+        # println()
+
     end
-
-    # println()
-
 end
 
 ### ============== ### ============== ### ============== ###
@@ -292,3 +313,11 @@ pos
 vel
 
 ### ============== ### ============== ### ============== ###
+
+i = 1
+
+# first neighbors
+findin(Symmetric(R_ij, :L)[(i*N)+1:(i+1)*N], sort(Symmetric(R_ij, :L)[(i*N)+1:(i+1)*N])[2:n_nl+1])
+
+# next neighbors
+rand(findin(Symmetric(R_ij, :L)[(i*N)+1:(i+1)*N], sort(Symmetric(R_ij, :L)[(i*N)+1:(i+1)*N])[n_nl+2:end]), 3)

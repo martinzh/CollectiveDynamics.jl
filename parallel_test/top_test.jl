@@ -68,9 +68,7 @@ function calc_Rij(R_ij::SharedArray, pos::SharedArray)
 
             rj = div(j,3) + 1
 
-            d = (pos[i]-pos[j])^2 + (pos[i+1]-pos[j+1])^2 + (pos[i+2]-pos[j+2])^2
-            d <= r0 && d > 0.0 ? R_ij[rj,ri] = 1.0 : R_ij[rj,ri] = -1.0
-            # d <= r0 ? R_ij[rj,ri] = 1.0 : R_ij[rj,ri] = -1.0
+            R_ij[rj,ri] = (pos[i]-pos[j])^2 + (pos[i+1]-pos[j+1])^2 + (pos[i+2]-pos[j+2])^2
         end
     end
 
@@ -80,7 +78,7 @@ end
 ### COMPUTE METRIC SHORT AND LONG RANGE INTERACTIONS
 ### ============== ### ============== ### ============== ###
 
-@everywhere function compute_metric_interactions(vel::SharedArray,v_r::SharedArray,v_n::SharedArray,R_ij::SharedArray)
+@everywhere function compute_topological_interactions(vel::SharedArray,v_r::SharedArray,v_n::SharedArray,R_ij::SharedArray)
 
     for id in first(localindexes(vel)):3:last(localindexes(vel))
 
@@ -95,45 +93,33 @@ end
         v_n[3i+2] = 0.0
         v_n[3i+3] = 0.0
 
-        sh_n = find(x -> x > zero(Float64), Symmetric(R_ij, :L)[(i*N)+1:(i+1)*N])
-        k_sh = length(sh_n)
-        # k_sh = sum(Symmetric(R_ij, :L)[(i*N)+1:(i+1)*N][sh_n])
+        # first neighbors
+        sh_n = findin(Symmetric(R_ij, :L)[(i*N)+1:(i+1)*N], sort(Symmetric(R_ij, :L)[(i*N)+1:(i+1)*N])[2:k_sh+1])
 
-        ln_n = find(x -> x < zero(Float64), Symmetric(R_ij, :L)[(i*N)+1:(i+1)*N])
-        # ln_n = deleteat!(collect(1:N), sh_n)
+        # next neighbors
+        ln_n = findin(Symmetric(R_ij, :L)[(i*N)+1:(i+1)*N], sort(Symmetric(R_ij, :L)[(i*N)+1:(i+1)*N])[k_sh+2:end])
 
         # short-range
-        if isempty(sh_n) == false
-            for j in sh_n
-                # print(j,"\t")
-                v_r[3i+1] += vel[3(j-1)+1] / k_sh
-                v_r[3i+2] += vel[3(j-1)+2] / k_sh
-                v_r[3i+3] += vel[3(j-1)+3] / k_sh
-            end
+        for j in sh_n
+            # print(j,"\t")
+            v_r[3i+1] += vel[3(j-1)+1] / k_sh
+            v_r[3i+2] += vel[3(j-1)+2] / k_sh
+            v_r[3i+3] += vel[3(j-1)+3] / k_sh
         end
 
         # println()
         k_ln = rand(κ_dist)
         # println(k_ln)
 
-        # if isempty(ln_n) == false && k_ln != 0
+        # possible long range
         if k_ln != 0.0
             for j in rand(ln_n, k_ln)
                 # print(j,"\t")
-                v_n[3i+1] += vel[3(j-1)+1] / convert(Float64,k_ln)
-                v_n[3i+2] += vel[3(j-1)+2] / convert(Float64,k_ln)
-                v_n[3i+3] += vel[3(j-1)+3] / convert(Float64,k_ln)
+                v_n[3i+1] += vel[3(j-1)+1] / k_ln
+                v_n[3i+2] += vel[3(j-1)+2] / k_ln
+                v_n[3i+3] += vel[3(j-1)+3] / k_ln
             end
         end
-
-        # if k_ln[i+1] > 0
-        #     for j in rand(ln_n, k_ln[i+1])
-        #         # print(j,"\t")
-        #         v_n[3i+1] += vel[3(j-1)+1] / k_ln[i+1]
-        #         v_n[3i+2] += vel[3(j-1)+2] / k_ln[i+1]
-        #         v_n[3i+3] += vel[3(j-1)+3] / k_ln[i+1]
-        #     end
-        # end
 
         # println()
 
@@ -200,7 +186,7 @@ function evolve_system(pos::SharedArray, vel::SharedArray, v_r::SharedArray, v_n
 
     @sync begin
         for p in workers()
-            @async remotecall_wait(compute_metric_interactions, p, vel, v_r, v_n, R_ij)
+            @async remotecall_wait(compute_topological_interactions, p, vel, v_r, v_n, R_ij)
             # @async remotecall_wait(update_particles, p, pos, vel, v_r, v_n)
         end
     end
@@ -241,6 +227,8 @@ rep = parse(Int, ARGS[5])
 #
 # rep = 20
 
+@everywhere k_sh = 6
+
 @everywhere ρ = 0.3
 @everywhere η = 0.15
 @everywhere v0 = 1.0
@@ -266,7 +254,7 @@ R_ij = SharedArray{Float64}(N,N)
 ### SET OUTPUT
 ### ============== ### ============== ### ============== ###
 
-output_path = set_output_data_structure_lnl("NLOC_P_MET_3D", N, κ, ω)
+output_path = set_output_data_structure_lnl("NLOC_P_TOP_3D", N, κ, ω)
 
 pos_file = open(output_path * "/pos_$(rep).dat", "w+")
 vel_file = open(output_path * "/vel_$(rep).dat", "w+")

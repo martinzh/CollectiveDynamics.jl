@@ -35,13 +35,13 @@ eta_folders = readdir(folder_path)
 
 ### ================================== ###
 
-f = 2
+f = 1
 data_path = folder_path * "/" * eta_folders[f]
 
 reps = [match(r"\w+(\d+).\w+", x).captures[1]  for x in filter(x -> ismatch(r"^pos_", x), readdir(data_path))]
 
 r = rand(reps)
-r = 2
+r = 1
 
 raw_data = reinterpret(Float64, read(data_path * "/pos_$(r).dat"))
 
@@ -52,4 +52,5 @@ x = view(pos_data, :, 1:3:3N)
 y = view(pos_data, :, 2:3:3N)
 z = view(pos_data, :, 3:3:3N)
 
-plot(x, y, z, leg = false, size = (800,800), tickfont = font(1), aspect_ratio = :equal)
+# plot(x, y, z, leg = false, size = (800,800), tickfont = font(1), aspect_ratio = :equal)
+plot(x, y, z, leg = false, size = (800,800))
