@@ -102,9 +102,13 @@ end
         # short-range
         for j in sh_n
             # print(j,"\t")
-            v_r[3i+1] += vel[3(j-1)+1] / k_sh
-            v_r[3i+2] += vel[3(j-1)+2] / k_sh
-            v_r[3i+3] += vel[3(j-1)+3] / k_sh
+            # v_r[3i+1] += vel[3(j-1)+1] / k_sh
+            # v_r[3i+2] += vel[3(j-1)+2] / k_sh
+            # v_r[3i+3] += vel[3(j-1)+3] / k_sh
+
+            v_r[3i+1] += vel[3(j-1)+1]
+            v_r[3i+2] += vel[3(j-1)+2]
+            v_r[3i+3] += vel[3(j-1)+3]
         end
 
         # println()
@@ -115,11 +119,23 @@ end
         if k_ln != 0.0
             for j in rand(ln_n, k_ln)
                 # print(j,"\t")
-                v_n[3i+1] += vel[3(j-1)+1] / k_ln
-                v_n[3i+2] += vel[3(j-1)+2] / k_ln
-                v_n[3i+3] += vel[3(j-1)+3] / k_ln
+                # v_n[3i+1] += vel[3(j-1)+1] / k_ln
+                # v_n[3i+2] += vel[3(j-1)+2] / k_ln
+                # v_n[3i+3] += vel[3(j-1)+3] / k_ln
+
+                v_n[3i+1] += vel[3(j-1)+1]
+                v_n[3i+2] += vel[3(j-1)+2]
+                v_n[3i+3] += vel[3(j-1)+3]
             end
         end
+
+        v_r[3i+1] /= k_sh
+        v_r[3i+2] /= k_sh
+        v_r[3i+3] /= k_sh
+
+        v_n[3i+1] /= k_ln
+        v_n[3i+2] /= k_ln
+        v_n[3i+3] /= k_ln
 
         # println()
 
