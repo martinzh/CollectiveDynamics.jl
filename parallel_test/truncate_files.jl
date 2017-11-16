@@ -1,7 +1,7 @@
 
 
 f = ARGS[1]
-N = ARGS[2]
+N = parse(Int, ARGS[2])
 
 # f = "NLOC_P_MET_3D"
 # N = 512
