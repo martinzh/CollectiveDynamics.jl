@@ -210,7 +210,7 @@ function update_particles(pos::SharedArray, vel::SharedArray,v_r::SharedArray,v_
         i = div(id, 3)
         # print(i+1,"|\t")
 
-        signal = ω * [v_r[3i+1] , v_r[3i+2], v_r[3i+3]] + (1.0 - ω) * [v_n[3i+1] , v_n[3i+2], v_n[3i+3]]
+        signal = ω * normalize([v_r[3i+1] , v_r[3i+2], v_r[3i+3]]) + (1.0 - ω) * normalize([v_n[3i+1] , v_n[3i+2], v_n[3i+3]])
         signal_angle = 0.0
 
         p_vel = [vel[3i+1] , vel[3i+2], vel[3i+3]]

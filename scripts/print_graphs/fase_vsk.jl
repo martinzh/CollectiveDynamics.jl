@@ -136,6 +136,12 @@ gr()
 
 ax[:plot](vals[sortperm(vals)], inv(0.1) .* orders[end, sortperm(vals)], "-o", color = "#000000", ms = 2, lw = 0.5)
 
+pyplot()
+gr()
+gui()
+plot(met_vals[2:end,1], met_vals[2:end,2], m = :o, xscale = :log10)
+plot(top_vals[2:end,1], top_vals[2:end,2], m = :o, xscale = :log10)
+
 ### ================================== ###
 
 met_vals_2D = readcsv("2D_met_order.csv")
