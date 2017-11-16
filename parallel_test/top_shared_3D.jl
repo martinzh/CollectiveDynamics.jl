@@ -4,7 +4,8 @@
 ### ============== ### ============== ### ============== ###
 
 @everywhere using Distributions, Quaternions
-@everywhere include("par_mod.jl")
+# @everywhere include("par_mod.jl")
+@everywhere include(joinpath(homedir(),"GitRepos","CollectiveDynamics.jl","parallel_test","par_mod.jl"))
 
 ### ============== ### ============== ### ============== ###
 ### SYSTEM'S PARAMETERS
