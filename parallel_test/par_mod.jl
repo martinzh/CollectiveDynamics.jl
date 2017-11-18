@@ -87,7 +87,7 @@ end
 ### COMPUTE METRIC SHORT AND LONG RANGE INTERACTIONS
 ### ============== ### ============== ### ============== ###
 
-@everywhere function compute_metric_interactions(vel::SharedArray,v_r::SharedArray,v_n::SharedArray,R_ij::SharedArray)
+function compute_metric_interactions(vel::SharedArray,v_r::SharedArray,v_n::SharedArray,R_ij::SharedArray)
 
     for id in first(localindexes(vel)):3:last(localindexes(vel))
 
@@ -141,7 +141,7 @@ end
 ### COMPUTE TOPOLOGICAL SHORT AND LONG RANGE INTERACTIONS
 ### ============== ### ============== ### ============== ###
 
-@everywhere function compute_topological_interactions(vel::SharedArray,v_r::SharedArray,v_n::SharedArray,R_ij::SharedArray)
+function compute_topological_interactions(vel::SharedArray,v_r::SharedArray,v_n::SharedArray,R_ij::SharedArray)
 
     for id in first(localindexes(vel)):3:last(localindexes(vel))
 
@@ -197,7 +197,7 @@ end
 ### UPDATE PARTICLE'S POSITIONS AND VELOCITIES
 ### ============== ### ============== ### ============== ###
 
-@everywhere function update_particles(pos::SharedArray, vel::SharedArray,v_r::SharedArray,v_n::SharedArray)
+function update_particles(pos::SharedArray, vel::SharedArray,v_r::SharedArray,v_n::SharedArray)
 
     for id in first(localindexes(vel)):3:last(localindexes(vel))
 
