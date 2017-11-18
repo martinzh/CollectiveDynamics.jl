@@ -4,16 +4,11 @@
 ### ============== ### ============== ### ============== ###
 
 @everywhere using Distributions, Quaternions
-# @everywhere include("par_mod.jl")
 @everywhere include(joinpath(homedir(),"GitRepos","CollectiveDynamics.jl","parallel_test","par_mod.jl"))
 
 ### ============== ### ============== ### ============== ###
 ### SYSTEM'S PARAMETERS
 ### ============== ### ============== ### ============== ###
-
-# N   = parse(Int64, ARGS[1]) # average non-local interactions
-# κ   = parse(Float64, ARGS[2]) # average non-local interactions
-# ω   = parse(Float64, ARGS[3]) # interactions relative weight
 
 file = ARGS[1]
 
@@ -48,7 +43,7 @@ rep = parse(Int, ARGS[7])
 
 @everywhere L  = cbrt(N / ρ) # size of box
 
-@everywhere r0 = ((v0 * dt) / l)^2 # local interaction range
+# @everywhere r0 = ((v0 * dt) / l)^2 # local interaction range
 
 @everywhere κ_dist = Poisson(κ)
 # κ_dist = Poisson(κ)

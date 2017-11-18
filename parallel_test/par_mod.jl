@@ -56,8 +56,8 @@ function calc_Rij_th(R_ij::SharedArray, pos::SharedArray, r0::Float64)
             rj = div(j,3) + 1
 
             d = (pos[i]-pos[j])^2 + (pos[i+1]-pos[j+1])^2 + (pos[i+2]-pos[j+2])^2
-            d <= r0 && d > 0.0 ? R_ij[rj,ri] = 1.0 : R_ij[rj,ri] = -1.0
-            # d <= r0 ? R_ij[rj,ri] = 1.0 : R_ij[rj,ri] = -1.0
+            d <= r0 && d > 0.0 ? R_ij[rj,ri] = 1 : R_ij[rj,ri] = -1
+            # d <= r0 ? R_ij[rj,ri] = 1 : R_ij[rj,ri] = -1
         end
     end
 
@@ -87,7 +87,7 @@ end
 ### COMPUTE METRIC SHORT AND LONG RANGE INTERACTIONS
 ### ============== ### ============== ### ============== ###
 
-function compute_metric_interactions(vel::SharedArray,v_r::SharedArray,v_n::SharedArray,R_ij::SharedArray)
+@everywhere function compute_metric_interactions(vel::SharedArray,v_r::SharedArray,v_n::SharedArray,R_ij::SharedArray)
 
     for id in first(localindexes(vel)):3:last(localindexes(vel))
 
@@ -102,15 +102,14 @@ function compute_metric_interactions(vel::SharedArray,v_r::SharedArray,v_n::Shar
         v_n[3i+2] = 0.0
         v_n[3i+3] = 0.0
 
-        sh_n = find(x -> x > zero(Float64), Symmetric(R_ij, :L)[(i*N)+1:(i+1)*N])
+        sh_n = find(x -> x == 1, Symmetric(R_ij, :L)[(i*N)+1:(i+1)*N])
         k_sh = length(sh_n)
-        # k_sh = sum(Symmetric(R_ij, :L)[(i*N)+1:(i+1)*N][sh_n])
+        # k_sh = convert(Float64, length(sh_n))
 
-        ln_n = find(x -> x < zero(Float64), Symmetric(R_ij, :L)[(i*N)+1:(i+1)*N])
-        # ln_n = deleteat!(collect(1:N), sh_n)
+        ln_n = find(x -> x == -1, Symmetric(R_ij, :L)[(i*N)+1:(i+1)*N])
 
         # short-range
-        if isempty(sh_n) == false
+        if k_sh > 0
             for j in sh_n
                 # print(j,"\t")
                 v_r[3i+1] += vel[3(j-1)+1] / k_sh
@@ -119,31 +118,22 @@ function compute_metric_interactions(vel::SharedArray,v_r::SharedArray,v_n::Shar
             end
         end
 
+        # length(sh_n) > 0 ? v_r_temp = mean( [[vel[3(j-1)+1],vel[3(j-1)+2],vel[3(j-1)+3]] for j in sh_n] ) : v_r_temp = zeros(Float64, 3)
+
         # println()
         k_ln = rand(κ_dist)
         # println(k_ln)
 
-        # if isempty(ln_n) == false && k_ln != 0
-        if k_ln != 0.0
+        # k_ln > 0 ? v_n_temp = mean( [[vel[3(j-1)+1],vel[3(j-1)+2],vel[3(j-1)+3]] for j in rand(ln_n, k_ln)] ) : v_n_temp = zeros(Float64, 3)
+
+        if k_ln > 0
             for j in rand(ln_n, k_ln)
                 # print(j,"\t")
-                v_n[3i+1] += vel[3(j-1)+1] / convert(Float64,k_ln)
-                v_n[3i+2] += vel[3(j-1)+2] / convert(Float64,k_ln)
-                v_n[3i+3] += vel[3(j-1)+3] / convert(Float64,k_ln)
+                v_n[3i+1] += vel[3(j-1)+1] / k_ln
+                v_n[3i+2] += vel[3(j-1)+2] / k_ln
+                v_n[3i+3] += vel[3(j-1)+3] / k_ln
             end
         end
-
-        # if k_ln[i+1] > 0
-        #     for j in rand(ln_n, k_ln[i+1])
-        #         # print(j,"\t")
-        #         v_n[3i+1] += vel[3(j-1)+1] / k_ln[i+1]
-        #         v_n[3i+2] += vel[3(j-1)+2] / k_ln[i+1]
-        #         v_n[3i+3] += vel[3(j-1)+3] / k_ln[i+1]
-        #     end
-        # end
-
-        # println()
-
     end
 end
 
@@ -166,11 +156,15 @@ end
         v_n[3i+2] = 0.0
         v_n[3i+3] = 0.0
 
+        i_dists = Symmetric(R_ij, :L)[(i*N)+1:(i+1)*N]
+
         # first neighbors
-        sh_n = findin(Symmetric(R_ij, :L)[(i*N)+1:(i+1)*N], sort(Symmetric(R_ij, :L)[(i*N)+1:(i+1)*N])[2:k_sh+1])
+        # sh_n = findin(Symmetric(R_ij, :L)[(i*N)+1:(i+1)*N], sort(Symmetric(R_ij, :L)[(i*N)+1:(i+1)*N])[2:k_sh+1])
+        sh_n = findin(i_dists, sort(i_dists)[2:k_sh+1])
 
         # next neighbors
-        ln_n = findin(Symmetric(R_ij, :L)[(i*N)+1:(i+1)*N], sort(Symmetric(R_ij, :L)[(i*N)+1:(i+1)*N])[k_sh+2:end])
+        # ln_n = findin(Symmetric(R_ij, :L)[(i*N)+1:(i+1)*N], sort(Symmetric(R_ij, :L)[(i*N)+1:(i+1)*N])[k_sh+2:end])
+        ln_n = findin(i_dists, sort(i_dists)[k_sh+2:end])
 
         # short-range
         for j in sh_n
@@ -185,7 +179,7 @@ end
         # println(k_ln)
 
         # possible long range
-        if k_ln != 0.0
+        if k_ln > 0
             for j in rand(ln_n, k_ln)
                 # print(j,"\t")
                 v_n[3i+1] += vel[3(j-1)+1] / k_ln
@@ -203,15 +197,16 @@ end
 ### UPDATE PARTICLE'S POSITIONS AND VELOCITIES
 ### ============== ### ============== ### ============== ###
 
-function update_particles(pos::SharedArray, vel::SharedArray,v_r::SharedArray,v_n::SharedArray)
+@everywhere function update_particles(pos::SharedArray, vel::SharedArray,v_r::SharedArray,v_n::SharedArray)
 
     for id in first(localindexes(vel)):3:last(localindexes(vel))
 
         i = div(id, 3)
         # print(i+1,"|\t")
 
-        signal = ω * normalize([v_r[3i+1] , v_r[3i+2], v_r[3i+3]]) + (1.0 - ω) * normalize([v_n[3i+1] , v_n[3i+2], v_n[3i+3]])
-        signal_angle = 0.0
+        # signal = ω * normalize([v_r[3i+1] , v_r[3i+2], v_r[3i+3]]) + (1.0 - ω) * normalize([v_n[3i+1] , v_n[3i+2], v_n[3i+3]])
+
+        signal = ω * [v_r[3i+1] , v_r[3i+2], v_r[3i+3]] + (1.0 - ω) * [v_n[3i+1] , v_n[3i+2], v_n[3i+3]]
 
         p_vel = [vel[3i+1] , vel[3i+2], vel[3i+3]]
 
@@ -220,7 +215,7 @@ function update_particles(pos::SharedArray, vel::SharedArray,v_r::SharedArray,v_
         q_r = Quaternion(zeros(Float64, 3))
 
         if norm(signal) != zero(Float64)
-            signal_angle = acos(dot(p_vel, signal) / norm(signal))
+            signal_angle = acos(dot(p_vel, signal) / (norm(signal)*norm(p_vel)))
             q_r = qrotation(cross(p_vel, signal), signal_angle + η * (2.0 * rand() * pi - pi)) * Quaternion(p_vel)
         else
             noise = randn(3)

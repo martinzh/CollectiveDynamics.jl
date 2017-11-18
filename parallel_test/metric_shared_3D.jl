@@ -4,16 +4,11 @@
 ### ============== ### ============== ### ============== ###
 
 @everywhere using Distributions, Quaternions
-# @everywhere include("par_mod.jl")
 @everywhere include(joinpath(homedir(),"GitRepos","CollectiveDynamics.jl","parallel_test","par_mod.jl"))
 
 ### ============== ### ============== ### ============== ###
 ### SYSTEM'S PARAMETERS
 ### ============== ### ============== ### ============== ###
-
-# N   = parse(Int64, ARGS[1]) # average non-local interactions
-# κ   = parse(Float64, ARGS[2]) # average non-local interactions
-# ω   = parse(Float64, ARGS[3]) # interactions relative weight
 
 file = ARGS[1]
 
@@ -28,8 +23,8 @@ rep = parse(Int, ARGS[7])
 
 ### ============== ### ============== ### ============== ###
 
-# @everywhere N = 512
-# @everywhere κ = 12
+# @everywhere N = 128
+# @everywhere κ = 1.0
 # @everywhere ω = 0.5
 #
 # rep = 20
@@ -39,6 +34,7 @@ rep = parse(Int, ARGS[7])
 @eval @everywhere ω = $w
 
 @everywhere ρ = 0.3
+@everywhere ρ = 3.0
 @everywhere η = 0.15
 @everywhere v0 = 1.0
 @everywhere dt = 1.0
@@ -51,13 +47,13 @@ rep = parse(Int, ARGS[7])
 @everywhere κ_dist = Poisson(κ)
 # κ_dist = Poisson(κ)
 
-pos = SharedArray{Float64}(3*N) # particles positions
-vel = SharedArray{Float64}(3*N) # array of particles' velocities
+pos = SharedArray{Float64}(3N) # particles positions
+vel = SharedArray{Float64}(3N) # array of particles' velocities
 
-v_r = SharedArray{Float64}(3*N) # local metric interactions
-v_n = SharedArray{Float64}(3*N) # non local topological interactions
+v_r = SharedArray{Float64}(3N) # local metric interactions
+v_n = SharedArray{Float64}(3N) # non local topological interactions
 
-R_ij = SharedArray{Float64}(N,N)
+R_ij = SharedArray{Int64}(N,N)
 
 ### ============== ### ============== ### ============== ###
 
@@ -173,16 +169,16 @@ println("Done all")
 ### ============== ### ============== ### ============== ###
 
 # for t in 1:T
-#
 #     println("//////// ", t)
 #
-#     evolve_system(pos, vel, v_r, v_n, R_ij)
+#     evolve_metric_system(pos, vel, v_r, v_n, R_ij, r0)
 #     write(pos_file, pos)
 #     write(vel_file, vel)
-#
 # end
-#
+
 # close(pos_file)
 # close(vel_file)
 #
 # println("Done all")
+
+### ============== ### ============== ### ============== ###
