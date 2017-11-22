@@ -48,11 +48,11 @@ rep = parse(Int, ARGS[7])
 @everywhere κ_dist = Poisson(κ)
 # κ_dist = Poisson(κ)
 
-pos = SharedArray{Float64}(3*N) # particles positions
-vel = SharedArray{Float64}(3*N) # array of particles' velocities
+pos = SharedArray{Float64}(3N) # particles positions
+vel = SharedArray{Float64}(3N) # array of particles' velocities
 
-v_r = SharedArray{Float64}(3*N) # local metric interactions
-v_n = SharedArray{Float64}(3*N) # non local topological interactions
+v_r = SharedArray{Float64}(3N) # local metric interactions
+v_n = SharedArray{Float64}(3N) # non local topological interactions
 
 R_ij = SharedArray{Float64}(N,N)
 
@@ -120,6 +120,7 @@ else
     vel_file = open(joinpath(output_path,"vel_$(rep).dat"), "w+")
 
     # write initial conditions
+    println("//////// ", 1)
     write(pos_file, pos)
     write(vel_file, vel)
 end
@@ -132,32 +133,15 @@ times = [convert(Int, exp10(i)) for i in Ti:Tf]
 
 for i in 1:(length(times) - 1)
 
-    if i > 1
+    for t in (times[i]+1):times[i+1]
 
-        for t in (times[i]+1):times[i+1]
+        evolve_topological_system(pos, vel, v_r, v_n, R_ij)
 
-            evolve_topological_system(pos, vel, v_r, v_n, R_ij)
-
-            if t % times[i] == 0 || t % times[i-1] == 0
-                println("//////// ", t)
-                write(pos_file, pos)
-                write(vel_file, vel)
-            end
+        if t % times[i] == 0 || t % div(times[i], exp10(1)) == 0
+            println("//////// ", t)
+            write(pos_file, pos)
+            write(vel_file, vel)
         end
-
-    else
-
-        for t in (times[i]+1):times[i+1]
-
-            evolve_topological_system(pos, vel, v_r, v_n, R_ij)
-
-            if t % times[i] == 0
-                println("//////// ", t)
-                write(pos_file, pos)
-                write(vel_file, vel)
-            end
-        end
-
     end
 
 end

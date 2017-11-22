@@ -56,8 +56,8 @@ function calc_Rij_th(R_ij::SharedArray, pos::SharedArray, r0::Float64)
             rj = div(j,3) + 1
 
             d = (pos[i]-pos[j])^2 + (pos[i+1]-pos[j+1])^2 + (pos[i+2]-pos[j+2])^2
-            d <= r0 && d > 0.0 ? R_ij[rj,ri] = 1 : R_ij[rj,ri] = -1
-            # d <= r0 ? R_ij[rj,ri] = 1 : R_ij[rj,ri] = -1
+            # d <= r0 && d > 0.0 ? R_ij[rj,ri] = 1 : R_ij[rj,ri] = -1
+            d <= r0 ? R_ij[rj,ri] = 1 : R_ij[rj,ri] = -1
         end
     end
 

@@ -1,30 +1,30 @@
 #!/bin/bash
 
-julia -p 4 expansion_folder_par.jl NLOC_MET_3D_EXT 4096 0.01
+/Users/mzumaya/Code/julia/julia -p 4 expansion_folder_par.jl NLOC_MET_3D_EXT 4096 0.01
 wait
-julia -p 4 expansion_folder_par.jl NLOC_MET_3D_EXT 4096 0.02
+/Users/mzumaya/Code/julia/julia -p 4 expansion_folder_par.jl NLOC_MET_3D_EXT 4096 0.02
 wait
-julia -p 4 expansion_folder_par.jl NLOC_MET_3D_EXT 4096 0.03
+/Users/mzumaya/Code/julia/julia -p 4 expansion_folder_par.jl NLOC_MET_3D_EXT 4096 0.03
 wait
-julia -p 4 expansion_folder_par.jl NLOC_MET_3D_EXT 4096 0.25
+/Users/mzumaya/Code/julia/julia -p 4 expansion_folder_par.jl NLOC_MET_3D_EXT 4096 0.25
 wait
-julia -p 4 expansion_folder_par.jl NLOC_MET_3D_EXT 4096 0.5
+/Users/mzumaya/Code/julia/julia -p 4 expansion_folder_par.jl NLOC_MET_3D_EXT 4096 0.5
 wait
-julia -p 4 expansion_folder_par.jl NLOC_MET_3D_EXT 4096 3.0
+/Users/mzumaya/Code/julia/julia -p 4 expansion_folder_par.jl NLOC_MET_3D_EXT 4096 3.0
 wait
-julia -p 4 expansion_folder_par.jl NLOC_TOP_3D_EXT 4096 0.2
+/Users/mzumaya/Code/julia/julia -p 4 expansion_folder_par.jl NLOC_TOP_3D_EXT 4096 0.2
 wait
-julia -p 4 expansion_folder_par.jl NLOC_TOP_3D_EXT 4096 0.05
+/Users/mzumaya/Code/julia/julia -p 4 expansion_folder_par.jl NLOC_TOP_3D_EXT 4096 0.05
 wait
-julia -p 4 expansion_folder_par.jl NLOC_TOP_3D_EXT 4096 0.025
+/Users/mzumaya/Code/julia/julia -p 4 expansion_folder_par.jl NLOC_TOP_3D_EXT 4096 0.025
 wait
-julia -p 4 expansion_folder_par.jl NLOC_TOP_3D_EXT 4096 0.01
+/Users/mzumaya/Code/julia/julia -p 4 expansion_folder_par.jl NLOC_TOP_3D_EXT 4096 0.01
 wait
-julia -p 4 expansion_folder_par.jl NLOC_TOP_3D_EXT 4096 0.0075
+/Users/mzumaya/Code/julia/julia -p 4 expansion_folder_par.jl NLOC_TOP_3D_EXT 4096 0.0075
 wait
-julia -p 4 expansion_folder_par.jl NLOC_TOP_3D_EXT 4096 0.0035
+/Users/mzumaya/Code/julia/julia -p 4 expansion_folder_par.jl NLOC_TOP_3D_EXT 4096 0.0035
 wait
-julia -p 4 expansion_folder_par.jl NLOC_TOP_3D_EXT 4096 0.0025
+/Users/mzumaya/Code/julia/julia -p 4 expansion_folder_par.jl NLOC_TOP_3D_EXT 4096 0.0025
 wait
-julia -p 4 expansion_folder_par.jl NLOC_TOP_3D_EXT 4096 0.0015
+/Users/mzumaya/Code/julia/julia -p 4 expansion_folder_par.jl NLOC_TOP_3D_EXT 4096 0.0015
 wait

@@ -34,7 +34,6 @@ rep = parse(Int, ARGS[7])
 @eval @everywhere ω = $w
 
 @everywhere ρ = 0.3
-@everywhere ρ = 3.0
 @everywhere η = 0.15
 @everywhere v0 = 1.0
 @everywhere dt = 1.0
@@ -119,6 +118,7 @@ else
     vel_file = open(joinpath(output_path,"vel_$(rep).dat"), "w+")
 
     # write initial conditions
+    println("//////// ", 1)
     write(pos_file, pos)
     write(vel_file, vel)
 end
@@ -131,35 +131,19 @@ times = [convert(Int, exp10(i)) for i in Ti:Tf]
 
 for i in 1:(length(times) - 1)
 
-    if i > 1
+    for t in (times[i]+1):times[i+1]
 
-        for t in (times[i]+1):times[i+1]
+        evolve_metric_system(pos, vel, v_r, v_n, R_ij, r0)
 
-            evolve_metric_system(pos, vel, v_r, v_n, R_ij, r0)
-
-            if t % times[i] == 0 || t % times[i-1] == 0
-                println("//////// ", t)
-                write(pos_file, pos)
-                write(vel_file, vel)
-            end
+        if t % times[i] == 0 || t % div(times[i], exp10(1)) == 0
+            println("//////// ", t)
+            write(pos_file, pos)
+            write(vel_file, vel)
         end
-
-    else
-
-        for t in (times[i]+1):times[i+1]
-
-            evolve_metric_system(pos, vel, v_r, v_n, R_ij, r0)
-
-            if t % times[i] == 0
-                println("//////// ", t)
-                write(pos_file, pos)
-                write(vel_file, vel)
-            end
-        end
-
     end
 
 end
+
 
 close(pos_file)
 close(vel_file)

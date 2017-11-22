@@ -6,25 +6,27 @@
 ## 21 / 02 / 2017
 ### ============== ### ============== ### ============== ###
 
-# addprocs(4)
+addprocs(4)
 
 ### ================================== ###
 
+using CollectiveDynamics.DataAnalysis
 using Plots, CollectiveDynamics.DataAnalysis
 
 ### ================================== ###
 
 function calc_Rij_3D(pos::SharedArray, Rij::SharedArray)
 
-    @parallel for i in 1:3:length(pos)
+    N = size(Rij, 1)
 
-        ri = div(i,3) + 1
+    @parallel for i in 1:3:3N
 
-        for j in (i+3):3:length(pos)
+        for j in (i+3):3:3N
 
-            rj = div(j,3) + 1
+            k = div(i, 3) + 1
+            l = div(j, 3) + 1
 
-            Rij[rj,ri] = (pos[i]-pos[j])^2 + (pos[i+1]-pos[j+1])^2 + (pos[i+2]-pos[j+2])^2
+            Rij[l, k] = norm([pos[i], pos[i+1], pos[i+2]] - [pos[j], pos[j+1], pos[j+2]])
         end
     end
 
@@ -34,16 +36,14 @@ end
 
 function calc_Rij_2D(pos, Rij)
 
-    @parallel for i in 1:2:length(pos)
+    N = size(Rij, 1)
 
-        ri = div(i,2) + 1
+    @parallel for i in 1:2:2N, j in (i+2):2:2N
 
-        for j in (i+2):2:length(pos)
+        k = div(i, 2) + 1
+        l = div(j, 2) + 1
 
-            rj = div(j,2) + 1
-
-            Rij[rj,ri] = (pos[i]-pos[j])^2 + (pos[i+1]-pos[j+1])^2
-        end
+        Rij[l, k] = norm([pos[i], pos[i+1]] - [pos[j], pos[j+1]])
     end
 
 end
@@ -63,10 +63,10 @@ w = "0.5"
 # folder = "SVM_GRID_3D"
 # folder = "SVM_GRID_FN_2D"
 
-# folder = "NLOC_MET_3D_EXT"
-# folder = "NLOC_TOP_3D_EXT"
+folder = "NLOC_MET_3D_EXT"
+folder = "NLOC_TOP_3D_EXT"
 
-# N = 4096
+N = 4096
 # N = 4000
 # N = 1024
 # N = 512
@@ -74,7 +74,7 @@ w = "0.5"
 # N = 128
 # N = 100
 
-# k = "9.0"
+k = "9.0"
 # k = "0.5"
 # k = "0.001"
 # k = "0.0125"
@@ -132,7 +132,7 @@ psi      = Array{Float64}[]
 Rij = SharedArray{Float64}(N,N)
 sh_pos = SharedArray{Float64}(3N)
 
-# r = 3
+r = 1
 for r in reps
 
     println(r)
@@ -189,3 +189,85 @@ println("Done")
 # plot(union(times[1:369],collect(2exp10(5):exp10(5):exp10(6))), nn_means, m = :o, xscale = :log10, yscale = :log10, leg = false)
 #
 # plot(union(times[1:369],collect(2exp10(5):exp10(5):exp10(6))), [norm(mean([[vel_data[i, j], vel_data[i+1, j], vel_data[i+2, j]] for i in 1:3:3N])) for j in 1:size(vel_data, 2)], xscale = :log10, leg = false)
+
+### ================================== ###
+τ = 6
+f_times = get_times(τ)
+
+times = union(f_times[1:369],collect(2exp10(5):exp10(5):exp10(6)))
+
+### ================================== ###
+
+sh_pos = pos_data[:,1]
+
+
+for i in 1:length(Rij)
+    Rij[i] = 0.0
+end
+
+pos_data
+sh_pos
+
+for i in 1:3N
+    sh_pos[i] = pos_data[:,1][i]
+end
+
+div(length(sh_pos), 3)
+
+calc_Rij_3D(sh_pos, Rij)
+
+mean(Symmetric(Rij, :L))
+
+plot(times, means, xscale = :log10, yscale = :log10, leg = false, m = :o, ms = 1.0)
+plot(times, nn_means, xscale = :log10, yscale = :log10, leg = false, m = :o, ms = 1.0)
+
+times = [convert(Int, exp10(i)) for i in 5:6]
+
+for i in 1:(length(times) - 1)
+
+    for t in (times[i]+1):times[i+1]
+
+        if t % times[i] == 0 || t % div(times[i], exp10(1)) == 0
+            println(t)
+        end
+    end
+
+end
+
+Ti = 5
+Tf = 6
+
+function get_times(Ti, Tf)
+
+    times = [convert(Int, exp10(i)) for i in Ti:Tf]
+
+    tau = Int64[]
+
+    for i in 1:(length(times) - 1)
+
+        if i > 1
+
+            for t in (times[i]+1):times[i+1]
+
+                if t % times[i] == 0 || t % times[i-1] == 0
+                    push!(tau, t)
+                end
+            end
+
+        else
+
+            for t in (times[i]+1):times[i+1]
+
+                if t % times[i] == 0
+                    push!(tau, t)
+                end
+            end
+
+        end
+
+    end
+
+    return tau
+end
+
+tau
