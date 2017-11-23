@@ -112,7 +112,7 @@ else
     ### SET OUTPUT
     ### ============== ### ============== ### ============== ###
 
-    output_path = set_output_data_structure_lnl("NLOC_MET_3D_TEST", N, κ, ω)
+    output_path = set_output_data_structure_lnl("NLOC_MET_3D_EXT", N, κ, ω)
 
     pos_file = open(joinpath(output_path,"pos_$(rep).dat"), "w+")
     vel_file = open(joinpath(output_path,"vel_$(rep).dat"), "w+")
