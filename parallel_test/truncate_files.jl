@@ -20,7 +20,7 @@ for (root, dirs, files) in walkdir(data_path)
 
         # println(file,"\t", ln, "\t", tr_ln, "\t", tr_ln <= ln)
 
-        if tr_ln < ln
+        if tr_ln <= ln
             println(file,"\t", ln, "\t", tr_ln, "\t", tr_ln < ln)
             write(joinpath(root,"cp_"*file), data[1:tr_ln])
             rm(joinpath(root, file))
