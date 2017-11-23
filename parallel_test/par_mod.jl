@@ -87,7 +87,7 @@ end
 ### COMPUTE METRIC SHORT AND LONG RANGE INTERACTIONS
 ### ============== ### ============== ### ============== ###
 
-function compute_metric_interactions(vel::SharedArray,v_r::SharedArray,v_n::SharedArray,R_ij::SharedArray)
+function compute_metric_interactions(vel::SharedArray,v_r::SharedArray,v_n::SharedArray,R_ij::SharedArray,N::Int64)
 
     for id in first(localindexes(vel)):3:last(localindexes(vel))
 
@@ -103,8 +103,8 @@ function compute_metric_interactions(vel::SharedArray,v_r::SharedArray,v_n::Shar
         v_n[3i+3] = 0.0
 
         sh_n = find(x -> x == 1, Symmetric(R_ij, :L)[(i*N)+1:(i+1)*N])
-        k_sh = length(sh_n)
-        # k_sh = convert(Float64, length(sh_n))
+        # k_sh = length(sh_n)
+        k_sh = convert(Float64, length(sh_n))
 
         ln_n = find(x -> x == -1, Symmetric(R_ij, :L)[(i*N)+1:(i+1)*N])
 
@@ -141,7 +141,7 @@ end
 ### COMPUTE TOPOLOGICAL SHORT AND LONG RANGE INTERACTIONS
 ### ============== ### ============== ### ============== ###
 
-function compute_topological_interactions(vel::SharedArray,v_r::SharedArray,v_n::SharedArray,R_ij::SharedArray)
+function compute_topological_interactions(vel::SharedArray,v_r::SharedArray,v_n::SharedArray,R_ij::SharedArray,N::Int64,k_sh::Float64)
 
     for id in first(localindexes(vel)):3:last(localindexes(vel))
 
@@ -169,9 +169,9 @@ function compute_topological_interactions(vel::SharedArray,v_r::SharedArray,v_n:
         # short-range
         for j in sh_n
             # print(j,"\t")
-            v_r[3i+1] += vel[3(j-1)+1] / k_sh
-            v_r[3i+2] += vel[3(j-1)+2] / k_sh
-            v_r[3i+3] += vel[3(j-1)+3] / k_sh
+            v_r[3i+1] += vel[3(j-1)+1] * k_sh
+            v_r[3i+2] += vel[3(j-1)+2] * k_sh
+            v_r[3i+3] += vel[3(j-1)+3] * k_sh
         end
 
         # println()
@@ -197,7 +197,7 @@ end
 ### UPDATE PARTICLE'S POSITIONS AND VELOCITIES
 ### ============== ### ============== ### ============== ###
 
-function update_particles(pos::SharedArray, vel::SharedArray,v_r::SharedArray,v_n::SharedArray)
+function update_particles(pos::SharedArray,vel::SharedArray,v_r::SharedArray,v_n::SharedArray,η::Float64,ω::Float64)
 
     for id in first(localindexes(vel)):3:last(localindexes(vel))
 
@@ -240,13 +240,13 @@ end
 ### SYSTEM UPDATE (METRIC SHORT RANGE)
 ### ============== ### ============== ### ============== ###
 
-function evolve_metric_system(pos::SharedArray, vel::SharedArray, v_r::SharedArray, v_n::SharedArray, R_ij::SharedArray, r0::Float64)
+function evolve_metric_system(pos::SharedArray, vel::SharedArray, v_r::SharedArray, v_n::SharedArray, R_ij::SharedArray, r0::Float64, N::Int64,η::Float64,ω::FLoat64)
 
     calc_Rij_th(R_ij, pos, r0)
 
     @sync begin
         for p in workers()
-            @async remotecall_wait(compute_metric_interactions, p, vel, v_r, v_n, R_ij)
+            @async remotecall_wait(compute_metric_interactions, p, vel, v_r, v_n, R_ij, N)
             # @async remotecall_wait(update_particles, p, pos, vel, v_r, v_n)
         end
     end
@@ -254,7 +254,7 @@ function evolve_metric_system(pos::SharedArray, vel::SharedArray, v_r::SharedArr
     @sync begin
         for p in workers()
             # @async remotecall_wait(compute_metric_interactions, p, vel, v_r, v_n, R_ij)
-            @async remotecall_wait(update_particles, p, pos, vel, v_r, v_n)
+            @async remotecall_wait(update_particles, p, pos, vel, v_r, v_n, η, ω)
         end
     end
 
@@ -264,13 +264,13 @@ end
 ### SYSTEM UPDATE
 ### ============== ### ============== ### ============== ###
 
-function evolve_topological_system(pos::SharedArray, vel::SharedArray, v_r::SharedArray, v_n::SharedArray, R_ij::SharedArray)
+function evolve_topological_system(pos::SharedArray, vel::SharedArray, v_r::SharedArray, v_n::SharedArray, R_ij::SharedArray,N::Int64,k_sh::Float64,η::Float64,ω::FLoat64)
 
     calc_Rij(R_ij, pos)
 
     @sync begin
         for p in workers()
-            @async remotecall_wait(compute_topological_interactions, p, vel, v_r, v_n, R_ij)
+            @async remotecall_wait(compute_topological_interactions, p, vel, v_r, v_n, R_ij, N, k_sh)
             # @async remotecall_wait(update_particles, p, pos, vel, v_r, v_n)
         end
     end
@@ -278,7 +278,7 @@ function evolve_topological_system(pos::SharedArray, vel::SharedArray, v_r::Shar
     @sync begin
         for p in workers()
             # @async remotecall_wait(compute_metric_interactions, p, vel, v_r, v_n, R_ij)
-            @async remotecall_wait(update_particles, p, pos, vel, v_r, v_n)
+            @async remotecall_wait(update_particles, p, pos, vel, v_r, v_n, η, ω)
         end
     end
 

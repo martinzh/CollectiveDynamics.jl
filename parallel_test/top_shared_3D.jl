@@ -33,7 +33,7 @@ rep = parse(Int, ARGS[7])
 @eval @everywhere κ = $k
 @eval @everywhere ω = $w
 
-@everywhere k_sh = 6
+@everywhere k_sh = 1./6.
 
 @everywhere ρ = 0.3
 @everywhere η = 0.15
@@ -135,7 +135,7 @@ for i in 1:(length(times) - 1)
 
     for t in (times[i]+1):times[i+1]
 
-        evolve_topological_system(pos, vel, v_r, v_n, R_ij)
+        evolve_topological_system(pos, vel, v_r, v_n, R_ij, N, k_sh, η, ω)
 
         if t % times[i] == 0 || t % div(times[i], exp10(1)) == 0
             println("//////// ", t)
