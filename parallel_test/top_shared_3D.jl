@@ -135,7 +135,7 @@ for i in 1:(length(times) - 1)
 
     for t in (times[i]+1):times[i+1]
 
-        evolve_topological_system(pos, vel, v_r, v_n, R_ij, N, k_sh, η, ω)
+        evolve_topological_system(pos, vel, v_r, v_n, R_ij, N, k_sh, η, ω, κ_dist)
 
         if t % times[i] == 0 || t % div(times[i], exp10(1)) == 0
             println("//////// ", t)
