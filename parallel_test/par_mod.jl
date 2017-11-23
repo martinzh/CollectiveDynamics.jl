@@ -240,7 +240,7 @@ end
 ### SYSTEM UPDATE (METRIC SHORT RANGE)
 ### ============== ### ============== ### ============== ###
 
-function evolve_metric_system(pos::SharedArray, vel::SharedArray, v_r::SharedArray, v_n::SharedArray, R_ij::SharedArray, r0::Float64, N::Int64,η::Float64,ω::FLoat64)
+function evolve_metric_system(pos::SharedArray, vel::SharedArray, v_r::SharedArray, v_n::SharedArray, R_ij::SharedArray, r0::Float64, N::Int64,η::Float64,ω::Float64)
 
     calc_Rij_th(R_ij, pos, r0)
 
@@ -264,7 +264,7 @@ end
 ### SYSTEM UPDATE
 ### ============== ### ============== ### ============== ###
 
-function evolve_topological_system(pos::SharedArray, vel::SharedArray, v_r::SharedArray, v_n::SharedArray, R_ij::SharedArray,N::Int64,k_sh::Float64,η::Float64,ω::FLoat64)
+function evolve_topological_system(pos::SharedArray, vel::SharedArray, v_r::SharedArray, v_n::SharedArray, R_ij::SharedArray,N::Int64,k_sh::Float64,η::Float64,ω::Float64)
 
     calc_Rij(R_ij, pos)
 
