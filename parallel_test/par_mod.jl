@@ -264,7 +264,7 @@ end
 ### SYSTEM UPDATE
 ### ============== ### ============== ### ============== ###
 
-function evolve_topological_system(pos::SharedArray, vel::SharedArray, v_r::SharedArray, v_n::SharedArray, R_ij::SharedArray,N::Int64,k_sh::Float64,η::Float64,ω::Float64,κ_dist)
+function evolve_topological_system(pos::SharedArray, vel::SharedArray, v_r::SharedArray, v_n::SharedArray, R_ij::SharedArray,N::Int64,k_sh::Int64,η::Float64,ω::Float64,κ_dist)
 
     calc_Rij(R_ij, pos)
 
