@@ -33,7 +33,7 @@ rep = parse(Int, ARGS[7])
 @eval @everywhere κ = $k
 @eval @everywhere ω = $w
 
-@everywhere k_sh = 1./6.
+@everywhere k_sh = 6
 
 @everywhere ρ = 0.3
 @everywhere η = 0.15

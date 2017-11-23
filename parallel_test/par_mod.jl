@@ -141,7 +141,7 @@ end
 ### COMPUTE TOPOLOGICAL SHORT AND LONG RANGE INTERACTIONS
 ### ============== ### ============== ### ============== ###
 
-function compute_topological_interactions(vel::SharedArray,v_r::SharedArray,v_n::SharedArray,R_ij::SharedArray,N::Int64,k_sh::Float64, κ_dist)
+function compute_topological_interactions(vel::SharedArray,v_r::SharedArray,v_n::SharedArray,R_ij::SharedArray,N::Int64,k_sh::Int64, κ_dist)
 
     for id in first(localindexes(vel)):3:last(localindexes(vel))
 
@@ -169,9 +169,9 @@ function compute_topological_interactions(vel::SharedArray,v_r::SharedArray,v_n:
         # short-range
         for j in sh_n
             # print(j,"\t")
-            v_r[3i+1] += vel[3(j-1)+1] * k_sh
-            v_r[3i+2] += vel[3(j-1)+2] * k_sh
-            v_r[3i+3] += vel[3(j-1)+3] * k_sh
+            v_r[3i+1] += vel[3(j-1)+1] / k_sh
+            v_r[3i+2] += vel[3(j-1)+2] / k_sh
+            v_r[3i+3] += vel[3(j-1)+3] / k_sh
         end
 
         # println()

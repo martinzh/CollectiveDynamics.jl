@@ -6,7 +6,7 @@ f_times = get_times(τ)
 
 times = union(f_times[1:369],collect(2exp10(5):exp10(5):exp10(6)))
 
-folder = "NLOC_MET_3D_EXT"
+folder = "prev/NLOC_MET_3D_EXT"
 folder = "NLOC_TOP_3D_EXT"
 N = "4096"
 
