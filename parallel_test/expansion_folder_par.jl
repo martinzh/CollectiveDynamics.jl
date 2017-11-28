@@ -92,6 +92,8 @@ end
 
     for j in localindexes(mean)[1]
 
+        @show j
+
         calc_Rij_3D(pos[:L][:,j], Rij)
 
         mean[:L][j] = mean(Symmetric(Rij, :L))
