@@ -110,7 +110,7 @@ end
 
         mean[j] = mean(Symmetric(Rij, :L))
         nn_mean[j] = mean(sort(Symmetric(Rij, :L), 1)[2,:])
-        vel_mean[j] = norm(mean([[vel_data[i, j], vel_data[i+1, j], vel_data[i+2, j]] for i in 1:3:3N]))
+        vel_mean[j] = norm(mean([[vel[i, j], vel[i+1, j], vel[i+2, j]] for i in 1:3:3N]))
 
     end
 end
