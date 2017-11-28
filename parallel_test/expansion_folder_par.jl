@@ -196,6 +196,11 @@ for r in reps
 
 end
 
+close(d_pos)
+close(d_vel)
+close(d_mean)
+close(d_nn_mean)
+close(d_vel_mean)
 
 close(exp_file)
 close(nn_mean_file)
