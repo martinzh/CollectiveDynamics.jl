@@ -67,7 +67,7 @@ end
 
 ### ================================== ###
 
-@everywhere function calc_Rij_3D(pos::SharedArray, Rij::SharedArray)
+@everywhere function calc_Rij_3D(pos, Rij)
 
     N = size(Rij, 1)
 
