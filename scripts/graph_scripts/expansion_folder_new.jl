@@ -8,7 +8,43 @@
 
 ### ================================== ###
 
-using CollectiveDynamics.DataAnalysis
+# using CollectiveDynamics.DataAnalysis
+
+### ================================== ###
+
+function make_dir_from_path(path)
+
+    try
+        mkdir(path)
+    catch error
+        println("Main data folder already exists")
+    end
+
+end
+
+### ================================== ###
+
+function get_times(Ti, Tf)
+
+    times = [convert(Int, exp10(i)) for i in Ti:Tf]
+    tau = Int64[]
+
+    push!(tau, 1)
+
+    for i in 1:(length(times) - 1)
+
+        for t in (times[i]+1):times[i+1]
+
+            if t % times[i] == 0 || t % div(times[i], exp10(1)) == 0
+                push!(tau, t)
+                # println("//////// ", t)
+            end
+        end
+
+    end
+
+    return tau
+end
 
 ### ================================== ###
 function calc_Rij_3D(pos, Rij)
@@ -21,7 +57,7 @@ function calc_Rij_3D(pos, Rij)
         l = div(j, 3) + 1
 
         Rij[k, l] = norm([pos[i], pos[i+1], pos[i+2]] - [pos[j], pos[j+1], pos[j+2]])
-        Rij[l, k] = Rij[k, l]
+        # Rij[l, k] = Rij[k, l]
     end
 
 end
@@ -36,7 +72,7 @@ function calc_Rij_2D(pos, Rij)
         l = div(j, 2) + 1
 
         Rij[k, l] = norm([pos[i], pos[i+1]] - [pos[j], pos[j+1]])
-        Rij[l, k] = Rij[k, l]
+        # Rij[l, k] = Rij[k, l]
     end
 
 end
@@ -89,6 +125,8 @@ make_dir_from_path(output_folder_path * "/exp_data_N_$(N)")
 
 ### ================================== ###
 
+times = get_times(0,6)
+
 ### ================================== ###
 
 println(params)
@@ -96,7 +134,7 @@ println(params)
 psi       = Array{Float64}[]
 means     = Array{Float64}[]
 nn_means  = Array{Float64}[]
-vel_means = Array{Float64}[]
+# vel_means = Array{Float64}[]
 
 exp_file   = open(output_folder_path * "/exp_data_N_$(N)" * "/exp" * params * ".dat", "w+")
 nn_mean_file = open(output_folder_path * "/exp_data_N_$(N)" * "/nn_mean" * params * ".dat", "w+")
@@ -117,14 +155,32 @@ for r in reps
 
     raw_data = reinterpret(Float64,read(data_folder_path * "/pos_$(r).dat"))
 
+    # if d == "2"
+    #     pos_data = reshape(raw_data, 2N, div(length(raw_data), 2N))
+    #     # calc_vect_2D_cm(pos_data)
+    #     push!(means, [mean(calc_rij_2D_vect(pos_data[:, i])) for i in 1:size(pos_data,2)])
+    # elseif d == "3"
+    #     pos_data = reshape(raw_data, 3N, div(length(raw_data), 3N))
+    #     # calc_vect_3D_cm(pos_data)
+    #     push!(means, [mean(calc_rij_3D_vect(pos_data[:, i])) for i in 1:size(pos_data,2)])
+    # end
 
     if d == "2"
         pos_data = reshape(raw_data, 2N, div(length(raw_data), 2N))
         # calc_vect_2D_cm(pos_data)
         push!(means, [mean(calc_rij_2D_vect(pos_data[:, i])) for i in 1:size(pos_data,2)])
+
     elseif d == "3"
-        pos_data = reshape(raw_data, 3N, div(length(raw_data), 3N))
+
+        if length(raw_data) == 3N*(length(times)-1)
+            pos_data = reshape(raw_data, 3N, div(length(raw_data), 3N))
+        else
+            pos_data = reshape(raw_data[3N+1:end], 3N, div(length(raw_data[3N+1:end]), 3N))
+        end
+
+        # pos_data = reshape(raw_data, 3N, div(length(raw_data), 3N))
         # calc_vect_3D_cm(pos_data)
+
         push!(means, [mean(calc_rij_3D_vect(pos_data[:, i])) for i in 1:size(pos_data,2)])
     end
 
@@ -137,7 +193,9 @@ for r in reps
         if d == "2" calc_Rij_2D(pos_data[:, j], Rij) end
         if d == "3" calc_Rij_3D(pos_data[:, j], Rij) end
 
-        nn_time[j] = mean([sort(Rij[:, i])[2] for i in 1:N])
+        # nn_time[j] = mean([sort(Rij[:, i])[2] for i in 1:N])
+
+        nn_mean[j] = mean(sort(Symmetric(Rij, :L), 1)[2,:])
 
     end
 
@@ -147,6 +205,19 @@ for r in reps
 
     raw_data = reinterpret(Float64,read(data_folder_path * "/vel_$(r).dat"))
 
+    # if d == "2"
+    #     vel_data = reshape(raw_data, 2N, div(length(raw_data), 2N))
+    #
+    #     push!(psi, [norm(mean([[vel_data[i, j], vel_data[i+1, j]] for i in 1:2:2N])) for j in 1:size(vel_data, 2)])
+    #     # push!(vel_means, vcat([mean([[vel_data[i, j], vel_data[i+1, j]] for i in 1:2:2N]) for j in 1:size(vel_data, 2)]...))
+    #
+    # elseif d == "3"
+    #     vel_data = reshape(raw_data, 3N, div(length(raw_data), 3N))
+    #
+    #     push!(psi, [norm(mean([[vel_data[i, j], vel_data[i+1, j], vel_data[i+2, j]] for i in 1:3:3N])) for j in 1:size(vel_data, 2)])
+    #     # push!(vel_means, vcat([mean([[vel_data[i, j], vel_data[i+1, j], vel_data[i+2, j]] for i in 1:3:3N]) for j in 1:size(vel_data, 2)]...))
+    # end
+
     if d == "2"
         vel_data = reshape(raw_data, 2N, div(length(raw_data), 2N))
 
@@ -154,7 +225,14 @@ for r in reps
         # push!(vel_means, vcat([mean([[vel_data[i, j], vel_data[i+1, j]] for i in 1:2:2N]) for j in 1:size(vel_data, 2)]...))
 
     elseif d == "3"
-        vel_data = reshape(raw_data, 3N, div(length(raw_data), 3N))
+
+        if length(raw_data) == 3N*(length(times)-1)
+            vel_data = reshape(raw_data, 3N, div(length(raw_data), 3N))
+        else
+            vel_data = reshape(raw_data[3N+1:end], 3N, div(length(raw_data[3N+1:end]), 3N))
+        end
+
+        # vel_data = reshape(raw_data, 3N, div(length(raw_data), 3N))
 
         push!(psi, [norm(mean([[vel_data[i, j], vel_data[i+1, j], vel_data[i+2, j]] for i in 1:3:3N])) for j in 1:size(vel_data, 2)])
         # push!(vel_means, vcat([mean([[vel_data[i, j], vel_data[i+1, j], vel_data[i+2, j]] for i in 1:3:3N]) for j in 1:size(vel_data, 2)]...))
