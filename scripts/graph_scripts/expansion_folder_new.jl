@@ -47,6 +47,25 @@ function get_times(Ti, Tf)
 end
 
 ### ================================== ###
+
+function calc_rij_3D_vect(vect)
+
+    n = div(length(vect),3)
+
+    vec_rij = zeros(Float64, div(n*(n-1),2) )
+
+    k = 1
+
+    for i in 1:3:3n, j in (i+3):3:3n
+        vec_rij[k] = norm([vect[i] - vect[j], vect[i+1] - vect[j+1], vect[i+2] - vect[j+2]])
+        k += 1
+    end
+
+    return vec_rij
+end
+
+### ================================== ###
+
 function calc_Rij_3D(pos, Rij)
 
     N = size(Rij, 1)
