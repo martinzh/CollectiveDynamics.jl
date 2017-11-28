@@ -262,17 +262,17 @@ println("Done")
 #
 # d_s = dzeros(size(d_t,2))
 #
-for p in workers()
-    # println(remotecall_fetch(myrange, p, sh_pos))
-    # println(remotecall_fetch(calc_means, p, sh_pos, sh_vel, sh_mean, sh_nn_mean, sh_vel, N))
-    println(p)
-    println(remotecall_fetch(myrange, p, sh_pos))
-    # println(remotecall_fetch(myrange, p, sh_vel))
-    # println(remotecall_fetch(localindexes, p, sh_mean))
-    # println(remotecall_fetch(localindexes, p, sh_nn_mean))
-    # println(remotecall_fetch(localindexes, p, sh_vel_mean))
-    println()
-end
+# for p in workers()
+#     # println(remotecall_fetch(myrange, p, sh_pos))
+#     # println(remotecall_fetch(calc_means, p, sh_pos, sh_vel, sh_mean, sh_nn_mean, sh_vel, N))
+#     println(p)
+#     println(remotecall_fetch(myrange, p, sh_pos))
+#     # println(remotecall_fetch(myrange, p, sh_vel))
+#     # println(remotecall_fetch(localindexes, p, sh_mean))
+#     # println(remotecall_fetch(localindexes, p, sh_nn_mean))
+#     # println(remotecall_fetch(localindexes, p, sh_vel_mean))
+#     println()
+# end
 #
 # @everywhere function d_test(d)
 #     println(localindexes(d))
