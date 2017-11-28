@@ -214,7 +214,7 @@ for r in reps
 
     @sync begin
         for p in workers()
-            @async remotecall_wait(calc_means, p, d_pos, d_vel, d_mean, d_nn_mean, d_vel_mean, N)
+            @async remotecall_wait(calc_means, p, sh_pos, sh_vel, sh_mean, sh_nn_mean, sh_vel_mean, N)
         end
     end
 
