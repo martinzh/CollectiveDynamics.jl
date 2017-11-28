@@ -98,7 +98,7 @@ end
 
 ### ================================== ###
 
-@everywhere function calc_means(pos, vel, mean, nn_mean, vel_mean, N)
+@everywhere function calc_means(pos::SharedArray, vel::SharedArray, mean::SharedArray, nn_mean::SharedArray, vel_mean::SharedArray, N::Int64)
 
     Rij = zeros(N, N)
 
@@ -106,11 +106,15 @@ end
 
     for j in j_range
         # @show j
-        calc_Rij_3D(pos[:,j], Rij)
+        # calc_Rij_3D(pos[:,j], Rij)
+        calc_Rij_3D(pos[(j-1)*3N+1:j*3N], Rij)
 
         mean[j] = mean(Symmetric(Rij, :L))
         nn_mean[j] = mean(sort(Symmetric(Rij, :L), 1)[2,:])
-        vel_mean[j] = norm(mean([[vel[i, j], vel[i+1, j], vel[i+2, j]] for i in 1:3:3N]))
+
+        t_vel = vel[(j-1)*3N+1:j*3N]
+
+        vel_mean[j] = norm(mean([[t_vel[i], t_vel[i+1], t_vel[i+2]] for i in 1:3:3N]))
 
     end
 end
@@ -258,17 +262,17 @@ println("Done")
 #
 # d_s = dzeros(size(d_t,2))
 #
-# for p in workers()
-#     # println(remotecall_fetch(myrange, p, sh_pos))
-#     # println(remotecall_fetch(calc_means, p, sh_pos, sh_vel, sh_mean, sh_nn_mean, sh_vel, N))
-#     println(p)
-#     println(remotecall_fetch(myrange, p, sh_pos))
-#     println(remotecall_fetch(myrange, p, sh_vel))
-#     println(remotecall_fetch(localindexes, p, sh_mean))
-#     println(remotecall_fetch(localindexes, p, sh_nn_mean))
-#     println(remotecall_fetch(localindexes, p, sh_vel_mean))
-#     println()
-# end
+for p in workers()
+    # println(remotecall_fetch(myrange, p, sh_pos))
+    # println(remotecall_fetch(calc_means, p, sh_pos, sh_vel, sh_mean, sh_nn_mean, sh_vel, N))
+    println(p)
+    println(remotecall_fetch(myrange, p, sh_pos))
+    # println(remotecall_fetch(myrange, p, sh_vel))
+    # println(remotecall_fetch(localindexes, p, sh_mean))
+    # println(remotecall_fetch(localindexes, p, sh_nn_mean))
+    # println(remotecall_fetch(localindexes, p, sh_vel_mean))
+    println()
+end
 #
 # @everywhere function d_test(d)
 #     println(localindexes(d))
