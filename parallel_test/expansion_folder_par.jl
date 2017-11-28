@@ -92,11 +92,11 @@ end
 
     for j in localindexes(mean)[1]
 
-        calc_Rij_3D(pos[:,j], Rij)
+        calc_Rij_3D(pos[:L][:,j], Rij)
 
         mean[:L][j] = mean(Symmetric(Rij, :L))
         nn_mean[:L][j] = mean(sort(Symmetric(Rij, :L), 1)[2,:])
-        vel_mean[:L][j] = norm(mean([[vel_data[i, j], vel_data[i+1, j], vel_data[i+2, j]] for i in 1:3:3N]))
+        vel_mean[:L][j] = norm(mean([[vel_data[:L][i, j], vel_data[:L][i+1, j], vel_data[:L][i+2, j]] for i in 1:3:3N]))
 
     end
 end
