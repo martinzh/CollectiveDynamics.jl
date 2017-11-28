@@ -31,6 +31,18 @@
 
 ### ================================== ###
 
+function make_dir_from_path(path)
+
+    try
+        mkdir(path)
+    catch error
+        println("Main data folder already exists")
+    end
+
+end
+
+### ================================== ###
+
 function get_times(Ti, Tf)
 
     times = [convert(Int, exp10(i)) for i in Ti:Tf]
