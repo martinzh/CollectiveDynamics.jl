@@ -176,7 +176,7 @@ nn_mean_file    = open(output_folder_path * "/exp_data_N_$(N)" * "/nn_mean" * pa
 
 reps = [match(r"\w+_(\d+).\w+", x).captures[1] for x in filter(x -> ismatch(r"pos_\d+.\w+", x), readdir(data_folder_path))]
 
-r = 1
+r = 2
 for r in reps
 
     println("rep=",r)
