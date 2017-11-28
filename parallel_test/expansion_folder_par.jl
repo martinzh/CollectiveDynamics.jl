@@ -10,8 +10,31 @@ addprocs(4)
 
 ### ================================== ###
 
-using CollectiveDynamics.DataAnalysis
-using Plots, CollectiveDynamics.DataAnalysis
+using Plots
+
+### ================================== ###
+
+function get_times(Ti, Tf)
+
+    times = [convert(Int, exp10(i)) for i in Ti:Tf]
+    tau = Int64[]
+
+    push!(tau, 1)
+
+    for i in 1:(length(times) - 1)
+
+        for t in (times[i]+1):times[i+1]
+
+            if t % times[i] == 0 || t % div(times[i], exp10(1)) == 0
+                push!(tau, t)
+                # println("//////// ", t)
+            end
+        end
+
+    end
+
+    return tau
+end
 
 ### ================================== ###
 
@@ -63,8 +86,8 @@ w = "0.5"
 # folder = "SVM_GRID_3D"
 # folder = "SVM_GRID_FN_2D"
 
-folder = "NLOC_MET_3D_EXT"
-folder = "NLOC_TOP_3D_EXT"
+folder = "new/NLOC_MET_3D_EXT"
+folder = "new/NLOC_TOP_3D_EXT"
 
 N = 4096
 # N = 4000
@@ -74,14 +97,19 @@ N = 4096
 # N = 128
 # N = 100
 
-k = "9.0"
+# k = "9.0"
 # k = "0.5"
 # k = "0.001"
-# k = "0.0125"
+k = "0.0125"
 # w = "0.5"
 
 # τ = 6
 # times = get_times(τ)
+
+Ti = 0
+Tf = 6
+
+times = get_times(Ti, Tf)
 
 ### ================================== ###
 
@@ -220,54 +248,3 @@ mean(Symmetric(Rij, :L))
 
 plot(times, means, xscale = :log10, yscale = :log10, leg = false, m = :o, ms = 1.0)
 plot(times, nn_means, xscale = :log10, yscale = :log10, leg = false, m = :o, ms = 1.0)
-
-times = [convert(Int, exp10(i)) for i in 5:6]
-
-for i in 1:(length(times) - 1)
-
-    for t in (times[i]+1):times[i+1]
-
-        if t % times[i] == 0 || t % div(times[i], exp10(1)) == 0
-            println(t)
-        end
-    end
-
-end
-
-Ti = 5
-Tf = 6
-
-function get_times(Ti, Tf)
-
-    times = [convert(Int, exp10(i)) for i in Ti:Tf]
-
-    tau = Int64[]
-
-    for i in 1:(length(times) - 1)
-
-        if i > 1
-
-            for t in (times[i]+1):times[i+1]
-
-                if t % times[i] == 0 || t % times[i-1] == 0
-                    push!(tau, t)
-                end
-            end
-
-        else
-
-            for t in (times[i]+1):times[i+1]
-
-                if t % times[i] == 0
-                    push!(tau, t)
-                end
-            end
-
-        end
-
-    end
-
-    return tau
-end
-
-tau
