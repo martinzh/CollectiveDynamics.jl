@@ -94,9 +94,9 @@ end
 
         calc_Rij_3D(pos[:,j], Rij)
 
-        mean[j] = mean(Symmetric(Rij, :L))
-        nn_mean[j] = mean(sort(Symmetric(Rij, :L), 1)[2,:])
-        vel_mean[j] = norm(mean([[vel_data[i, j], vel_data[i+1, j], vel_data[i+2, j]] for i in 1:3:3N]))
+        mean[:L][j] = mean(Symmetric(Rij, :L))
+        nn_mean[:L][j] = mean(sort(Symmetric(Rij, :L), 1)[2,:])
+        vel_mean[:L][j] = norm(mean([[vel_data[i, j], vel_data[i+1, j], vel_data[i+2, j]] for i in 1:3:3N]))
 
     end
 end
