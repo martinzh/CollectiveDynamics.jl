@@ -1,18 +1,48 @@
 
-using Plots, CollectiveDynamics.DataAnalysis
+### ================================== ###
 
-τ = 6
-f_times = get_times(τ)
+using Plots
+
+### ================================== ###
+
+function get_times(Ti, Tf)
+
+    times = [convert(Int, exp10(i)) for i in Ti:Tf]
+    tau = Int64[]
+
+    push!(tau, 1)
+
+    for i in 1:(length(times) - 1)
+
+        for t in (times[i]+1):times[i+1]
+
+            if t % times[i] == 0 || t % div(times[i], exp10(1)) == 0
+                push!(tau, t)
+                # println("//////// ", t)
+            end
+        end
+
+    end
+
+    return tau
+end
+
+### ================================== ###
+
+times = get_times(0, 6)
 
 times = union(f_times[1:369],collect(2exp10(5):exp10(5):exp10(6)))
 
-folder = "prev/NLOC_MET_3D_EXT"
+folder = "NLOC_MET_3D_EXT"
 folder = "NLOC_TOP_3D_EXT"
-N = "4096"
+N = 4096
 
-folder_path = "$(homedir())/art_DATA/$(folder)/EXP_N/exp_data_N_$(N)"
+folder_path = joinpath(homedir(),"art_DATA",folder,"EXP_N","exp_data_N_$(N)")
+folder_path = joinpath(homedir(),"art_DATA",folder,"DATA","data_N_$(N)")
 
 folders = readdir(folder_path)
+
+### ================================== ###
 
 order_files = filter( x -> ismatch(r"^order.", x), readdir(folder_path))
 exp_files = filter( x -> ismatch(r"^exp.", x), readdir(folder_path))
