@@ -189,24 +189,24 @@ for r in reps
     #     push!(means, [mean(calc_rij_3D_vect(pos_data[:, i])) for i in 1:size(pos_data,2)])
     # end
 
-    # if d == "2"
-    #     pos_data = reshape(raw_data, 2N, div(length(raw_data), 2N))
-    #     # calc_vect_2D_cm(pos_data)
-    #     push!(means, [mean(calc_rij_2D_vect(pos_data[:, i])) for i in 1:size(pos_data,2)])
-    #
-    # elseif d == "3"
-    #
-    #     if length(raw_data) == 3N*(length(times)-1)
-    #         pos_data = reshape(raw_data, 3N, div(length(raw_data), 3N))
-    #     else
-    #         pos_data = reshape(raw_data[3N+1:end], 3N, div(length(raw_data[3N+1:end]), 3N))
-    #     end
-    #
-    #     # pos_data = reshape(raw_data, 3N, div(length(raw_data), 3N))
-    #     # calc_vect_3D_cm(pos_data)
-    #
-    #     push!(means, [mean(calc_rij_3D_vect(pos_data[:, i])) for i in 1:size(pos_data,2)])
-    # end
+    if d == "2"
+        pos_data = reshape(raw_data, 2N, div(length(raw_data), 2N))
+        # calc_vect_2D_cm(pos_data)
+        push!(means, [mean(calc_rij_2D_vect(pos_data[:, i])) for i in 1:size(pos_data,2)])
+
+    elseif d == "3"
+
+        if length(raw_data) == 3N*(length(times)-1)
+            pos_data = reshape(raw_data, 3N, div(length(raw_data), 3N))
+        else
+            pos_data = reshape(raw_data[3N+1:end], 3N, div(length(raw_data[3N+1:end]), 3N))
+        end
+
+        # pos_data = reshape(raw_data, 3N, div(length(raw_data), 3N))
+        # calc_vect_3D_cm(pos_data)
+
+        # push!(means, [mean(calc_rij_3D_vect(pos_data[:, i])) for i in 1:size(pos_data,2)])
+    end
 
     # println("pass pos_data")
 
