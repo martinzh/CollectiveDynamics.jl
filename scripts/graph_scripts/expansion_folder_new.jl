@@ -75,7 +75,7 @@ function calc_Rij_3D(pos, Rij)
         k = div(i, 3) + 1
         l = div(j, 3) + 1
 
-        Rij[k, l] = norm([pos[i], pos[i+1], pos[i+2]] - [pos[j], pos[j+1], pos[j+2]])
+        Rij[l, k] = norm([pos[i], pos[i+1], pos[i+2]] - [pos[j], pos[j+1], pos[j+2]])
         # Rij[l, k] = Rij[k, l]
     end
 
@@ -104,13 +104,14 @@ k = ARGS[3]
 w = ARGS[4]
 d = ARGS[5]
 
+# folder = "new/NLOC_MET_3D_EXT"
 # folder = "NLOC_MET_3D"
 # folder = "NLOC_TOP_3D"
 # folder = "NLOC_DATA"
 # folder = "SVM_GRID_3D"
 # folder = "SVM_GRID_FN_2D"
 
-# N = 4000
+# N = 4096
 # N = 1024
 # N = 512
 # N = 256
@@ -119,8 +120,11 @@ d = ARGS[5]
 
 # k = "9.0"
 # k = "0.5"
+# k = "0.0125"
 # k = "0.001"
 
+# w = "0.5"
+# d = "3"
 
 ### ================================== ###
 
@@ -151,15 +155,15 @@ times = get_times(0,6)
 
 println(params)
 
-psi       = Array{Float64}[]
-means     = Array{Float64}[]
+# psi       = Array{Float64}[]
+# means     = Array{Float64}[]
 nn_means  = Array{Float64}[]
 # vel_means = Array{Float64}[]
 
-exp_file   = open(output_folder_path * "/exp_data_N_$(N)" * "/exp" * params * ".dat", "w+")
+# exp_file   = open(output_folder_path * "/exp_data_N_$(N)" * "/exp" * params * ".dat", "w+")
 nn_mean_file = open(output_folder_path * "/exp_data_N_$(N)" * "/nn_mean" * params * ".dat", "w+")
 
-order_file = open(output_folder_path * "/exp_data_N_$(N)" * "/order" * params * ".dat", "w+")
+# order_file = open(output_folder_path * "/exp_data_N_$(N)" * "/order" * params * ".dat", "w+")
 # vel_mean_file = open(output_folder_path * "/exp_data_N_$(N)" * "/vel_mean" * params * ".dat", "w+")
 
 ### ================================== ###
@@ -185,35 +189,34 @@ for r in reps
     #     push!(means, [mean(calc_rij_3D_vect(pos_data[:, i])) for i in 1:size(pos_data,2)])
     # end
 
-    if d == "2"
-        pos_data = reshape(raw_data, 2N, div(length(raw_data), 2N))
-        # calc_vect_2D_cm(pos_data)
-        push!(means, [mean(calc_rij_2D_vect(pos_data[:, i])) for i in 1:size(pos_data,2)])
-
-    elseif d == "3"
-
-        if length(raw_data) == 3N*(length(times)-1)
-            pos_data = reshape(raw_data, 3N, div(length(raw_data), 3N))
-        else
-            pos_data = reshape(raw_data[3N+1:end], 3N, div(length(raw_data[3N+1:end]), 3N))
-        end
-
-        # pos_data = reshape(raw_data, 3N, div(length(raw_data), 3N))
-        # calc_vect_3D_cm(pos_data)
-
-        push!(means, [mean(calc_rij_3D_vect(pos_data[:, i])) for i in 1:size(pos_data,2)])
-    end
+    # if d == "2"
+    #     pos_data = reshape(raw_data, 2N, div(length(raw_data), 2N))
+    #     # calc_vect_2D_cm(pos_data)
+    #     push!(means, [mean(calc_rij_2D_vect(pos_data[:, i])) for i in 1:size(pos_data,2)])
+    #
+    # elseif d == "3"
+    #
+    #     if length(raw_data) == 3N*(length(times)-1)
+    #         pos_data = reshape(raw_data, 3N, div(length(raw_data), 3N))
+    #     else
+    #         pos_data = reshape(raw_data[3N+1:end], 3N, div(length(raw_data[3N+1:end]), 3N))
+    #     end
+    #
+    #     # pos_data = reshape(raw_data, 3N, div(length(raw_data), 3N))
+    #     # calc_vect_3D_cm(pos_data)
+    #
+    #     push!(means, [mean(calc_rij_3D_vect(pos_data[:, i])) for i in 1:size(pos_data,2)])
+    # end
 
     # println("pass pos_data")
 
     nn_time = zeros(size(pos_data, 2))
 
+    # j = 1
     for j in 1:size(pos_data, 2)
 
         if d == "2" calc_Rij_2D(pos_data[:, j], Rij) end
         if d == "3" calc_Rij_3D(pos_data[:, j], Rij) end
-
-        # nn_time[j] = mean([sort(Rij[:, i])[2] for i in 1:N])
 
         nn_time[j] = mean(sort(Symmetric(Rij, :L), 1)[2,:])
 
@@ -223,7 +226,7 @@ for r in reps
 
     println("pass nn_means")
 
-    raw_data = reinterpret(Float64,read(data_folder_path * "/vel_$(r).dat"))
+    # raw_data = reinterpret(Float64,read(data_folder_path * "/vel_$(r).dat"))
 
     # if d == "2"
     #     vel_data = reshape(raw_data, 2N, div(length(raw_data), 2N))
@@ -238,40 +241,40 @@ for r in reps
     #     # push!(vel_means, vcat([mean([[vel_data[i, j], vel_data[i+1, j], vel_data[i+2, j]] for i in 1:3:3N]) for j in 1:size(vel_data, 2)]...))
     # end
 
-    if d == "2"
-        vel_data = reshape(raw_data, 2N, div(length(raw_data), 2N))
-
-        push!(psi, [norm(mean([[vel_data[i, j], vel_data[i+1, j]] for i in 1:2:2N])) for j in 1:size(vel_data, 2)])
-        # push!(vel_means, vcat([mean([[vel_data[i, j], vel_data[i+1, j]] for i in 1:2:2N]) for j in 1:size(vel_data, 2)]...))
-
-    elseif d == "3"
-
-        if length(raw_data) == 3N*(length(times)-1)
-            vel_data = reshape(raw_data, 3N, div(length(raw_data), 3N))
-        else
-            vel_data = reshape(raw_data[3N+1:end], 3N, div(length(raw_data[3N+1:end]), 3N))
-        end
-
-        # vel_data = reshape(raw_data, 3N, div(length(raw_data), 3N))
-
-        push!(psi, [norm(mean([[vel_data[i, j], vel_data[i+1, j], vel_data[i+2, j]] for i in 1:3:3N])) for j in 1:size(vel_data, 2)])
-        # push!(vel_means, vcat([mean([[vel_data[i, j], vel_data[i+1, j], vel_data[i+2, j]] for i in 1:3:3N]) for j in 1:size(vel_data, 2)]...))
-    end
+    # if d == "2"
+    #     vel_data = reshape(raw_data, 2N, div(length(raw_data), 2N))
+    #
+    #     push!(psi, [norm(mean([[vel_data[i, j], vel_data[i+1, j]] for i in 1:2:2N])) for j in 1:size(vel_data, 2)])
+    #     # push!(vel_means, vcat([mean([[vel_data[i, j], vel_data[i+1, j]] for i in 1:2:2N]) for j in 1:size(vel_data, 2)]...))
+    #
+    # elseif d == "3"
+    #
+    #     if length(raw_data) == 3N*(length(times)-1)
+    #         vel_data = reshape(raw_data, 3N, div(length(raw_data), 3N))
+    #     else
+    #         vel_data = reshape(raw_data[3N+1:end], 3N, div(length(raw_data[3N+1:end]), 3N))
+    #     end
+    #
+    #     # vel_data = reshape(raw_data, 3N, div(length(raw_data), 3N))
+    #
+    #     push!(psi, [norm(mean([[vel_data[i, j], vel_data[i+1, j], vel_data[i+2, j]] for i in 1:3:3N])) for j in 1:size(vel_data, 2)])
+    #     # push!(vel_means, vcat([mean([[vel_data[i, j], vel_data[i+1, j], vel_data[i+2, j]] for i in 1:3:3N]) for j in 1:size(vel_data, 2)]...))
+    # end
 
     println("pass vel and psi")
 
 end
 
-write(exp_file, hcat(means...))
+# write(exp_file, hcat(means...))
 write(nn_mean_file, hcat(nn_means...))
 
-write(order_file, hcat(psi...))
+# write(order_file, hcat(psi...))
 # write(vel_mean_file, hcat(vel_means...))
 
-close(exp_file)
+# close(exp_file)
 close(nn_mean_file)
 
-close(order_file)
+# close(order_file)
 # close(vel_mean_file)
 
 println("Done")
