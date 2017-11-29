@@ -45,7 +45,7 @@ N = 64
 τ = 4
 τ = 3
 
-tau = get_times(0,6)
+times = get_times(0,6)[2:end]
 
 v0 = 1.0
 
@@ -55,7 +55,7 @@ folder = "new/NLOC_MET_3D_EXT"
 folder = "new/NLOC_P_TOP_3D"
 
 folder_path = "$(homedir())/art_DATA/$(folder)/DATA/data_N_$(N)"
-folder_path = "$(homedir())/art_DATA/$(folder)/EXP/exp_data_N_$(N)"
+folder_path = "$(homedir())/art_DATA/$(folder)/EXP_N/exp_data_N_$(N)"
 
 eta_folders = readdir(folder_path)
 
@@ -116,3 +116,55 @@ plot(o, e)
 size(pos_data)
 
 div(length(raw_data), 3N)
+
+### ================================== ###
+
+order_files = filter( x -> ismatch(r"^order.", x), readdir(folder_path))
+exp_files = filter( x -> ismatch(r"^exp.", x), readdir(folder_path))
+nn_files = filter( x -> ismatch(r"^nn_mean.", x), readdir(folder_path))
+
+means = zeros(length(times), length(order_files))
+orders = zeros(length(times), length(order_files))
+nn_means = zeros(length(times), length(order_files))
+
+std_means = zeros(length(times), length(order_files))
+
+### ================================== ###
+# para VSK
+capt = [match(r"_(\d+\.\d+)\.\w+$|_(\d+\.\d+e-5)\.\w+$", f).captures for f in order_files]
+vals = [parse(Float64, vcat(capt...)[i]) for i in find(x -> x != nothing, vcat(capt...))]
+
+# para NLOC
+vals = [ parse(Float64, match(r"^\w+_(\d+\.\d+)", x).captures[1]) for x in order_files ]
+
+# para TFLOCK
+vals = [ parse(Float64, match(r"(\d\.\d+)\.\w+$", x).captures[1]) for x in order_files ]
+
+### ================================== ###
+# i = 3
+for i in sortperm(vals)
+
+    println(i)
+
+    raw_data = reinterpret(Float64, read(folder_path * "/" * exp_files[i]))
+    exp_data = reshape(raw_data, length(times), div(length(raw_data), length(times)))
+
+    raw_data = reinterpret(Float64, read(folder_path * "/" * order_files[i]))
+    order_data = reshape(raw_data, length(times), div(length(raw_data), length(times)))
+
+    raw_data = reinterpret(Float64, read(folder_path * "/" * nn_files[i]))
+    nn_data = reshape(raw_data, length(times), div(length(raw_data), length(times)))
+
+    means[:, i] = mean(exp_data, 2)
+    std_means[:, i] = std(exp_data, 2)
+    orders[:, i] = mean(order_data, 2)
+    nn_means[:, i] = mean(nn_data, 2)
+
+end
+
+### ================================== ###
+
+plot(times, orders, xscale = :log10)
+plot(times, means, xscale = :log10, yscale = :log10, leg = false)
+plot(times, nn_means, xscale = :log10, yscale = :log10, leg = false)
+plot([vals[i] for i in sortperm(vals)], orders[end, :], leg = false, m = :o, xscale = :log10)

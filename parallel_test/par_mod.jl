@@ -253,7 +253,7 @@ function update_particles(pos::SharedArray,vel::SharedArray,v_r::SharedArray,v_n
 
         q_r = Quaternion(zeros(Float64, 3))
 
-        if norm(signal) != zero(Float64)
+        if norm(signal) > zero(Float64)
             signal_angle = acos(dot(p_vel, signal) / (norm(signal)*norm(p_vel)))
             q_r = qrotation(cross(p_vel, signal), signal_angle + η * (2.0 * rand() * pi - pi)) * Quaternion(p_vel)
         else

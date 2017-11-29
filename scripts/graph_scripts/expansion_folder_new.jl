@@ -80,6 +80,7 @@ function calc_Rij_3D(pos, Rij)
     end
 
 end
+
 ### ================================== ###
 function calc_Rij_2D(pos, Rij)
 
