@@ -214,7 +214,7 @@ for r in reps
 
         # nn_time[j] = mean([sort(Rij[:, i])[2] for i in 1:N])
 
-        nn_means[j] = mean(sort(Symmetric(Rij, :L), 1)[2,:])
+        nn_time[j] = mean(sort(Symmetric(Rij, :L), 1)[2,:])
 
     end
 

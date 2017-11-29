@@ -94,28 +94,34 @@ function compute_metric_interactions(vel::SharedArray,v_r::SharedArray,v_n::Shar
         i = div(id, 3)
         # print(i+1,"|\t")
 
-        v_r[3i+1] = 0.0
-        v_r[3i+2] = 0.0
-        v_r[3i+3] = 0.0
+        # v_r[3i+1] = 0.0
+        # v_r[3i+2] = 0.0
+        # v_r[3i+3] = 0.0
+        #
+        # v_n[3i+1] = 0.0
+        # v_n[3i+2] = 0.0
+        # v_n[3i+3] = 0.0
 
-        v_n[3i+1] = 0.0
-        v_n[3i+2] = 0.0
-        v_n[3i+3] = 0.0
+        v_r_temp = zeros(Float64,3)
+        v_n_temp = zeros(Float64,3)
 
         sh_n = find(x -> x == 1, Symmetric(R_ij, :L)[(i*N)+1:(i+1)*N])
-        # k_sh = length(sh_n)
-        k_sh = convert(Float64, length(sh_n))
-
         ln_n = find(x -> x == -1, Symmetric(R_ij, :L)[(i*N)+1:(i+1)*N])
+
+        k_sh = convert(Float64, length(sh_n))
 
         # short-range
         if k_sh > 0
             for j in sh_n
                 # print(j,"\t")
-                v_r[3i+1] += vel[3(j-1)+1] / k_sh
-                v_r[3i+2] += vel[3(j-1)+2] / k_sh
-                v_r[3i+3] += vel[3(j-1)+3] / k_sh
+                # v_r[3i+1] += vel[3(j-1)+1] / k_sh
+                # v_r[3i+2] += vel[3(j-1)+2] / k_sh
+                # v_r[3i+3] += vel[3(j-1)+3] / k_sh
+                v_r_temp[1] += vel[3(j-1)+1]
+                v_r_temp[2] += vel[3(j-1)+2]
+                v_r_temp[3] += vel[3(j-1)+3]
             end
+            broadcast!(x-> x/k_sh, v_r_temp, v_r_temp)
         end
 
         # length(sh_n) > 0 ? v_r_temp = mean( [[vel[3(j-1)+1],vel[3(j-1)+2],vel[3(j-1)+3]] for j in sh_n] ) : v_r_temp = zeros(Float64, 3)
@@ -129,11 +135,24 @@ function compute_metric_interactions(vel::SharedArray,v_r::SharedArray,v_n::Shar
         if k_ln > 0
             for j in rand(ln_n, k_ln)
                 # print(j,"\t")
-                v_n[3i+1] += vel[3(j-1)+1] / k_ln
-                v_n[3i+2] += vel[3(j-1)+2] / k_ln
-                v_n[3i+3] += vel[3(j-1)+3] / k_ln
+                # v_n[3i+1] += vel[3(j-1)+1] / k_ln
+                # v_n[3i+2] += vel[3(j-1)+2] / k_ln
+                # v_n[3i+3] += vel[3(j-1)+3] / k_ln
+                v_n_temp[1] += vel[3(j-1)+1]
+                v_n_temp[2] += vel[3(j-1)+2]
+                v_n_temp[3] += vel[3(j-1)+3]
             end
+            broadcast!(x-> x/convert(Float64, k_ln), v_n_temp, v_n_temp)
         end
+
+        v_r[3i+1] = v_r_temp[1]
+        v_r[3i+2] = v_r_temp[2]
+        v_r[3i+3] = v_r_temp[3]
+
+        v_n[3i+1] = v_n_temp[1]
+        v_n[3i+2] = v_n_temp[2]
+        v_n[3i+3] = v_n_temp[3]
+
     end
 end
 
@@ -148,13 +167,16 @@ function compute_topological_interactions(vel::SharedArray,v_r::SharedArray,v_n:
         i = div(id, 3)
         # print(i+1,"|\t")
 
-        v_r[3i+1] = 0.0
-        v_r[3i+2] = 0.0
-        v_r[3i+3] = 0.0
+        # v_r[3i+1] = 0.0
+        # v_r[3i+2] = 0.0
+        # v_r[3i+3] = 0.0
+        #
+        # v_n[3i+1] = 0.0
+        # v_n[3i+2] = 0.0
+        # v_n[3i+3] = 0.0
 
-        v_n[3i+1] = 0.0
-        v_n[3i+2] = 0.0
-        v_n[3i+3] = 0.0
+        v_r_temp = zeros(Float64,3)
+        v_n_temp = zeros(Float64,3)
 
         i_dists = Symmetric(R_ij, :L)[(i*N)+1:(i+1)*N]
 
@@ -169,10 +191,15 @@ function compute_topological_interactions(vel::SharedArray,v_r::SharedArray,v_n:
         # short-range
         for j in sh_n
             # print(j,"\t")
-            v_r[3i+1] += vel[3(j-1)+1] / k_sh
-            v_r[3i+2] += vel[3(j-1)+2] / k_sh
-            v_r[3i+3] += vel[3(j-1)+3] / k_sh
+            # v_r[3i+1] += vel[3(j-1)+1] / k_sh
+            # v_r[3i+2] += vel[3(j-1)+2] / k_sh
+            # v_r[3i+3] += vel[3(j-1)+3] / k_sh
+            v_r_temp[1] += vel[3(j-1)+1]
+            v_r_temp[2] += vel[3(j-1)+2]
+            v_r_temp[3] += vel[3(j-1)+3]
         end
+
+        broadcast!(x-> x/convert(Float64,k_sh), v_r_temp, v_r_temp)
 
         # println()
         k_ln = rand(κ_dist)
@@ -182,11 +209,23 @@ function compute_topological_interactions(vel::SharedArray,v_r::SharedArray,v_n:
         if k_ln > 0
             for j in rand(ln_n, k_ln)
                 # print(j,"\t")
-                v_n[3i+1] += vel[3(j-1)+1] / k_ln
-                v_n[3i+2] += vel[3(j-1)+2] / k_ln
-                v_n[3i+3] += vel[3(j-1)+3] / k_ln
+                # v_n[3i+1] += vel[3(j-1)+1] / k_ln
+                # v_n[3i+2] += vel[3(j-1)+2] / k_ln
+                # v_n[3i+3] += vel[3(j-1)+3] / k_ln
+                v_n_temp[1] += vel[3(j-1)+1]
+                v_n_temp[2] += vel[3(j-1)+2]
+                v_n_temp[3] += vel[3(j-1)+3]
             end
+            broadcast!(x-> x/convert(Float64, k_ln), v_n_temp, v_n_temp)
         end
+
+        v_r[3i+1] = v_r_temp[1]
+        v_r[3i+2] = v_r_temp[2]
+        v_r[3i+3] = v_r_temp[3]
+
+        v_n[3i+1] = v_n_temp[1]
+        v_n[3i+2] = v_n_temp[2]
+        v_n[3i+3] = v_n_temp[3]
 
         # println()
 
