@@ -114,6 +114,9 @@ function compute_metric_interactions(vel::SharedArray,v_r::SharedArray,v_n::Shar
         if k_sh > 0
             for j in sh_n
                 # print(j,"\t")
+                # v_r[3i+1] += vel[3(j-1)+1]
+                # v_r[3i+2] += vel[3(j-1)+2]
+                # v_r[3i+3] += vel[3(j-1)+3]
                 # v_r[3i+1] += vel[3(j-1)+1] / k_sh
                 # v_r[3i+2] += vel[3(j-1)+2] / k_sh
                 # v_r[3i+3] += vel[3(j-1)+3] / k_sh
@@ -122,6 +125,9 @@ function compute_metric_interactions(vel::SharedArray,v_r::SharedArray,v_n::Shar
                 v_r_temp[3] += vel[3(j-1)+3]
             end
             broadcast!(x-> x/k_sh, v_r_temp, v_r_temp)
+            # v_r[3i+1] /= k_sh
+            # v_r[3i+2] /= k_sh
+            # v_r[3i+3] /= k_sh
         end
 
         # length(sh_n) > 0 ? v_r_temp = mean( [[vel[3(j-1)+1],vel[3(j-1)+2],vel[3(j-1)+3]] for j in sh_n] ) : v_r_temp = zeros(Float64, 3)
@@ -135,6 +141,9 @@ function compute_metric_interactions(vel::SharedArray,v_r::SharedArray,v_n::Shar
         if k_ln > 0
             for j in rand(ln_n, k_ln)
                 # print(j,"\t")
+                # v_n[3i+1] += vel[3(j-1)+1]
+                # v_n[3i+2] += vel[3(j-1)+2]
+                # v_n[3i+3] += vel[3(j-1)+3]
                 # v_n[3i+1] += vel[3(j-1)+1] / k_ln
                 # v_n[3i+2] += vel[3(j-1)+2] / k_ln
                 # v_n[3i+3] += vel[3(j-1)+3] / k_ln
@@ -143,7 +152,13 @@ function compute_metric_interactions(vel::SharedArray,v_r::SharedArray,v_n::Shar
                 v_n_temp[3] += vel[3(j-1)+3]
             end
             broadcast!(x-> x/convert(Float64, k_ln), v_n_temp, v_n_temp)
+            # v_n[3i+1] /= convert(Float64, k_ln)
+            # v_n[3i+2] /= convert(Float64, k_ln)
+            # v_n[3i+3] /= convert(Float64, k_ln)
         end
+
+        v_r_temp = normalize(v_r_temp)
+        v_n_temp = normalize(v_n_temp)
 
         v_r[3i+1] = v_r_temp[1]
         v_r[3i+2] = v_r_temp[2]
@@ -191,6 +206,9 @@ function compute_topological_interactions(vel::SharedArray,v_r::SharedArray,v_n:
         # short-range
         for j in sh_n
             # print(j,"\t")
+            # v_r[3i+1] += vel[3(j-1)+1]
+            # v_r[3i+2] += vel[3(j-1)+2]
+            # v_r[3i+3] += vel[3(j-1)+3]
             # v_r[3i+1] += vel[3(j-1)+1] / k_sh
             # v_r[3i+2] += vel[3(j-1)+2] / k_sh
             # v_r[3i+3] += vel[3(j-1)+3] / k_sh
@@ -201,6 +219,10 @@ function compute_topological_interactions(vel::SharedArray,v_r::SharedArray,v_n:
 
         broadcast!(x-> x/convert(Float64,k_sh), v_r_temp, v_r_temp)
 
+        # v_r[3i+1] /= convert(Float64, k_sh)
+        # v_r[3i+2] /= convert(Float64, k_sh)
+        # v_r[3i+3] /= convert(Float64, k_sh)
+
         # println()
         k_ln = rand(κ_dist)
         # println(k_ln)
@@ -209,6 +231,9 @@ function compute_topological_interactions(vel::SharedArray,v_r::SharedArray,v_n:
         if k_ln > 0
             for j in rand(ln_n, k_ln)
                 # print(j,"\t")
+                # v_n[3i+1] += vel[3(j-1)+1]
+                # v_n[3i+2] += vel[3(j-1)+2]
+                # v_n[3i+3] += vel[3(j-1)+3]
                 # v_n[3i+1] += vel[3(j-1)+1] / k_ln
                 # v_n[3i+2] += vel[3(j-1)+2] / k_ln
                 # v_n[3i+3] += vel[3(j-1)+3] / k_ln
@@ -217,7 +242,13 @@ function compute_topological_interactions(vel::SharedArray,v_r::SharedArray,v_n:
                 v_n_temp[3] += vel[3(j-1)+3]
             end
             broadcast!(x-> x/convert(Float64, k_ln), v_n_temp, v_n_temp)
+            # v_n[3i+1] /= convert(FLoat664, k_ln)
+            # v_n[3i+2] /= convert(FLoat664, k_ln)
+            # v_n[3i+3] /= convert(FLoat664, k_ln)
         end
+
+        v_r_temp = normalize(v_r_temp)
+        v_n_temp = normalize(v_n_temp)
 
         v_r[3i+1] = v_r_temp[1]
         v_r[3i+2] = v_r_temp[2]
