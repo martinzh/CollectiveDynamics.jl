@@ -138,7 +138,7 @@ end
 
     Rij = zeros(N, N)
 
-    for j in localindexes(mean)
+    for j in localindexes(m_val)
         # @show j
 
         calc_Rij_3D(pos[(j-1)*3N+1:j*3N], Rij)
