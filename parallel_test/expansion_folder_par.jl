@@ -71,7 +71,15 @@ end
 
     N = size(Rij, 1)
 
-    for i in 1:3:3N
+    # for i in 1:3:3N, j in (i+3):3:3N
+    #
+    #     k = div(i, 3) + 1
+    #     l = div(j, 3) + 1
+    #
+    #     Rij[l, k] = norm([pos[i], pos[i+1], pos[i+2]] - [pos[j], pos[j+1], pos[j+2]])
+    # end
+
+    @parallel for i in 1:3:3N
 
         for j in (i+3):3:3N
 
@@ -82,6 +90,7 @@ end
         end
     end
 
+    # return Rij
 end
 
 ### ================================== ###
@@ -98,23 +107,59 @@ end
 
 ### ================================== ###
 
-@everywhere function calc_means(pos::SharedArray, vel::SharedArray, mean::SharedArray, nn_mean::SharedArray, vel_mean::SharedArray, N::Int64)
+function col_range(data_ln, N)
+
+    st = div(div(data_ln, 3N), length(workers()))
+    # st = div(div(data_ln, 3N), 8)
+
+    c_range = [] # columns range
+    f_range = [] # full data range
+
+    for i in 0:length(workers())-1
+        if i != length(workers())-1
+            r = (st*i)+1:st*(i+1)
+            # println(r, "\t", length(r), "\t", (first(r)-1)*3N+1:last(r)*3N)
+            push!(c_range, r)
+            push!(f_range, (first(r)-1)*3N+1:last(r)*3N)
+        else
+            r = (st*i)+1:div(data_ln, 3N)
+            # println(r, "\t", length(r), "\t", (first(r)-1)*3N+1:last(r)*3N)
+            push!(c_range, r)
+            push!(f_range, (first(r)-1)*3N+1:last(r)*3N)
+        end
+    end
+
+    return c_range, f_range
+end
+
+### ================================== ###
+
+@everywhere function calc_means(pos::SharedArray, vel::SharedArray, m_val::SharedArray, nn_mean::SharedArray, vel_mean::SharedArray, N::Int64)
 
     Rij = zeros(N, N)
 
-    j_range = myrange(pos)[2]
-
-    for j in j_range
+    for j in localindexes(mean)
         # @show j
-        # calc_Rij_3D(pos[:,j], Rij)
+
         calc_Rij_3D(pos[(j-1)*3N+1:j*3N], Rij)
 
-        mean[j] = mean(Symmetric(Rij, :L))
+        # println("passed calc_Rij")
+
+        m_val[j] = mean(Symmetric(Rij, :L))
+        # println("passed mean")
+
         nn_mean[j] = mean(sort(Symmetric(Rij, :L), 1)[2,:])
+        # println("passed nn_mean")
 
-        t_vel = vel[(j-1)*3N+1:j*3N]
+        v = zeros(Float64,3)
 
-        vel_mean[j] = norm(mean([[t_vel[i], t_vel[i+1], t_vel[i+2]] for i in 1:3:3N]))
+        for i in (j-1)*3N+1:3:j*3N
+            v[1] += vel[i]
+            v[2] += vel[i+1]
+            v[3] += vel[i+2]
+        end
+
+        vel_mean[j] = norm(v ./ convert(Float64, N))
 
     end
 end
@@ -125,7 +170,6 @@ folder = ARGS[1]
 N = parse(Int, ARGS[2])
 k = ARGS[3]
 # w = ARGS[4]
-
 
 # folder = "NLOC_MET_3D"
 # folder = "NLOC_TOP_3D"
@@ -151,7 +195,7 @@ k = ARGS[3]
 # k = "0.0125"
 # w = "0.5"
 
-w = "0.5"
+# w = "0.5"
 
 Ti = 0
 Tf = 6
@@ -179,11 +223,13 @@ nn_mean_file    = open(output_folder_path * "/exp_data_N_$(N)" * "/nn_mean" * pa
 
 ### ================================== ###
 
-sh_mean     = SharedArray{Float64}(length(times)-1)
-sh_nn_mean  = SharedArray{Float64}(length(times)-1)
-sh_vel_mean = SharedArray{Float64}(length(times)-1)
-
 reps = [match(r"\w+_(\d+).\w+", x).captures[1] for x in filter(x -> ismatch(r"pos_\d+.\w+", x), readdir(data_folder_path))]
+
+c_range, f_range = col_range(3N*(length(times)-1), N)
+
+sh_mean = SharedArray{Float64}(length(times)-1, init = S -> S[c_range[myid()-1]] = 0.0)
+sh_nn_mean = SharedArray{Float64}(length(times)-1, init = S -> S[c_range[myid()-1]] = 0.0)
+sh_vel_mean = SharedArray{Float64}(length(times)-1, init = S -> S[c_range[myid()-1]] = 0.0)
 
 # r = 2
 for r in reps
@@ -191,36 +237,28 @@ for r in reps
     println("rep=",r)
 
     raw_data = reinterpret(Float64,read(data_folder_path * "/pos_$(r).dat"))
-
-    if length(raw_data) == 3N*(length(times)-1)
-        pos_data = reshape(raw_data, 3N, div(length(raw_data), 3N))
-    else
-        pos_data = reshape(raw_data[3N+1:end], 3N, div(length(raw_data[3N+1:end]), 3N))
-    end
+    length(raw_data) == 3N*(length(times)-1) ? pos_data = raw_data : pos_data = raw_data[3N+1:end]
 
     raw_data = reinterpret(Float64,read(data_folder_path * "/vel_$(r).dat"))
+    length(raw_data) == 3N*(length(times)-1) ? vel_data = raw_data : vel_data = raw_data[3N+1:end]
 
-    if length(raw_data) == 3N*(length(times)-1)
-        vel_data = reshape(raw_data, 3N, div(length(raw_data), 3N))
-    else
-        vel_data = reshape(raw_data[3N+1:end], 3N, div(length(raw_data[3N+1:end]), 3N))
-    end
+    sh_pos = SharedArray{Float64}(size(pos_data), init = S -> S[f_range[myid()-1]] = 0.0)
+    sh_vel = SharedArray{Float64}(size(vel_data), init = S -> S[f_range[myid()-1]] = 0.0)
 
-    sh_pos = SharedArray{Float64,2}(size(pos_data))
-    sh_vel = SharedArray{Float64,2}(size(vel_data))
-
-    for i in 1:length(pos_data)
+    @parallel for i in 1:length(pos_data)
         sh_pos[i] = pos_data[i]
         sh_vel[i] = vel_data[i]
     end
 
-    # d_pos = distribute(reshape(raw_data, 3N, div(length(raw_data), 3N)), procs = workers(), dist = [1,length(workers())])
+    ### ================================== ###
 
     @sync begin
         for p in workers()
             @async remotecall_wait(calc_means, p, sh_pos, sh_vel, sh_mean, sh_nn_mean, sh_vel_mean, N)
         end
     end
+
+    ### ================================== ###
 
     println("finished calc_means")
 
@@ -237,6 +275,17 @@ close(order_file)
 # close(vel_mean_file)
 
 println("Done")
+
+### ================================== ###
+
+# for p in workers()
+#     println(remotecall_fetch(localindexes, p, sh_mean))
+#     println(remotecall_fetch(localindexes, p, sh_nn_mean))
+#     println(remotecall_fetch(localindexes, p, sh_vel_mean))
+#     println(remotecall_fetch(localindexes, p, sh_pos))
+#     println(remotecall_fetch(localindexes, p, sh_vel))
+#     println()
+# end
 
 ### ================================== ###
 

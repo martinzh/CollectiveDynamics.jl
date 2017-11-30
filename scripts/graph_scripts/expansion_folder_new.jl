@@ -76,7 +76,6 @@ function calc_Rij_3D(pos, Rij)
         l = div(j, 3) + 1
 
         Rij[l, k] = norm([pos[i], pos[i+1], pos[i+2]] - [pos[j], pos[j+1], pos[j+2]])
-        # Rij[l, k] = Rij[k, l]
     end
 
 end
