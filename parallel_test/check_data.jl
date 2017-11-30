@@ -54,6 +54,9 @@ v0 = 1.0
 folder = "new/NLOC_MET_3D_EXT"
 folder = "new/NLOC_P_TOP_3D"
 
+folder = "NLOC_MET_3D_EXT"
+folder = "NLOC_P_TOP_3D"
+
 folder_path = "$(homedir())/art_DATA/$(folder)/DATA/data_N_$(N)"
 folder_path = "$(homedir())/art_DATA/$(folder)/EXP_N/exp_data_N_$(N)"
 
@@ -164,7 +167,9 @@ end
 
 ### ================================== ###
 
-plot(times, orders, xscale = :log10)
+plot(times, orders, xscale = :log10, leg = false)
 plot(times, means, xscale = :log10, yscale = :log10, leg = false)
 plot(times, nn_means, xscale = :log10, yscale = :log10, leg = false)
 plot([vals[i] for i in sortperm(vals)], orders[end, :], leg = false, m = :o, xscale = :log10)
+
+[vals[i] for i in sortperm(vals)]
