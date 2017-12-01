@@ -247,8 +247,8 @@ function compute_topological_interactions(vel::SharedArray,v_r::SharedArray,v_n:
             # v_n[3i+3] /= convert(FLoat664, k_ln)
         end
 
-        v_r_temp = normalize(v_r_temp)
-        v_n_temp = normalize(v_n_temp)
+        # v_r_temp = normalize(v_r_temp)
+        # v_n_temp = normalize(v_n_temp)
 
         v_r[3i+1] = v_r_temp[1]
         v_r[3i+2] = v_r_temp[2]
@@ -276,7 +276,7 @@ function update_particles(pos::SharedArray,vel::SharedArray,v_r::SharedArray,v_n
 
         # signal = ω * normalize([v_r[3i+1] , v_r[3i+2], v_r[3i+3]]) + (1.0 - ω) * normalize([v_n[3i+1] , v_n[3i+2], v_n[3i+3]])
 
-        signal = ω * [v_r[3i+1] , v_r[3i+2], v_r[3i+3]] + (1.0 - ω) * [v_n[3i+1] , v_n[3i+2], v_n[3i+3]]
+        signal = ω .* [v_r[3i+1] , v_r[3i+2], v_r[3i+3]] + (1.0 - ω) .* [v_n[3i+1] , v_n[3i+2], v_n[3i+3]]
 
         p_vel = [vel[3i+1] , vel[3i+2], vel[3i+3]]
 
@@ -285,7 +285,7 @@ function update_particles(pos::SharedArray,vel::SharedArray,v_r::SharedArray,v_n
         q_r = Quaternion(zeros(Float64, 3))
 
         if norm(signal) > zero(Float64)
-            signal_angle = acos(dot(p_vel, signal) / (norm(signal)*norm(p_vel)))
+            signal_angle = acos( dot(p_vel, signal) / (norm(signal)*norm(p_vel)))
             q_r = qrotation(cross(p_vel, signal), signal_angle + η * (2.0 * rand() * pi - pi)) * Quaternion(p_vel)
         else
             noise = randn(3)
