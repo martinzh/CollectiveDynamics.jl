@@ -19,9 +19,12 @@ for (root, dirs, files) in walkdir(data_path)
         ln = length(data)
 
         # println(file,"\t", ln, "\t", tr_ln, "\t", tr_ln <= ln)
+
+        println(joinpath(root, file),"\t", ln)
+
         # ln < 5652480 ? println(joinpath(root, file),"\t", ln) : nothing
 
-        ln < 5640192 ? println(joinpath(root, file),"\t", ln) : nothing
+        # ln < 5640192 ? println(joinpath(root, file),"\t", ln) : nothing
         # if tr_ln <= ln
         #     println(file,"\t", ln, "\t", tr_ln, "\t", tr_ln < ln)
         #     write(joinpath(root,"cp_"*file), data[1:tr_ln])

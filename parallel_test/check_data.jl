@@ -167,9 +167,18 @@ end
 
 ### ================================== ###
 
-plot(times, orders, xscale = :log10, leg = false)
-plot(times, means, xscale = :log10, yscale = :log10, leg = false)
-plot(times, nn_means, xscale = :log10, yscale = :log10, leg = false)
-plot([vals[i] for i in sortperm(vals)], orders[end, :], leg = false, m = :o, xscale = :log10)
+gr(size=(1024,720))
+
+plot(times, orders, xscale = :log10, leg = false, xlabel = "t", ylabel = " psi")
+png("order_t_m")
+
+plot(times, means, xscale = :log10, yscale = :log10, leg = false, xlabel = "t", ylabel = "rij")
+png("rij_t_m")
+
+plot(times, nn_means, xscale = :log10, yscale = :log10, leg = false, xlabel = "t", ylabel = "rnn")
+png("rnn_t_m")
+
+plot([vals[i] for i in sortperm(vals)], orders[end, :], leg = false, m = :o, xscale = :log10, xlabel = "k", ylabel = "psi")
+png("order_k_m")
 
 [vals[i] for i in sortperm(vals)]
