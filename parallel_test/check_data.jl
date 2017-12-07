@@ -1,4 +1,4 @@
-using Plots
+using Plots, Polynomials, LaTeXStrings
 
 ### ================================== ###
 
@@ -46,6 +46,7 @@ N = 64
 τ = 3
 
 times = get_times(0,6)[2:end]
+x_vals = broadcast(x -> log10(x), times)
 
 v0 = 1.0
 
@@ -168,6 +169,16 @@ end
 
 ### ================================== ###
 
+r_vals = broadcast(x -> log10(x), means)
+r_nn_vals = broadcast(x -> log10(x), nn_means)
+
+x_l = 400
+
+r_fit_vals = [polyfit(x_vals[x_l:end], r_vals[x_l:end, i], 1) for i in sortperm(vals)]
+r_nn_fit_vals = [polyfit(x_vals[x_l:end], r_nn_vals[x_l:end, i], 1) for i in sortperm(vals)]
+
+### ================================== ###
+
 gr(size=(1024,720))
 
 plot(times, orders, xscale = :log10, leg = false, xlabel = "t", ylabel = " psi")
@@ -175,15 +186,27 @@ png("order_t_m")
 
 plot(times, means, xscale = :log10, yscale = :log10, leg = false, xlabel = "t", ylabel = "rij")
 plot(times, means, xscale = :log10, yscale = :log10, leg = :topleft, xlabel = "t", ylabel = "rij", label = [repr(vals[i]) for i in sortperm(vals)])
-png("rij_t_m")
+png("rij_t_t_1k")
+png("rij_t_m_1k")
 
-plot(times, nn_means, xscale = :log10, yscale = :log10, leg = false, xlabel = "t", ylabel = "rnn")
-png("rnn_t_m")
+plot(times, nn_means, xscale = :log10, yscale = :log10, leg = :topleft, xlabel = "t", ylabel = "rnn", label = [repr(vals[i]) for i in sortperm(vals)])
+png("rnn_t_t_1k")
+png("rnn_t_m_1k")
 
 plot([vals[i] for i in sortperm(vals)], orders[end, :], leg = false, m = :o, xscale = :log10, xlabel = "k", ylabel = "psi", xlims = [9exp10(-4), 3.1])
-png("order_k_m")
+plot([vals[i] for i in sortperm(vals)][2:end], orders[end, :][2:end], leg = false, m = :o, xscale = :log10, xlabel = "k", ylabel = "psi", xlims = [9exp10(-4), 1.1])
+png("order_k_m_1k")
+png("order_k_t_1k")
 
 writecsv("order_top_4k.csv",hcat([vals[i] for i in sortperm(vals)], orders[end,:]))
 writecsv("order_met_4k.csv",hcat([vals[i] for i in sortperm(vals)], orders[end,:]))
+
+plot(vals[sortperm(vals)][2:end], [exp10(r_fit_vals[i][0]) for i in 2:length(r_fit_vals)], m = :o, lab = "r_ij", xscale = :log10, xlims = (0.8exp10(-2),10), xlabel = "k", ylabel = "D(k)")
+plot(vals[sortperm(vals)][2:end], [exp10(r_nn_fit_vals[i][0]) for i in 2:length(r_fit_vals)], m = :o, lab = "r_ij", xscale = :log10, xlims = (0.8exp10(-2),10), xlabel = "k", ylabel = "D(k)")
+
+plot(vals[sortperm(vals)][2:end], [exp10(r_fit_vals[i][0]) for i in 2:length(r_fit_vals)], m =:p, lab = "r_ij", xscale = :log10, yscale = :log10, xlims = (9exp10(-4),10), xlabel = "k", ylabel = "D(k)")
+plot!(vals[sortperm(vals)][2:end], [exp10(r_nn_fit_vals[i][0]) for i in 2:length(r_fit_vals)], m =:p, lab = "r_nn", xscale = :log10, yscale = :log10, xlims = (9exp10(-4),1.1), xlabel = "k", ylabel = "D(k)")
+png("diff_k_m_1k")
+png("diff_k_t_1k")
 
 pwd()
