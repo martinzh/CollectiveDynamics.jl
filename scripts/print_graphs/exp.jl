@@ -5,7 +5,31 @@
 ## 11 / 07 / 2017
 ### ============== ### ============== ### ============== ###
 
-using PyPlot, CollectiveDynamics.DataAnalysis, Polynomials, LaTeXStrings
+using PyPlot, Polynomials, LaTeXStrings
+
+### ================================== ###
+
+function get_times(Ti, Tf)
+
+    times = [convert(Int, exp10(i)) for i in Ti:Tf]
+    tau = Int64[]
+
+    push!(tau, 1)
+
+    for i in 1:(length(times) - 1)
+
+        for t in (times[i]+1):times[i+1]
+
+            if t % times[i] == 0 || t % div(times[i], exp10(1)) == 0
+                push!(tau, t)
+                # println("//////// ", t)
+            end
+        end
+
+    end
+
+    return tau
+end
 
 ### ================================== ###
 
@@ -17,12 +41,7 @@ N = 128
 N = 100
 N = 64
 
-τ = 6
-τ = 5
-τ = 4
-τ = 3
-
-times = get_times(τ)
+times = get_times(0,6)[2:end]
 x_vals = broadcast(x -> log10(x), times)
 
 #tflock
@@ -38,6 +57,10 @@ folder = "NLOC_DATA_3D"
 folder = "NLOC_MET_3D"
 folder = "NLOC_MET_2D"
 
+folder = "new/NLOC_MET_3D_EXT"
+folder = "NLOC_MET_2D"
+
+folder = "NLOC_TOP_3D_EXT"
 folder = "NLOC_TOP_3D"
 folder = "NLOC_TOP_2D"
 folder = "NLOC_TOP_3D_MEAN"
@@ -47,6 +70,7 @@ folder = "TFLOCK_DATA"
 
 folder = "SVM_GRID_FN_3D"
 
+folder_path = "$(homedir())/art_DATA/$(folder)/EXP_N/exp_data_N_$(N)"
 folder_path = "$(homedir())/art_DATA/$(folder)/EXP/exp_data_N_$(N)"
 folder_path = "$(homedir())/art_DATA/$(folder)/EXP/exp_data_N_$(N)/eta_1.5"
 
@@ -216,6 +240,7 @@ x_f = 300
 
 # ax[:plot](times[x_f:end], broadcast(x-> 35*sqrt(x) , times[x_f:end]), "r--", lw = 0.8) # 3D met
 ax[:plot](times[x_f:end], broadcast(x-> 0.2*sqrt(x) , times[x_f:end]), "r--", lw = 0.8) # 3D met
+ax[:plot](times[x_f:end], broadcast(x-> 0.05*sqrt(x) , times[x_f:end]), "r--", lw = 0.8) # 3D met
 
 # ax[:plot](times[x_f:end], broadcast(x-> 0.05exp10(-2)x , times[x_f:end]), "r--", lw = 0.8) # 2D met
 ax[:plot](times[x_f:end], broadcast(x-> 0.2*sqrt(x) , times[x_f:end]), "r--", lw = 0.8) # 2D met
@@ -224,7 +249,7 @@ plt[:xscale]("log")
 plt[:yscale]("log")
 
 # tflock
-plt[:xlim](10, exp10(5))
+plt[:xlim](2, exp10(6))
 # plt[:xlim](2, 1.5exp10(6))
 
 plt[:tick_params](which = "both", labelsize = ls, direction = "in", pad = 2)
@@ -235,13 +260,30 @@ ax[:tick_params](axis="y",which="minor",left="off")
 plt[:xticks]([exp10(1), exp10(2), exp10(3), exp10(4)])
 
 plt[:xticks]([exp10(1), exp10(2), exp10(3), exp10(4), exp10(5), exp10(6)])
+plt[:xticks]([exp10(2), exp10(4), exp10(6)])
 
 plt[:yticks]([exp10(0), exp10(3), exp10(6), exp10(8)])
 plt[:yticks]([exp10(1), exp10(2), exp10(3), exp10(4)])
+plt[:yticks]([exp10(1), exp10(2), exp10(3)])
 # plt[:yticklabels](["10", "10^{2}", "10^{5}", "10^{8}"])
 
 # ax[:text](exp10(6), 0.5exp10(-2), L"t", ha="center", va="center", size=fs) # 3D met
 # ax[:text](exp10(6), 0.8exp10(-3), L"t", ha="center", va="center", size=fs) # 2D met
+
+ax[:text](2exp10(1), 1.3exp10(4), L"\langle \Delta r \rangle_{\kappa}", ha="center", va="center", size=fs)  # 3D top 4k
+ax[:text](0.7exp10(6), 3.5exp10(1), L"t", ha="center", va="center", size=fs) # 3D met 4k
+
+### ================================== ###
+# 3D top 4k
+ax[:text](0.7exp10(6), 3.5exp10(0), L"t", ha="center", va="center", size=fs)
+ax[:text](exp10(1), 3exp10(3), L"\langle \Delta r \rangle_{\kappa}", ha="center", va="center", size=fs)
+ax[:annotate](L"\kappa", xy = (2exp10(4), 7exp10(0)), xycoords = "data", xytext = (1.2exp10(3), 0.2exp10(3)), arrowprops = Dict(:facecolor => "#423b3b", :edgecolor => "#423b3b", :width => 0.1, :headwidth => 2, :headlength => 3) )
+### ================================== ###
+# 3D met 4k
+ax[:text](0.7exp10(6), 3.5exp10(0), L"t", ha="center", va="center", size=fs)
+ax[:text](1.3exp10(1), exp10(3), L"\langle \Delta r \rangle_{\kappa}", ha="center", va="center", size=fs)
+ax[:annotate](L"\kappa", xy = (2exp10(4), 6exp10(0)), xycoords = "data", xytext = (1.2exp10(3), 1.2exp10(2)), arrowprops = Dict(:facecolor => "#423b3b", :edgecolor => "#423b3b", :width => 0.1, :headwidth => 2, :headlength => 3) )
+### ================================== ###
 
 ax[:text](exp10(6), 1.8exp10(1), L"t", ha="center", va="center", size=fs) # 3D met
 ax[:text](exp10(6), 5exp10(1), L"t", ha="center", va="center", size=fs) # 2D met
@@ -249,6 +291,7 @@ ax[:text](0.8exp10(5), 8, L"t", ha="center", va="center", size=fs) # tflock
 
 # ax[:text](4exp10(1), exp10(8), L"\langle \Delta^2 r_{ij} \rangle_{\kappa}", ha="center", va="center", size=fs)  # 3D
 # ax[:text](3.5exp10(1), exp10(7), L"\langle \Delta^2 r_{ij} \rangle_{\kappa}", ha="center", va="center", size=fs)  # 2D
+
 
 ax[:text](exp10(1), 1.5exp10(4), L"\langle \Delta r \rangle_{\kappa}", ha="center", va="center", size=fs)  # 3D
 ax[:text](1.5exp10(1), 0.75exp10(4), L"\langle \Delta r \rangle_{\kappa}", ha="center", va="center", size=fs)  # 2D
@@ -258,7 +301,6 @@ ax[:annotate](L"\kappa", xy = (2exp10(3), 2exp10(1)), xycoords = "data", xytext 
 
 ax[:annotate](L"\kappa", xy = (2exp10(4), 5exp10(1)), xycoords = "data", xytext = (1.5exp10(3), 2.5exp10(3)), arrowprops = Dict(:facecolor => "#423b3b", :edgecolor => "#423b3b", :width => 0.1, :headwidth => 2, :headlength => 3) ) # 3D met
 
-ax[:annotate](L"\kappa", xy = (2exp10(4), 5exp10(1)), xycoords = "data", xytext = (1.2exp10(3), 0.7exp10(3)), arrowprops = Dict(:facecolor => "#423b3b", :edgecolor => "#423b3b", :width => 0.1, :headwidth => 2, :headlength => 3) ) # 3D met
 
 plt[:tight_layout]()
 
@@ -268,8 +310,11 @@ fig[:savefig]("tflock_delta_r.png", dpi = 300, format = "png", bbox_inches = "ti
 fig[:savefig]("delta_rij_met.eps", dpi = 300, format = "eps", bbox_inches = "tight" , pad_inches = 0.1) # 3D met
 fig[:savefig]("delta_rij_met.png", dpi = 300, format = "png", bbox_inches = "tight" , pad_inches = 0.1) # 3D met
 
-fig[:savefig]("delta_r_met.eps", dpi = 300, format = "eps", bbox_inches = "tight" , pad_inches = 0.1) # 3D met
-fig[:savefig]("delta_r_met.png", dpi = 300, format = "png", bbox_inches = "tight" , pad_inches = 0.1) # 3D met
+fig[:savefig]("delta_r_met_4k.eps", dpi = 300, format = "eps", bbox_inches = "tight" , pad_inches = 0.1) # 3D met
+fig[:savefig]("delta_r_met_4k.png", dpi = 300, format = "png", bbox_inches = "tight" , pad_inches = 0.1) # 3D met
+
+fig[:savefig]("delta_r_top_4k.eps", dpi = 300, format = "eps", bbox_inches = "tight" , pad_inches = 0.1) # 3D met
+fig[:savefig]("delta_r_top_4k.png", dpi = 300, format = "png", bbox_inches = "tight" , pad_inches = 0.1) # 3D met
 
 fig[:savefig]("2D_delta_r_met.eps", dpi = 300, format = "eps", bbox_inches = "tight" , pad_inches = 0.1) # 2D met
 fig[:savefig]("2D_delta_r_met.png", dpi = 300, format = "png", bbox_inches = "tight" , pad_inches = 0.1) # 2D met
@@ -290,9 +335,8 @@ ax[:plot](times, nn_means[:, sortperm(vals)], "-", ms = 2, lw = 0.5)
 
 x_f = 300
 
-ax[:plot](times[x_f:end], broadcast(x-> 0.1exp10(-4)x , times[x_f:end]), "r--", lw = 0.8) # 3D met
-
 ax[:plot](times[x_f:end], broadcast(x-> 2exp10(-2)sqrt(x) , times[x_f:end]), "r--", lw = 0.8) # 3D met
+ax[:plot](times[x_f:end], broadcast(x-> 0.05exp10(-2)sqrt(x) , times[x_f:end]), "r--", lw = 0.8) # 3D top 4k
 
 ax[:plot](times[x_f:end], broadcast(x-> exp10(-2)sqrt(x) , times[x_f:end]), "r--", lw = 0.8) # 2D met
 
@@ -302,11 +346,11 @@ plt[:yscale]("log")
 plt[:xlim](exp10(1), exp10(5)) # tflock
 plt[:ylim](exp10(-10), exp10(0)) # tflock
 
-plt[:xlim](10, exp10(5))
+plt[:xlim](2, exp10(6))
 plt[:ylim](exp10(-3), exp10(7)) # 3D
 plt[:ylim](exp10(-7), exp10(6)) # 2D
 
-plt[:tick_params](which = "both", labelsize = ls, direction = "in", pad = 3)
+plt[:tick_params](which = "both", labelsize = ls, direction = "in", pad = 2)
 ax[:tick_params](axis="x",which="minor",bottom="off")
 ax[:tick_params](axis="y",which="minor",left="off")
 
@@ -315,6 +359,20 @@ plt[:xticks]([exp10(1), exp10(2), exp10(3), exp10(4)])
 plt[:yticks]([exp10(-3), exp10(0), exp10(3), exp10(6)])
 plt[:yticks]([exp10(-4), exp10(-1), exp10(2), exp10(5)]) # 2d met
 # plt[:yticklabels](["10", "10^{2}", "10^{5}", "10^{8}"])
+
+### ================================== ###
+# 3D top 4k
+ax[:text](0.7exp10(6), 0.65exp10(-1), L"t", ha="center", va="center", size=fs)
+ax[:text](1.4exp10(1), 0.8exp10(1), L"\langle \Delta r \rangle_{\kappa}", ha="center", va="center", size=fs)
+ax[:annotate](L"\kappa", xy = (1.5exp10(4), exp10(-1)), xycoords = "data", xytext = (1.2exp10(3), 0.6exp10(0)), arrowprops = Dict(:facecolor => "#423b3b", :edgecolor => "#423b3b", :width => 0.1, :headwidth => 2, :headlength => 3) )
+### ================================== ###
+
+# 3D top 4k
+ax[:text](0.7exp10(6), 0.65exp10(-1), L"t", ha="center", va="center", size=fs)
+ax[:text](1.4exp10(1), 0.4exp10(2), L"\langle \Delta r \rangle_{\kappa}", ha="center", va="center", size=fs)
+ax[:annotate](L"\kappa", xy = (1.5exp10(4), exp10(-1)), xycoords = "data", xytext = (exp10(3), 0.3exp10(1)), arrowprops = Dict(:facecolor => "#423b3b", :edgecolor => "#423b3b", :width => 0.1, :headwidth => 2, :headlength => 3) )
+### ================================== ###
+
 
 ax[:text](0.7exp10(5), 1.64, L"t", ha="center", va="center", size=fs) # tflock
 ax[:text](5exp10(1), 2.28, L"\langle \Delta r_{\mathrm{nn}} \rangle_{\kappa}", ha="center", va="center", size=fs) # tflock
@@ -341,8 +399,11 @@ plt[:tight_layout]()
 fig[:savefig]("tflock_delta_rnn.eps", dpi = 300, format = "eps", bbox_inches = "tight" , pad_inches = 0.1)
 fig[:savefig]("tflock_delta_rnn.png", dpi = 300, format = "png", bbox_inches = "tight" , pad_inches = 0.1)
 
-fig[:savefig]("delta_rnn_met.eps", dpi = 300, format = "eps", bbox_inches = "tight" , pad_inches = 0.1)
-fig[:savefig]("delta_rnn_met.png", dpi = 300, format = "png", bbox_inches = "tight" , pad_inches = 0.1)
+fig[:savefig]("delta_rnn_met_4k.eps", dpi = 300, format = "eps", bbox_inches = "tight" , pad_inches = 0.1)
+fig[:savefig]("delta_rnn_met_4k.png", dpi = 300, format = "png", bbox_inches = "tight" , pad_inches = 0.1)
+
+fig[:savefig]("delta_rnn_top_4k.eps", dpi = 300, format = "eps", bbox_inches = "tight" , pad_inches = 0.1)
+fig[:savefig]("delta_rnn_top_4k.png", dpi = 300, format = "png", bbox_inches = "tight" , pad_inches = 0.1)
 
 fig[:savefig]("2D_delta_rnn_met.eps", dpi = 300, format = "eps", bbox_inches = "tight" , pad_inches = 0.1)
 fig[:savefig]("2D_delta_rnn_met.png", dpi = 300, format = "png", bbox_inches = "tight" , pad_inches = 0.1)
@@ -380,11 +441,21 @@ plt[:yticks]([exp10(-3), exp10(-2), exp10(-1), exp10(0), exp10(1), exp10(2)])
 plt[:yticks]([exp10(-1), exp10(0)])
 plt[:xticks]([exp10(-2), exp10(-1), exp10(0), exp10(1)])
 
+plt[:yticks]([exp10(-3), exp10(-2), exp10(-1)])
+plt[:xticks]([exp10(-2), exp10(-1), exp10(0)])
+
 # ax[:text](2exp10(-3), 4.5exp10(2), L"D(\kappa)", ha="center", va="center", size=fs) # 3D
 # ax[:text](25, 0.8exp10(-3), L"\kappa", ha="center", va="center", size=fs) # 3D
 
-ax[:text](3.5exp10(-3), 2exp10(1), L"D(\kappa)", ha="center", va="center", size=fs) # 3D
-ax[:text](22, 0.5exp10(-1), L"\kappa", ha="center", va="center", size=fs) # 3D
+### ================================== ###
+# 3D met 4k
+ax[:text](3.8exp10(-3), 0.9exp10(0), L"D(\kappa)", ha="center", va="center", size=fs)
+ax[:text](9, 0.4exp10(-3), L"\kappa", ha="center", va="center", size=fs)
+### ================================== ###
+# 3D top 4k
+ax[:text](4.5exp10(-4), 0.4exp10(1), L"D(\kappa)", ha="center", va="center", size=fs)
+ax[:text](3, 0.25exp10(-3), L"\kappa", ha="center", va="center", size=fs)
+### ================================== ###
 
 ax[:text](2.5exp10(-3), 0.8exp10(1), L"D(\kappa)", ha="center", va="center", size=fs) # 2D
 ax[:text](7.5, 0.5exp10(-1), L"\kappa", ha="center", va="center", size=fs) # 2D
@@ -399,7 +470,12 @@ plt[:legend](bbox_to_anchor=(0., 1.02, 1., .102), loc=3,
 
 plt[:tight_layout]()
 
-fig[:savefig]("coef_diff_met.eps", dpi = 300, format = "eps", bbox_inches = "tight" , pad_inches = 0.1)
+fig[:savefig]("coef_diff_met_4k.eps", dpi = 300, format = "eps", bbox_inches = "tight" , pad_inches = 0.1)
+fig[:savefig]("coef_diff_met_4k.png", dpi = 300, format = "eps", bbox_inches = "tight" , pad_inches = 0.1)
+
+fig[:savefig]("coef_diff_top_4k.eps", dpi = 300, format = "eps", bbox_inches = "tight" , pad_inches = 0.1)
+fig[:savefig]("coef_diff_top_4k.png", dpi = 300, format = "eps", bbox_inches = "tight" , pad_inches = 0.1)
+
 fig[:savefig]("2D_coef_diff_met.eps", dpi = 300, format = "eps", bbox_inches = "tight" , pad_inches = 0.1)
 fig[:savefig]("2D_coef_diff_top.eps", dpi = 300, format = "eps", bbox_inches = "tight" , pad_inches = 0.1)
 fig[:savefig]("2D_coef_diff_met.png", dpi = 300, format = "png", bbox_inches = "tight" , pad_inches = 0.1)

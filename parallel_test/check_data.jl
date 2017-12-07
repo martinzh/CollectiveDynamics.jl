@@ -52,7 +52,8 @@ v0 = 1.0
 ### ================================== ###
 
 folder = "new/NLOC_MET_3D_EXT"
-folder = "new/NLOC_P_TOP_3D"
+folder = "new/NLOC_TOP_3D_EXT"
+folder = "NLOC_TOP_3D_EXT"
 
 folder = "NLOC_MET_3D_EXT"
 folder = "NLOC_P_TOP_3D"
@@ -173,12 +174,16 @@ plot(times, orders, xscale = :log10, leg = false, xlabel = "t", ylabel = " psi")
 png("order_t_m")
 
 plot(times, means, xscale = :log10, yscale = :log10, leg = false, xlabel = "t", ylabel = "rij")
+plot(times, means, xscale = :log10, yscale = :log10, leg = :topleft, xlabel = "t", ylabel = "rij", label = [repr(vals[i]) for i in sortperm(vals)])
 png("rij_t_m")
 
 plot(times, nn_means, xscale = :log10, yscale = :log10, leg = false, xlabel = "t", ylabel = "rnn")
 png("rnn_t_m")
 
-plot([vals[i] for i in sortperm(vals)], orders[end, :], leg = false, m = :o, xscale = :log10, xlabel = "k", ylabel = "psi")
+plot([vals[i] for i in sortperm(vals)], orders[end, :], leg = false, m = :o, xscale = :log10, xlabel = "k", ylabel = "psi", xlims = [9exp10(-4), 3.1])
 png("order_k_m")
 
-[vals[i] for i in sortperm(vals)]
+writecsv("order_top_4k.csv",hcat([vals[i] for i in sortperm(vals)], orders[end,:]))
+writecsv("order_met_4k.csv",hcat([vals[i] for i in sortperm(vals)], orders[end,:]))
+
+pwd()

@@ -4,6 +4,30 @@ using Plots, CollectiveDynamics.DataAnalysis
 
 ### ================================== ###
 
+function get_times(Ti, Tf)
+
+    times = [convert(Int, exp10(i)) for i in Ti:Tf]
+    tau = Int64[]
+
+    push!(tau, 1)
+
+    for i in 1:(length(times) - 1)
+
+        for t in (times[i]+1):times[i+1]
+
+            if t % times[i] == 0 || t % div(times[i], exp10(1)) == 0
+                push!(tau, t)
+                # println("//////// ", t)
+            end
+        end
+
+    end
+
+    return tau
+end
+
+### ================================== ###
+
 N = 4096
 N = 1024
 N = 512
@@ -17,7 +41,7 @@ N = 64
 τ = 4
 τ = 3
 
-times = get_times(τ)
+times = get_times(0,6)[2:end]
 
 ### ================================== ###
 
@@ -147,6 +171,9 @@ plot(top_vals[2:end,1], top_vals[2:end,2], m = :o, xscale = :log10)
 met_vals_2D = readcsv("2D_met_order.csv")
 top_vals_2D = readcsv("2D_top_order.csv")
 
+met_vals = readcsv("$(homedir())/GitRepos/CollectiveDynamics.jl/data/order_met_4k.csv")
+top_vals = readcsv("$(homedir())/GitRepos/CollectiveDynamics.jl/data/order_top_4k.csv")
+
 met_vals = readcsv("$(homedir())/GitRepos/CollectiveDynamics.jl/data/3D_met_order.csv")
 top_vals = readcsv("$(homedir())/GitRepos/CollectiveDynamics.jl/data/3D_top_order.csv")
 
@@ -251,6 +278,9 @@ plt[:yticks](collect(linspace(0.2,1,3))) # tflock
 plt[:xticks]([exp10(-4), exp10(-2), exp10(0)])
 plt[:xticks]([exp10(-4), exp10(-2), exp10(0), exp10(1)])
 
+plt[:xticks]([exp10(-3), exp10(-2), exp10(-1), exp10(0), 10])
+plt[:yticks]([0.0, 0.5, 1.0])
+
 plt[:xticks]([exp10(-3), exp10(-2), exp10(-1), 0.3 , exp10(0)])
 plt[:xticklabels](["10^{-3}", "10^{-2}", "10^{-1}", "0.3", "10^{-3}"])
 
@@ -268,6 +298,9 @@ ax[:text](2.8exp10(-5), 0.97, L"\Psi(\kappa)", ha="center", va="center", size=fs
 # 3D
 ax[:text](11, 0.07, L"\kappa", ha="center", va="center", size=fs)
 ax[:text](0.0003, 0.94, L"\Psi(\kappa)", ha="center", va="center", size=fs)
+
+ax[:text](11, 0.03, L"\kappa", ha="center", va="center", size=fs) # 3D_4k
+ax[:text](0.002, 0.94, L"\Psi(\kappa)", ha="center", va="center", size=fs) # 3D_4k
 
 ax[:text](0.3, -0.2, L"\rho_0", ha="center", va="center", size=0.75*fs) # 3D
 ax[:text](0.2, 0.08, L"\rho_0", ha="center", va="center", size=0.75*fs) # 2D
