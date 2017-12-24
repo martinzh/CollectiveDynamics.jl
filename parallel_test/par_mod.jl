@@ -105,6 +105,8 @@ function compute_metric_interactions(vel::SharedArray,v_r::SharedArray,v_n::Shar
         sh_n = find(x -> x == 1, Symmetric(R_ij, :L)[(i*N)+1:(i+1)*N])
         ln_n = find(x -> x == -1, Symmetric(R_ij, :L)[(i*N)+1:(i+1)*N])
 
+        k_sh = length(sh_n)
+
         # short-range
         if k_sh > 0
             for j in sh_n
