@@ -213,7 +213,7 @@ function update_particles(pos::SharedArray,vel::SharedArray,v_r::SharedArray,v_n
 
             noise = randn(3)
 
-            signal_anngle = dot(noise, p_vel) / (norm(noise)*norm(p_vel))
+            signal_angle = dot(noise, p_vel) / (norm(noise)*norm(p_vel))
 
             signal_angle = ifelse( signal_angle < -1, -1, signal_angle)
             signal_angle = ifelse( signal_angle > 1, 1, signal_angle)
