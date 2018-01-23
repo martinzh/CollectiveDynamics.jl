@@ -94,79 +94,44 @@ function compute_metric_interactions(vel::SharedArray,v_r::SharedArray,v_n::Shar
         i = div(id, 3)
         # print(i+1,"|\t")
 
-        # v_r[3i+1] = 0.0
-        # v_r[3i+2] = 0.0
-        # v_r[3i+3] = 0.0
-        #
-        # v_n[3i+1] = 0.0
-        # v_n[3i+2] = 0.0
-        # v_n[3i+3] = 0.0
+        v_r[3i+1] = 0.0
+        v_r[3i+2] = 0.0
+        v_r[3i+3] = 0.0
 
-        v_r_temp = zeros(Float64,3)
-        v_n_temp = zeros(Float64,3)
+        v_n[3i+1] = 0.0
+        v_n[3i+2] = 0.0
+        v_n[3i+3] = 0.0
 
         sh_n = find(x -> x == 1, Symmetric(R_ij, :L)[(i*N)+1:(i+1)*N])
         ln_n = find(x -> x == -1, Symmetric(R_ij, :L)[(i*N)+1:(i+1)*N])
 
-        k_sh = convert(Float64, length(sh_n))
+        k_sh = length(sh_n)
 
         # short-range
         if k_sh > 0
             for j in sh_n
                 # print(j,"\t")
-                # v_r[3i+1] += vel[3(j-1)+1]
-                # v_r[3i+2] += vel[3(j-1)+2]
-                # v_r[3i+3] += vel[3(j-1)+3]
-                # v_r[3i+1] += vel[3(j-1)+1] / k_sh
-                # v_r[3i+2] += vel[3(j-1)+2] / k_sh
-                # v_r[3i+3] += vel[3(j-1)+3] / k_sh
-                v_r_temp[1] += vel[3(j-1)+1]
-                v_r_temp[2] += vel[3(j-1)+2]
-                v_r_temp[3] += vel[3(j-1)+3]
+                v_r[3i+1] += vel[3(j-1)+1]
+                v_r[3i+2] += vel[3(j-1)+2]
+                v_r[3i+3] += vel[3(j-1)+3]
             end
-            broadcast!(x-> x/k_sh, v_r_temp, v_r_temp)
-            # v_r[3i+1] /= k_sh
-            # v_r[3i+2] /= k_sh
-            # v_r[3i+3] /= k_sh
+            v_r[3i+1] /= k_sh
+            v_r[3i+2] /= k_sh
+            v_r[3i+3] /= k_sh
         end
 
-        # length(sh_n) > 0 ? v_r_temp = mean( [[vel[3(j-1)+1],vel[3(j-1)+2],vel[3(j-1)+3]] for j in sh_n] ) : v_r_temp = zeros(Float64, 3)
-
-        # println()
         k_ln = rand(κ_dist)
-        # println(k_ln)
-
-        # k_ln > 0 ? v_n_temp = mean( [[vel[3(j-1)+1],vel[3(j-1)+2],vel[3(j-1)+3]] for j in rand(ln_n, k_ln)] ) : v_n_temp = zeros(Float64, 3)
 
         if k_ln > 0
-            for j in rand(ln_n, k_ln)
-                # print(j,"\t")
-                # v_n[3i+1] += vel[3(j-1)+1]
-                # v_n[3i+2] += vel[3(j-1)+2]
-                # v_n[3i+3] += vel[3(j-1)+3]
-                # v_n[3i+1] += vel[3(j-1)+1] / k_ln
-                # v_n[3i+2] += vel[3(j-1)+2] / k_ln
-                # v_n[3i+3] += vel[3(j-1)+3] / k_ln
-                v_n_temp[1] += vel[3(j-1)+1]
-                v_n_temp[2] += vel[3(j-1)+2]
-                v_n_temp[3] += vel[3(j-1)+3]
+            for j in sample(ln_n, k_ln, replace = true)
+                v_n[3i+1] += vel[3(j-1)+1]
+                v_n[3i+2] += vel[3(j-1)+2]
+                v_n[3i+3] += vel[3(j-1)+3]
             end
-            broadcast!(x-> x/convert(Float64, k_ln), v_n_temp, v_n_temp)
-            # v_n[3i+1] /= convert(Float64, k_ln)
-            # v_n[3i+2] /= convert(Float64, k_ln)
-            # v_n[3i+3] /= convert(Float64, k_ln)
+            v_n[3i+1] /= k_ln
+            v_n[3i+2] /= k_ln
+            v_n[3i+3] /= k_ln
         end
-
-        v_r_temp = normalize(v_r_temp)
-        v_n_temp = normalize(v_n_temp)
-
-        v_r[3i+1] = v_r_temp[1]
-        v_r[3i+2] = v_r_temp[2]
-        v_r[3i+3] = v_r_temp[3]
-
-        v_n[3i+1] = v_n_temp[1]
-        v_n[3i+2] = v_n_temp[2]
-        v_n[3i+3] = v_n_temp[3]
 
     end
 end
@@ -180,85 +145,41 @@ function compute_topological_interactions(vel::SharedArray,v_r::SharedArray,v_n:
     for id in first(localindexes(vel)):3:last(localindexes(vel))
 
         i = div(id, 3)
-        # print(i+1,"|\t")
 
-        # v_r[3i+1] = 0.0
-        # v_r[3i+2] = 0.0
-        # v_r[3i+3] = 0.0
-        #
-        # v_n[3i+1] = 0.0
-        # v_n[3i+2] = 0.0
-        # v_n[3i+3] = 0.0
+        v_r[3i+1] = 0.0
+        v_r[3i+2] = 0.0
+        v_r[3i+3] = 0.0
 
-        v_r_temp = zeros(Float64,3)
-        v_n_temp = zeros(Float64,3)
+        v_n[3i+1] = 0.0
+        v_n[3i+2] = 0.0
+        v_n[3i+3] = 0.0
 
-        i_dists = Symmetric(R_ij, :L)[(i*N)+1:(i+1)*N]
-
-        # first neighbors
-        # sh_n = findin(Symmetric(R_ij, :L)[(i*N)+1:(i+1)*N], sort(Symmetric(R_ij, :L)[(i*N)+1:(i+1)*N])[2:k_sh+1])
-        sh_n = findin(i_dists, sort(i_dists)[2:k_sh+1])
-
-        # next neighbors
-        # ln_n = findin(Symmetric(R_ij, :L)[(i*N)+1:(i+1)*N], sort(Symmetric(R_ij, :L)[(i*N)+1:(i+1)*N])[k_sh+2:end])
-        ln_n = findin(i_dists, sort(i_dists)[k_sh+2:end])
+        neighbors = sortperm(Symmetric(R_ij, :L)[(i*N)+1:(i+1)*N])
 
         # short-range
-        for j in sh_n
-            # print(j,"\t")
-            # v_r[3i+1] += vel[3(j-1)+1]
-            # v_r[3i+2] += vel[3(j-1)+2]
-            # v_r[3i+3] += vel[3(j-1)+3]
-            # v_r[3i+1] += vel[3(j-1)+1] / k_sh
-            # v_r[3i+2] += vel[3(j-1)+2] / k_sh
-            # v_r[3i+3] += vel[3(j-1)+3] / k_sh
-            v_r_temp[1] += vel[3(j-1)+1]
-            v_r_temp[2] += vel[3(j-1)+2]
-            v_r_temp[3] += vel[3(j-1)+3]
+        for j in neighbors[2:k_sh+1]
+            v_r[3i+1] += vel[3(j-1)+1]
+            v_r[3i+2] += vel[3(j-1)+2]
+            v_r[3i+3] += vel[3(j-1)+3]
         end
 
-        broadcast!(x-> x/convert(Float64,k_sh), v_r_temp, v_r_temp)
+        v_r[3i+1] /= k_sh
+        v_r[3i+2] /= k_sh
+        v_r[3i+3] /= k_sh
 
-        # v_r[3i+1] /= convert(Float64, k_sh)
-        # v_r[3i+2] /= convert(Float64, k_sh)
-        # v_r[3i+3] /= convert(Float64, k_sh)
-
-        # println()
         k_ln = rand(κ_dist)
-        # println(k_ln)
 
         # possible long range
         if k_ln > 0
-            for j in rand(ln_n, k_ln)
-                # print(j,"\t")
-                # v_n[3i+1] += vel[3(j-1)+1]
-                # v_n[3i+2] += vel[3(j-1)+2]
-                # v_n[3i+3] += vel[3(j-1)+3]
-                # v_n[3i+1] += vel[3(j-1)+1] / k_ln
-                # v_n[3i+2] += vel[3(j-1)+2] / k_ln
-                # v_n[3i+3] += vel[3(j-1)+3] / k_ln
-                v_n_temp[1] += vel[3(j-1)+1]
-                v_n_temp[2] += vel[3(j-1)+2]
-                v_n_temp[3] += vel[3(j-1)+3]
+            for j in sample(neighbors[k_sh+2:end], k_ln, replace = true)
+                v_n[3i+1] += vel[3(j-1)+1]
+                v_n[3i+2] += vel[3(j-1)+2]
+                v_n[3i+3] += vel[3(j-1)+3]
             end
-            broadcast!(x-> x/convert(Float64, k_ln), v_n_temp, v_n_temp)
-            # v_n[3i+1] /= convert(FLoat664, k_ln)
-            # v_n[3i+2] /= convert(FLoat664, k_ln)
-            # v_n[3i+3] /= convert(FLoat664, k_ln)
+            v_n[3i+1] /= k_ln
+            v_n[3i+2] /= k_ln
+            v_n[3i+3] /= k_ln
         end
-
-        # v_r_temp = normalize(v_r_temp)
-        # v_n_temp = normalize(v_n_temp)
-
-        v_r[3i+1] = v_r_temp[1]
-        v_r[3i+2] = v_r_temp[2]
-        v_r[3i+3] = v_r_temp[3]
-
-        v_n[3i+1] = v_n_temp[1]
-        v_n[3i+2] = v_n_temp[2]
-        v_n[3i+3] = v_n_temp[3]
-
-        # println()
 
     end
 end
@@ -272,25 +193,33 @@ function update_particles(pos::SharedArray,vel::SharedArray,v_r::SharedArray,v_n
     for id in first(localindexes(vel)):3:last(localindexes(vel))
 
         i = div(id, 3)
-        # print(i+1,"|\t")
 
-        # signal = ω * normalize([v_r[3i+1] , v_r[3i+2], v_r[3i+3]]) + (1.0 - ω) * normalize([v_n[3i+1] , v_n[3i+2], v_n[3i+3]])
+        signal = ω .* [v_r[3i+1] , v_r[3i+2], v_r[3i+3]] + (1.0 - ω) .* [v_n[3i+1], v_n[3i+2], v_n[3i+3]]
 
-        signal = ω .* [v_r[3i+1] , v_r[3i+2], v_r[3i+3]] + (1.0 - ω) .* [v_n[3i+1] , v_n[3i+2], v_n[3i+3]]
-
-        p_vel = [vel[3i+1] , vel[3i+2], vel[3i+3]]
-
-        # norm(signal) != zero(Float64) ? signal_angle = acos(dot(p_vel, signal) / norm(signal)) : signal_angle = 0.0
+        p_vel = [vel[3i+1], vel[3i+2], vel[3i+3]]
 
         q_r = Quaternion(zeros(Float64, 3))
 
         if norm(signal) > zero(Float64)
-            signal_angle = acos( dot(p_vel, signal) / (norm(signal)*norm(p_vel)))
-            q_r = qrotation(cross(p_vel, signal), signal_angle + η * (2.0 * rand() * pi - pi)) * Quaternion(p_vel)
+
+            signal_angle = dot(p_vel, signal) / (norm(signal)*norm(p_vel))
+
+            signal_angle = ifelse( signal_angle < -1, -1, signal_angle)
+            signal_angle = ifelse( signal_angle > 1, 1, signal_angle)
+
+            q_r = qrotation(cross(p_vel, signal), acos(signal_angle) + η * (2.0 * rand() * pi - pi)) * Quaternion(p_vel)
+
         else
+
             noise = randn(3)
-            # q_r = qrotation(cross(p_vel, noise), η * acos(dot(normalize(noise), p_vel)) ) * Quaternion(p_vel)
-            q_r = qrotation( cross(p_vel, noise), η * acos(dot(noise, p_vel) / (norm(noise)*norm(p_vel))) ) * Quaternion(p_vel)
+
+            signal_angle = dot(noise, p_vel) / (norm(noise)*norm(p_vel))
+
+            signal_angle = ifelse( signal_angle < -1, -1, signal_angle)
+            signal_angle = ifelse( signal_angle > 1, 1, signal_angle)
+
+            q_r = qrotation( cross(p_vel, noise), η * acos(signal_angle) ) * Quaternion(p_vel)
+
         end
 
         u_vel = normalize([q_r.v1, q_r.v2, q_r.v3])
