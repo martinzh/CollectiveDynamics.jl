@@ -40,18 +40,20 @@ N = 128
 N = 100
 N = 64
 
+τ = 7
 τ = 6
 τ = 5
 τ = 4
 τ = 3
 
-times = get_times(0,6)[2:end]
+times = get_times(0,τ)[2:end]
 x_vals = broadcast(x -> log10(x), times)
 
 v0 = 1.0
 
 ### ================================== ###
 
+folder = "NLOC_MET_3D_EXT_LST"
 folder = "new/NLOC_MET_3D_EXT"
 folder = "new/NLOC_TOP_3D_EXT"
 folder = "NLOC_TOP_3D_EXT"
@@ -190,12 +192,13 @@ plot(times, means, xscale = :log10, yscale = :log10, leg = :topleft, xlabel = "t
 png("rij_t_t_1k")
 png("rij_t_m_1k")
 
+plot(times, nn_means, xscale = :log10, yscale = :log10, leg = false, xlabel = "t", ylabel = "rnn")
 plot(times, nn_means, xscale = :log10, yscale = :log10, leg = :topleft, xlabel = "t", ylabel = "rnn", label = [repr(vals[i]) for i in sortperm(vals)])
 png("rnn_t_t_1k")
 png("rnn_t_m_1k")
 
-plot([vals[i] for i in sortperm(vals)][2:end], orders[end, 2:end], leg = false, m = :o, xscale = :log10, xlabel = "k", ylabel = "psi", xlims = [9exp10(-3), 3.1])
-plot([vals[i] for i in sortperm(vals)][2:end], orders[end, :][2:end], leg = false, m = :o, xscale = :log10, xlabel = "k", ylabel = "psi", xlims = [9exp10(-4), 1.1])
+plot([vals[i] for i in sortperm(vals)][1:end], orders[end, 1:end], leg = false, m = :o, xscale = :log10, xlabel = "k", ylabel = "psi", xlims = [9exp10(-4), 9.1])
+plot([vals[i] for i in sortperm(vals)][1:end], orders[end, :][1:end], leg = false, m = :o, xscale = :log10, xlabel = "k", ylabel = "psi", xlims = [9exp10(-4), 1.1])
 png("order_k_m_1k")
 png("order_k_t_1k")
 

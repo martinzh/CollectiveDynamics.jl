@@ -112,7 +112,7 @@ Inertial Flock type
 * v_r -> interaction vector
 * k_r -> local connectivity
 
-* p_cell_id -> particle's celll id
+* p_cell_id -> particle's cell id
 """
 type Flock
     N  :: Int64

@@ -169,6 +169,8 @@ end
 folder = ARGS[1]
 N = parse(Int, ARGS[2])
 k = ARGS[3]
+Ti = ARGS[4]
+Tf = ARGS[5]
 # w = ARGS[4]
 
 # folder = "NLOC_MET_3D"
@@ -197,8 +199,8 @@ k = ARGS[3]
 
 w = "0.5"
 
-Ti = 0
-Tf = 6
+# Ti = 0
+# Tf = 6
 
 times = get_times(Ti, Tf)
 
