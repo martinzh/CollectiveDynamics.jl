@@ -169,8 +169,8 @@ end
 folder = ARGS[1]
 N = parse(Int, ARGS[2])
 k = ARGS[3]
-Ti = ARGS[4]
-Tf = ARGS[5]
+Ti = parse(Int, ARGS[4])
+Tf = parse(Int, ARGS[5])
 # w = ARGS[4]
 
 # folder = "NLOC_MET_3D"
