@@ -10,7 +10,7 @@
 @everywhere function set_output_data_structure_lnl(path, N, o, a)
 
     parent_folder_path = joinpath(homedir(),"art_DATA","$(path)")
-    folder_path        = joinpath(parent_folder_path,"DATA","data_N_$(N)")
+    folder_path        = joinpath(parent_folder_path,path,"data_N_$(N)")
     reps_path          = joinpath(folder_path,"data_N_$(N)_o_$(o)_a_$(a)")
 
     try
