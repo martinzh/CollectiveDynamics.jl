@@ -42,6 +42,8 @@ Rij = Symmetric(Rij, :L)
 
 for i in 1:N
 
+    println(i)
+
     v_r[i] = zeros(Float64, 3)
 
     repel_neighbors = find( x-> x > 0.0 && x <= zor, Rij[:, i])
@@ -81,6 +83,8 @@ end
 ### ============ UPDATE PARTICLE'S POSITIONS AND VELOCITIES ============ ###
 
 for i in 1:N
+
+    println(i)
 
     q_r = Quaternion(zeros(Float64, 3))
 
