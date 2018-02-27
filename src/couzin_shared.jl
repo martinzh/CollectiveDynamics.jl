@@ -235,8 +235,8 @@ end
 n = parse(Int64, ARGS[1])
 # N = 512
 
-d_o = parse(Float64, ARGS[2])
-d_a = parse(Float64, ARGS[3])
+o = parse(Float64, ARGS[2])
+a = parse(Float64, ARGS[3])
 # δr = 10.0
 
 T = parse(Int64, ARGS[4])
@@ -246,8 +246,8 @@ rep = parse(Int64, ARGS[5])
 # rep = 1
 
 @eval @everywhere N = $n
-@eval @everywhere Δo = $d_o
-@eval @everywhere Δa = $d_a
+@eval @everywhere Δo = $o
+@eval @everywhere Δa = $a
 
 @everywhere L  = cbrt(N / ρ) # size of box
 
