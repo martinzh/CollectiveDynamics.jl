@@ -76,6 +76,7 @@ reps = [match(r"\w+(\d+).\w+", x).captures[1]  for x in filter(x -> ismatch(r"^p
 # r = rand(reps)
 r = 1
 
+raw_data = reinterpret(Float64, read("/Users/mzumaya/GitRepos/selfAssembly/data_test.dat"))
 raw_data = reinterpret(Float64, read(data_path * "/pos_$(r).dat"))
 
 # 3D
@@ -86,6 +87,7 @@ y = view(pos_data, :, 2:3:3N)
 z = view(pos_data, :, 3:3:3N)
 
 # plot(x, y, z, leg = false, size = (800,800), tickfont = font(1), aspect_ratio = :equal)
+plot(x, y, z, leg = false, size = (800,800))
 o = plot(x, y, z, leg = false, size = (800,800))
 
 ### ================================== ###
