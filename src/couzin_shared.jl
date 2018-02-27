@@ -55,22 +55,22 @@ end
 
 function calc_Rij(Rij::SharedArray, pos::SharedArray)
 
-    N = size(Rij, 1)
+    # N = size(Rij, 1)
 
     # @parallel for j in 1:N
     #     for i in 1+j:N
     #     Rij[i,j] = norm(pos[i] - pos[j])
     # end
 
-    @parallel for j in 1:3:length(pos)
+    @parallel for i in 1:3:length(pos)
 
-        rj = div(j,3) + 1
+        ri = div(i,3) + 1
 
-        for i in (j+3):3:length(pos)
+        for j in (i+3):3:length(pos)
 
-            ri = div(i,3) + 1
+            rj = div(j,3) + 1
 
-            R_ij[ri,rj] = sqrt((pos[i]-pos[j])^2 + (pos[i+1]-pos[j+1])^2 + (pos[i+2]-pos[j+2])^2)
+            R_ij[rj,ri] = sqrt((pos[i]-pos[j])^2 + (pos[i+1]-pos[j+1])^2 + (pos[i+2]-pos[j+2])^2)
         end
     end
 
