@@ -266,7 +266,7 @@ pos = SharedArray{Float64}(3N) # particles positions
 vel = SharedArray{Float64}(3N) # array of particles' velocities
 v_r = SharedArray{Float64}(3N) # local metric interactions
 
-R_ij = SharedArray{Int64}(N,N)
+Rij = SharedArray{Int64}(N,N)
 
 ### ============ RANDOM INITIAL CONDITIONS ============ ###
 
