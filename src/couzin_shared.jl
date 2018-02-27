@@ -82,7 +82,7 @@ end
 
     F_Rij = Symmetric(Rij, :L)
 
-    for id in first(localindexes(pos)):3:last(localidexes(pos))
+    for id in first(localindexes(pos)):3:last(localindexes(pos))
 
         i = div(id,3)
         # println(i)
@@ -141,7 +141,7 @@ end
 
 @everywhere function update_particles(v_r::SharedArray, pos::SharedArray, vel::SharedArray, η::Float64, θ::Float64, v0::Float64)
 
-    for id in first(localindexes(pos)):last(localidexes(pos))
+    for id in first(localindexes(pos)):last(localindexes(pos))
 
         i = div(id, 3)
         # println(i)
