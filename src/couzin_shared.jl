@@ -80,7 +80,7 @@ end
 
 @everywhere function compute_interactions(v_r::SharedArray, pos::SharedArray, vel::SharedArray, Rij::SharedArray, zor::Float64, zoo::Float64, zoa::Float64)
 
-    N = div(lenght(pos), 3)
+    N = div(length(pos), 3)
 
     for id in first(localindexes(pos)):3:last(localindexes(pos))
 
