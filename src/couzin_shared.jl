@@ -123,13 +123,15 @@ end
             v_o = zeros(Float64, 3)
             v_a = zeros(Float64, 3)
 
-            for j in find( x-> x > zor && x < zoo, Symmetric(Rij,:L)[:, i])
+            # for j in find( x-> x > zor && x < zoo, Symmetric(Rij,:L)[:, i])
+            for j in find( x-> x > zor && x < zoo, Symmetric(R_ij, :L)[(i*N)+1:(i+1)*N])
                 v_o[1] += vel[3(j-1)+1]
                 v_o[2] += vel[3(j-1)+2]
                 v_o[3] += vel[3(j-1)+3]
             end
 
-            for j in find( x-> x > zoo && x < zoa, Symmetric(Rij,:L)[:, i])
+            # for j in find( x-> x > zoo && x < zoa, Symmetric(Rij,:L)[:, i])
+            for j in find( x-> x > zoo && x < zoa, Symmetric(R_ij, :L)[(i*N)+1:(i+1)*N])
                 # v_a[1] += pos[3(j-1)+1] - pos[3i+1] / Symmetric(Rij,:L)[j,i]
                 # v_a[2] += pos[3(j-1)+2] - pos[3i+2] / Symmetric(Rij,:L)[j,i]
                 # v_a[3] += pos[3(j-1)+3] - pos[3i+3] / Symmetric(Rij,:L)[j,i]
