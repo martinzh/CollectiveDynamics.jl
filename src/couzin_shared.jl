@@ -9,36 +9,41 @@
 
 @everywhere function set_output_data_structure_lnl(path, N, o, a)
 
-    parent_folder_path = joinpath(homedir(),"art_DATA","$(path)")
-    folder_path        = joinpath(parent_folder_path,path,"DATA","data_N_$(N)")
+    parent_folder_path = joinpath(homedir(),"art_DATA",path)
+    folder_path        = joinpath(parent_folder_path,"DATA","data_N_$(N)")
     reps_path          = joinpath(folder_path,"data_N_$(N)_o_$(o)_a_$(a)")
 
     try
         mkdir(joinpath(homedir(),"art_DATA"))
+        println(joinpath(homedir(),"art_DATA"))
     catch error
         println("Main data folder already exists")
     end
 
     try
         mkdir(parent_folder_path)
+        println(parent_folder_path)
     catch error
         println("Parent folder already exists")
     end
 
     try
-        mkdir(joinpath(parent_folder_path,"/DATA"))
+        mkdir(joinpath(parent_folder_path,"DATA"))
+        println(joinpath(parent_folder_path,"DATA"))
     catch error
         println("Parent folder already exists")
     end
 
     try
         mkdir(folder_path)
+        println(folder_path)
     catch error
         println("Folder already exists")
     end
 
     try
         mkdir(reps_path)
+        println(reps_path)
     catch error
         println("Parameter folder already exists")
     end
