@@ -247,7 +247,7 @@ rep = parse(Int64, ARGS[5])
 
 @eval @everywhere N = $n
 @eval @everywhere Δo = $d_o
-@eval @everywhere Δr = $d_a
+@eval @everywhere Δa = $d_a
 
 @everywhere L  = cbrt(N / ρ) # size of box
 
