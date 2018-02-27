@@ -226,15 +226,13 @@ end
 @everywhere η = 0.15
 @everywhere θ = 40.0
 
-@everywhere L  = cbrt(N / ρ) # size of box
-
 ### ============ METRIC BEHAVIORAL THRESHOLDS ============ ###
 
 # zor = ((v0 * dt) / l)^2 # zone of repulsion
 # zoo = zor + ((v0 * dt) / l)^2 # zone of orientation
 # zoa = zoo + ((v0 * dt) / l)^2 # zone of attraction
 
-N = parse(Int64, ARGS[1])
+n = parse(Int64, ARGS[1])
 # N = 512
 
 Δo = parse(Float64, ARGS[2])
@@ -246,6 +244,10 @@ T = parse(Int64, ARGS[4])
 
 rep = parse(Int64, ARGS[5])
 # rep = 1
+
+@eval @everywhere N = $n
+
+@everywhere L  = cbrt(N / ρ) # size of box
 
 @everywhere zor = 1.0 # zone of repulsion
 @everywhere zoo = zor + Δo # zone of orientation
