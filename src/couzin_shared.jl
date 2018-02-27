@@ -7,7 +7,7 @@
 
 ### ============ OUTPUT FOLDER STRUCTURE ============ ###
 
-@everyhere function set_output_data_structure_lnl(path, N, o, a)
+@everywhere function set_output_data_structure_lnl(path, N, o, a)
 
     parent_folder_path = joinpath(homedir(),"art_DATA","$(path)")
     folder_path        = joinpath(parent_folder_path,"DATA","data_N_$(N)")
