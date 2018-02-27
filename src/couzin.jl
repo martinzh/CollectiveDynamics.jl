@@ -1,13 +1,18 @@
+### ============== ### ============== ### ============== ###
+### SHARED ARRAYS VERSION
+### COUZIN COLLECTIVE MOTION MODEL
+### ============== ### ============== ### ============== ###
 
 using Quaternions
 
 ### ============ COMPUTE RELATIVE DISTANCES ============ ###
 
-function calc_Rij(Rij)
+function calc_Rij(Rij::SharedArray, pos::SharedArray)
 
     N = size(Rij, 1)
 
-    for j in 1:N, i in 1+j:N
+    for j in 1:N
+        for i in 1+j:N
         Rij[i,j] = norm(pos[i] - pos[j])
     end
 
@@ -61,7 +66,7 @@ end
 
 ### ============ UPDATE PARTICLE'S POSITIONS AND VELOCITIES ============ ###
 
-function update_particles(v_r, pos, vel)
+function update_particles(v_r, pos, vel, θ, v0)
 
     N = length(pos)
 
@@ -77,25 +82,40 @@ function update_particles(v_r, pos, vel)
             signal_angle = ifelse( signal_angle < -1, -1, signal_angle)
             signal_angle = ifelse( signal_angle > 1, 1, signal_angle)
 
-            q_r = qrotation(cross(vel[i], v_r[i]), acos(signal_angle) + η * (2.0 * rand() * pi - pi)) * Quaternion(vel[i])
+            rot_ang = acos(signal_angle) + η * (2.0 * rand() * pi - pi)
+
+            # q_r = qrotation(cross(vel[i], v_r[i]),  rot_ang) * Quaternion(vel[i])
+
+            if rot_ang < θ
+                q_r = qrotation(cross(vel[i], v_r[i]),  rot_ang) * Quaternion(vel[i])
+            else
+                # q_r = qrotation(cross(vel[i], v_r[i]), θ + η * (2.0 * rand() * pi - pi)) * Quaternion(vel[i])
+                q_r = qrotation(cross(vel[i], v_r[i]), θ) * Quaternion(vel[i])
+            end
+
+            u_vel = normalize([q_r.v1, q_r.v2, q_r.v3])
+
+            vel[i] = u_vel
+            pos[i] += v0 * u_vel
 
         else
 
-            noise = randn(3)
+            # noise = randn(3)
+            #
+            # signal_angle = dot(noise, vel[i]) / (norm(noise)*norm(vel[i]))
+            #
+            # signal_angle = ifelse( signal_angle < -1, -1, signal_angle)
+            # signal_angle = ifelse( signal_angle > 1, 1, signal_angle)
+            #
+            # q_r = qrotation( cross(vel[i], noise), η * acos(signal_angle) ) * Quaternion(vel[i])
 
-            signal_angle = dot(noise, vel[i]) / (norm(noise)*norm(vel[i]))
-
-            signal_angle = ifelse( signal_angle < -1, -1, signal_angle)
-            signal_angle = ifelse( signal_angle > 1, 1, signal_angle)
-
-            q_r = qrotation( cross(vel[i], noise), η * acos(signal_angle) ) * Quaternion(vel[i])
-
+            pos[i] += v0 * vel[i]
         end
 
-    	u_vel = normalize([q_r.v1, q_r.v2, q_r.v3])
-
-    	vel[i] = u_vel
-    	pos[i] += u_vel
+        # u_vel = normalize([q_r.v1, q_r.v2, q_r.v3])
+        #
+        # vel[i] = u_vel
+        # pos[i] += v0 * u_vel
 
     end
 end
@@ -104,11 +124,15 @@ end
 
 N = 128
 
-ρ = 0.3
-η = 0.15
-v0 = 1.0
 dt = 1.0
+
+ρ = 0.3
 l = 0.5
+
+v0 = 1.0
+η = 0.15
+
+θ = 40.0
 
 T = 1000
 
@@ -116,13 +140,19 @@ L  = cbrt(N / ρ) # size of box
 
 ### ============ METRIC BEHAVIORAL THRESHOLDS ============ ###
 
-zor = ((v0 * dt) / l)^2 # zone of repulsion
-zoo = zor + ((v0 * dt) / l)^2 # zone of orientation
-zoa = zoo + ((v0 * dt) / l)^2 # zone of attraction
+# zor = ((v0 * dt) / l)^2 # zone of repulsion
+# zoo = zor + ((v0 * dt) / l)^2 # zone of orientation
+# zoa = zoo + ((v0 * dt) / l)^2 # zone of attraction
+
+δr = parse(Float64, ARGS[1])
+# δr = 10.0
+
+rep = parse(Int64, ARGS[2])
+# rep = 1
 
 zor = 1.0 # zone of repulsion
 zoo = zor + 10.0 # zone of orientation
-zoa = zoo + 10.0 # zone of attraction
+zoa = zoo + δr # zone of attraction
 
 ### ============ RANDOM INITIAL CONDITIONS ============ ###
 
@@ -135,16 +165,25 @@ v_r = [zeros(Float64, 3) for i in 1:N]
 
 Rij = zeros(Float64, N, N)
 
-out = open("data_test.dat", "w")
+data_folder = "DATA_N_$(N)"
 
-write(out, vcat(pos...))
+pos_path = joinpath(homedir(),"art_DATA","COUZIN",data_folder,"pos_N_$(N)_A_$(δr)_r_$(rep)")
+vel_path = joinpath(homedir(),"art_DATA","COUZIN",data_folder,"vel_N_$(N)_A_$(δr)_r_$(rep)")
+
+pos_out = open(pos_path, "w")
+vel_out = open(vel_path, "w")
+
+write(pos_out, vcat(pos...))
+write(vel_out, vcat(pos...))
 
 for t in 1:T
     println(t)
     calc_Rij(Rij)
     compute_interactions(v_r, pos, vel, Symmetric(Rij, :L), zor, zoo, zoa)
-    update_particles(v_r, pos, vel)
-    write(out, vcat(pos...))
+    update_particles(v_r, pos, vel, θ, v0)
+    write(pos_out, vcat(pos...))
+    write(vel_out, vcat(vel...))
 end
 
-close(out)
+close(pos_out)
+close(vel_out)

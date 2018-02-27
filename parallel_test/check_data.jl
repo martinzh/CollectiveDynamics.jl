@@ -74,17 +74,19 @@ data_path = folder_path * "/" * eta_folders[f]
 reps = [match(r"\w+(\d+).\w+", x).captures[1]  for x in filter(x -> ismatch(r"^pos_", x), readdir(data_path))]
 
 # r = rand(reps)
-r = 1
+r = 3
 
-raw_data = reinterpret(Float64, read("/Users/mzumaya/GitRepos/selfAssembly/data_test.dat"))
 raw_data = reinterpret(Float64, read(data_path * "/pos_$(r).dat"))
 
-# 3D
-pos_data = transpose(reshape(raw_data, 3N, div(length(raw_data), 3N)))
+a = "0.0"
+raw_data = reinterpret(Float64, read(joinpath(homedir(),"art_DATA","COUZIN","DATA_N_128","pos_N_$(N)_A_$(a)_r_$(r)")));
 
-x = view(pos_data, :, 1:3:3N)
-y = view(pos_data, :, 2:3:3N)
-z = view(pos_data, :, 3:3:3N)
+# 3D
+pos_data = transpose(reshape(raw_data, 3N, div(length(raw_data), 3N)));
+
+x = view(pos_data, :, 1:3:3N);
+y = view(pos_data, :, 2:3:3N);
+z = view(pos_data, :, 3:3:3N);
 
 # plot(x, y, z, leg = false, size = (800,800), tickfont = font(1), aspect_ratio = :equal)
 plot(x, y, z, leg = false, size = (800,800))
