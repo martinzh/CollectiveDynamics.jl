@@ -80,7 +80,7 @@ end
 
 @everywhere function compute_interactions(v_r::SharedArray, pos::SharedArray, vel::SharedArray, Rij::SharedArray, zor::Float64, zoo::Float64, zoa::Float64)
 
-    # F_Rij = Symmetric(Rij, :L)
+    N = div(lenght(pos), 3)
 
     for id in first(localindexes(pos)):3:last(localindexes(pos))
 
@@ -165,7 +165,7 @@ end
 
 @everywhere function update_particles(v_r::SharedArray, pos::SharedArray, vel::SharedArray, η::Float64, θ::Float64, v0::Float64)
 
-    for id in first(localindexes(pos)):last(localindexes(pos))
+    for id in first(localindexes(pos)):3:last(localindexes(pos))
 
         i = div(id, 3)
         # println(i)
