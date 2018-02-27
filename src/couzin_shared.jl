@@ -91,20 +91,27 @@ end
         v_r[3i+2] = 0.0
         v_r[3i+3] = 0.0
 
-        repel_neighbors = find( x-> x > 0.0 && x <= zor, F_Rij[:, i])
+        # repel_neighbors = find( x-> x > 0.0 && x <= zor, F_Rij[:, i])
+        repel_neighbors = find( x-> x > 0.0 && x <= zor, F_Rij[(i*N)+1:(i+1)*N])
 
         if length(repel_neighbors) > 0
 
             for j in repel_neighbors
-                v_r[3i+1] -= pos[3(j-1)+1] - pos[3i+1] / F_Rij[j,i]
-                v_r[3i+2] -= pos[3(j-1)+2] - pos[3i+2] / F_Rij[j,i]
-                v_r[3i+3] -= pos[3(j-1)+3] - pos[3i+3] / F_Rij[j,i]
+                # v_r[3i+1] -= pos[3(j-1)+1] - pos[3i+1] / F_Rij[j,i]
+                # v_r[3i+2] -= pos[3(j-1)+2] - pos[3i+2] / F_Rij[j,i]
+                # v_r[3i+3] -= pos[3(j-1)+3] - pos[3i+3] / F_Rij[j,i]
+                v_r[3i+1] -= pos[3(j-1)+1] - pos[3i+1] / F_Rij[(i*N) + j]
+                v_r[3i+2] -= pos[3(j-1)+2] - pos[3i+2] / F_Rij[(i*N) + j]
+                v_r[3i+3] -= pos[3(j-1)+3] - pos[3i+3] / F_Rij[(i*N) + j]
             end
 
         else
 
-            orient_neighbors = find( x-> x > zor && x < zoo, F_Rij[:, i])
-            atract_neighbors = find( x-> x > zoo && x < zoa, F_Rij[:, i])
+            # orient_neighbors = find( x-> x > zor && x < zoo, F_Rij[:, i])
+            # atract_neighbors = find( x-> x > zoo && x < zoa, F_Rij[:, i])
+
+            orient_neighbors = find( x-> x > zor && x < zoo, F_Rij[(i*N)+1:(i+1)*N])
+            atract_neighbors = find( x-> x > zoo && x < zoa, F_Rij[(i*N)+1:(i+1)*N])
 
             v_o = zeros(Float64, 3)
             v_a = zeros(Float64, 3)
@@ -116,9 +123,12 @@ end
             end
 
             for j in find( x-> x > zoo && x < zoa, F_Rij[:, i])
-                v_a[1] += pos[3(j-1)+1] - pos[3i+1] / F_Rij[j,i]
-                v_a[2] += pos[3(j-1)+2] - pos[3i+2] / F_Rij[j,i]
-                v_a[3] += pos[3(j-1)+3] - pos[3i+3] / F_Rij[j,i]
+                # v_a[1] += pos[3(j-1)+1] - pos[3i+1] / F_Rij[j,i]
+                # v_a[2] += pos[3(j-1)+2] - pos[3i+2] / F_Rij[j,i]
+                # v_a[3] += pos[3(j-1)+3] - pos[3i+3] / F_Rij[j,i]
+                v_a[1] += pos[3(j-1)+1] - pos[3i+1] / F_Rij[(i*N) + j]
+                v_a[2] += pos[3(j-1)+2] - pos[3i+2] / F_Rij[(i*N) + j]
+                v_a[3] += pos[3(j-1)+3] - pos[3i+3] / F_Rij[(i*N) + j]
             end
 
             if length(v_a) > 0
