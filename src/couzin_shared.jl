@@ -219,7 +219,6 @@ end
 
 ### ============ SYSTEM'S PARAMETERS ============ ###
 
-@everywhere N = 512
 @everywhere dt = 1.0
 @everywhere ρ = 0.3
 @everywhere l = 0.5
@@ -235,14 +234,17 @@ end
 # zoo = zor + ((v0 * dt) / l)^2 # zone of orientation
 # zoa = zoo + ((v0 * dt) / l)^2 # zone of attraction
 
-Δo = parse(Float64, ARGS[1])
-Δr = parse(Float64, ARGS[2])
+N = parse(Int64, ARGS[1])
+# N = 512
+
+Δo = parse(Float64, ARGS[2])
+Δr = parse(Float64, ARGS[3])
 # δr = 10.0
 
-T = parse(Int64, ARGS[3])
+T = parse(Int64, ARGS[4])
 # T = 1000
 
-rep = parse(Int64, ARGS[4])
+rep = parse(Int64, ARGS[5])
 # rep = 1
 
 @everywhere zor = 1.0 # zone of repulsion
@@ -273,7 +275,7 @@ end
 
 ### ============ SET OUTPUT ============ ###
 
-output_path = set_output_data_structure_lnl("COUZIN_3D", N, ARGS[1], ARGS[2])
+output_path = set_output_data_structure_lnl("COUZIN_3D", N, ARGS[2], ARGS[3])
 
 pos_file = open(joinpath(output_path,"pos_$(rep).dat"), "w+")
 vel_file = open(joinpath(output_path,"vel_$(rep).dat"), "w+")
