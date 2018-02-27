@@ -54,6 +54,8 @@ v0 = 1.0
 ### ================================== ###
 
 folder = "NLOC_MET_3D_EXT_LST"
+folder = "NLOC_TOP_3D_EXT_LST"
+
 folder = "new/NLOC_MET_3D_EXT"
 folder = "new/NLOC_TOP_3D_EXT"
 folder = "NLOC_TOP_3D_EXT"
@@ -183,6 +185,8 @@ r_nn_fit_vals = [polyfit(x_vals[x_l:end], r_nn_vals[x_l:end, i], 1) for i in sor
 ### ================================== ###
 
 gr(size=(1024,720))
+gui()
+plot(collect(1:100), sin.(collect(1:100)))
 
 plot(times, orders, xscale = :log10, leg = false, xlabel = "t", ylabel = " psi")
 png("order_t_m")
