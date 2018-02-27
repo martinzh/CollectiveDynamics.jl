@@ -85,12 +85,12 @@ for i in 1:N
     q_r = Quaternion(zeros(Float64, 3))
 
     if norm(v_r[i]) > 0.0
-        angle = dot(vel[i], v_r[i]) / (norm(signal)*norm(vel[i]))
+        signal_angle = dot(vel[i], v_r[i]) / (norm(v_r[i])*norm(vel[i]))
 
-        angle = ifelse( angle < -1, -1, angle)
-        angle = ifelse( angle > 1, 1, angle)
+        signal_angle = ifelse( signal_angle < -1, -1, signal_angle)
+        signal_angle = ifelse( signal_angle > 1, 1, signal_angle)
 
-        q_r = qrotation(cross(vel[i], v_r[i]), acos(angle) + η * (2.0 * rand() * pi - pi)) * Quaternion(vel[i])
+        q_r = qrotation(cross(vel[i], v_r[i]), acos(signal_angle) + η * (2.0 * rand() * pi - pi)) * Quaternion(vel[i])
 
     else
 
@@ -105,5 +105,9 @@ for i in 1:N
 
     end
 
+	u_vel = normalize([q_r.v1, q_r.v2, q_r.v3])
+
+	vel[i] = u_vel
+	pos[i] += u_vel
 
 end
