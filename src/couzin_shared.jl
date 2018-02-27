@@ -73,7 +73,7 @@ end
 
 ### ============ COMPUTE INTERACTIONS ============ ###
 
-@everywhere function compute_interactions(v_r::SharedArray, pos::SharedArray, vel::SharedArray, Rij::SharedArray, zor::FLoat64, zoo::FLoat64, zoa::FLoat64)
+@everywhere function compute_interactions(v_r::SharedArray, pos::SharedArray, vel::SharedArray, Rij::SharedArray, zor::Float64, zoo::Float64, zoa::Float64)
 
     for id in first(localindexes(pos)):3:last(localidexes(pos))
 
@@ -132,7 +132,7 @@ end
 
 ### ============ UPDATE PARTICLE'S POSITIONS AND VELOCITIES ============ ###
 
-@everywhere function update_particles(v_r::SharedArray, pos::SharedArray, vel::SharedArray, η::FLoat64, θ::FLoat64, v0::Float64)
+@everywhere function update_particles(v_r::SharedArray, pos::SharedArray, vel::SharedArray, η::Float64, θ::Float64, v0::Float64)
 
     for id in first(localindexes(pos)):last(localidexes(pos))
 
