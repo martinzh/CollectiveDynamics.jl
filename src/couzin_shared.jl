@@ -100,9 +100,16 @@ end
                 # v_r[3i+1] -= pos[3(j-1)+1] - pos[3i+1] / Symmetric(Rij,:L)[j,i]
                 # v_r[3i+2] -= pos[3(j-1)+2] - pos[3i+2] / Symmetric(Rij,:L)[j,i]
                 # v_r[3i+3] -= pos[3(j-1)+3] - pos[3i+3] / Symmetric(Rij,:L)[j,i]
-                v_r[3i+1] -= pos[3(j-1)+1] - pos[3i+1] / Symmetric(Rij,:L)[(i*N) + j]
-                v_r[3i+2] -= pos[3(j-1)+2] - pos[3i+2] / Symmetric(Rij,:L)[(i*N) + j]
-                v_r[3i+3] -= pos[3(j-1)+3] - pos[3i+3] / Symmetric(Rij,:L)[(i*N) + j]
+
+                # v_r[3i+1] -= pos[3(j-1)+1] - pos[3i+1] / Symmetric(Rij,:L)[(i*N) + j]
+                # v_r[3i+2] -= pos[3(j-1)+2] - pos[3i+2] / Symmetric(Rij,:L)[(i*N) + j]
+                # v_r[3i+3] -= pos[3(j-1)+3] - pos[3i+3] / Symmetric(Rij,:L)[(i*N) + j]
+
+                norm = sqrt((pos[3(j-1)+1] - pos[3i+1])^2 + (pos[3(j-1)+2] - pos[3i+2])^2 + (pos[3(j-1)+3] - pos[3i+3])^2)
+
+                v_r[3i+1] -= pos[3(j-1)+1] - pos[3i+1] / norm
+                v_r[3i+2] -= pos[3(j-1)+2] - pos[3i+2] / norm
+                v_r[3i+3] -= pos[3(j-1)+3] - pos[3i+3] / norm
             end
 
         else
@@ -126,9 +133,16 @@ end
                 # v_a[1] += pos[3(j-1)+1] - pos[3i+1] / Symmetric(Rij,:L)[j,i]
                 # v_a[2] += pos[3(j-1)+2] - pos[3i+2] / Symmetric(Rij,:L)[j,i]
                 # v_a[3] += pos[3(j-1)+3] - pos[3i+3] / Symmetric(Rij,:L)[j,i]
-                v_a[1] += pos[3(j-1)+1] - pos[3i+1] / Symmetric(Rij,:L)[(i*N) + j]
-                v_a[2] += pos[3(j-1)+2] - pos[3i+2] / Symmetric(Rij,:L)[(i*N) + j]
-                v_a[3] += pos[3(j-1)+3] - pos[3i+3] / Symmetric(Rij,:L)[(i*N) + j]
+                # v_a[1] += pos[3(j-1)+1] - pos[3i+1] / Symmetric(Rij,:L)[(i*N) + j]
+                # v_a[2] += pos[3(j-1)+2] - pos[3i+2] / Symmetric(Rij,:L)[(i*N) + j]
+                # v_a[3] += pos[3(j-1)+3] - pos[3i+3] / Symmetric(Rij,:L)[(i*N) + j]
+
+                norm = sqrt((pos[3(j-1)+1] - pos[3i+1])^2 + (pos[3(j-1)+2] - pos[3i+2])^2 + (pos[3(j-1)+3] - pos[3i+3])^2)
+
+                v_a[3i+1] += pos[3(j-1)+1] - pos[3i+1] / norm
+                v_a[3i+2] += pos[3(j-1)+2] - pos[3i+2] / norm
+                v_a[3i+3] += pos[3(j-1)+3] - pos[3i+3] / norm
+
             end
 
             if length(v_a) > 0
