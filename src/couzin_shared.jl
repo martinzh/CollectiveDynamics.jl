@@ -80,6 +80,8 @@ end
 
 @everywhere function compute_interactions(v_r::SharedArray, pos::SharedArray, vel::SharedArray, Rij::SharedArray, N::Int64, zor::Float64, zoo::Float64, zoa::Float64)
 
+    F_Rij = Symmetric(Rij, :L)
+
     for id in first(localindexes(pos)):3:last(localindexes(pos))
 
         i = div(id,3)
@@ -90,7 +92,8 @@ end
         v_r[3i+3] = 0.0
 
         # repel_neighbors = find( x-> x > 0.0 && x <= zor, F_Rij[:, i])
-        repel_neighbors = find( x-> x > 0.0 && x <= zor, Symmetric(Rij,:L)[(i*N)+1:(i+1)*N])
+        # repel_neighbors = find( x-> x > 0.0 && x <= zor, Symmetric(Rij,:L)[(i*N)+1:(i+1)*N])
+        repel_neighbors = find( x-> x > 0.0 && x <= zor, F_Rij[(i*N)+1:(i+1)*N])
 
         if length(repel_neighbors) > 0
 
@@ -103,11 +106,15 @@ end
                 # v_r[3i+2] -= pos[3(j-1)+2] - pos[3i+2] / Symmetric(Rij,:L)[(i*N) + j]
                 # v_r[3i+3] -= pos[3(j-1)+3] - pos[3i+3] / Symmetric(Rij,:L)[(i*N) + j]
 
-                norm = sqrt((pos[3(j-1)+1] - pos[3i+1])^2 + (pos[3(j-1)+2] - pos[3i+2])^2 + (pos[3(j-1)+3] - pos[3i+3])^2)
+                v_r[3i+1] -= pos[3(j-1)+1] - pos[3i+1] / F_Rij[(i*N) + j]
+                v_r[3i+2] -= pos[3(j-1)+2] - pos[3i+2] / F_Rij[(i*N) + j]
+                v_r[3i+3] -= pos[3(j-1)+3] - pos[3i+3] / F_Rij[(i*N) + j]
 
-                v_r[3i+1] -= (pos[3(j-1)+1] - pos[3i+1]) / norm
-                v_r[3i+2] -= (pos[3(j-1)+2] - pos[3i+2]) / norm
-                v_r[3i+3] -= (pos[3(j-1)+3] - pos[3i+3]) / norm
+                # norm = sqrt((pos[3(j-1)+1] - pos[3i+1])^2 + (pos[3(j-1)+2] - pos[3i+2])^2 + (pos[3(j-1)+3] - pos[3i+3])^2)
+                #
+                # v_r[3i+1] -= (pos[3(j-1)+1] - pos[3i+1]) / norm
+                # v_r[3i+2] -= (pos[3(j-1)+2] - pos[3i+2]) / norm
+                # v_r[3i+3] -= (pos[3(j-1)+3] - pos[3i+3]) / norm
             end
 
         else
@@ -132,15 +139,20 @@ end
                 # v_a[1] += pos[3(j-1)+1] - pos[3i+1] / Symmetric(Rij,:L)[j,i]
                 # v_a[2] += pos[3(j-1)+2] - pos[3i+2] / Symmetric(Rij,:L)[j,i]
                 # v_a[3] += pos[3(j-1)+3] - pos[3i+3] / Symmetric(Rij,:L)[j,i]
+
                 # v_a[1] += pos[3(j-1)+1] - pos[3i+1] / Symmetric(Rij,:L)[(i*N) + j]
                 # v_a[2] += pos[3(j-1)+2] - pos[3i+2] / Symmetric(Rij,:L)[(i*N) + j]
                 # v_a[3] += pos[3(j-1)+3] - pos[3i+3] / Symmetric(Rij,:L)[(i*N) + j]
 
-                norm = sqrt((pos[3(j-1)+1] - pos[3i+1])^2 + (pos[3(j-1)+2] - pos[3i+2])^2 + (pos[3(j-1)+3] - pos[3i+3])^2)
+                v_a[1] += pos[3(j-1)+1] - pos[3i+1] / F_Rij[(i*N) + j]
+                v_a[2] += pos[3(j-1)+2] - pos[3i+2] / F_Rij[(i*N) + j]
+                v_a[3] += pos[3(j-1)+3] - pos[3i+3] / F_Rij[(i*N) + j]
 
-                v_a[1] += (pos[3(j-1)+1] - pos[3i+1]) / norm
-                v_a[2] += (pos[3(j-1)+2] - pos[3i+2]) / norm
-                v_a[3] += (pos[3(j-1)+3] - pos[3i+3]) / norm
+                # norm = sqrt((pos[3(j-1)+1] - pos[3i+1])^2 + (pos[3(j-1)+2] - pos[3i+2])^2 + (pos[3(j-1)+3] - pos[3i+3])^2)
+                #
+                # v_a[1] += (pos[3(j-1)+1] - pos[3i+1]) / norm
+                # v_a[2] += (pos[3(j-1)+2] - pos[3i+2]) / norm
+                # v_a[3] += (pos[3(j-1)+3] - pos[3i+3]) / norm
 
             end
 
@@ -282,8 +294,8 @@ rep = parse(Int64, ARGS[5])
 @everywhere L  = cbrt(N / ρ) # size of box
 
 @everywhere zor = 1.0 # zone of repulsion
-@everywhere zoo = zor + Δo # zone of orientation
-@everywhere zoa = zoo + Δa # zone of attraction
+@everywhere zoo = zor + Δo*L # zone of orientation
+@everywhere zoa = zoo + Δa*L # zone of attraction
 
 ### ============ SHARED ARRAY INITIALIZATION ============ ###
 
