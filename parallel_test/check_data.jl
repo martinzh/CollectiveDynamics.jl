@@ -1,5 +1,5 @@
 using Plots, Polynomials, LaTeXStrings
-
+using Plots
 ### ================================== ###
 
 function get_times(Ti, Tf)
@@ -63,10 +63,14 @@ folder = "NLOC_TOP_3D_EXT"
 folder = "NLOC_MET_3D_EXT"
 folder = "NLOC_P_TOP_3D"
 
+folder = "COUZIN_3D"
+
 folder_path = "$(homedir())/art_DATA/$(folder)/DATA/data_N_$(N)"
 folder_path = "$(homedir())/art_DATA/$(folder)/EXP_N/exp_data_N_$(N)"
 
 eta_folders = readdir(folder_path)
+
+readdir(joinpath(folder_path,eta_folders[11]))
 
 f = 1
 data_path = folder_path * "/" * eta_folders[f]
@@ -77,9 +81,12 @@ reps = [match(r"\w+(\d+).\w+", x).captures[1]  for x in filter(x -> ismatch(r"^p
 r = 3
 
 raw_data = reinterpret(Float64, read(data_path * "/pos_$(r).dat"))
+raw_data = reinterpret(Float64, read(joinpath(folder_path,eta_folders[9],"pos_$(r).dat")))
 
-a = "0.0"
-raw_data = reinterpret(Float64, read(joinpath(homedir(),"art_DATA","COUZIN","DATA_N_128","pos_N_$(N)_A_$(a)_r_$(r)")));
+o = "0.5"
+a = "2.0"
+
+raw_data = reinterpret(Float64, read(joinpath(homedir(),"art_DATA","COUZIN_3D","DATA","data_N_128","data_N_$(N)_o_$(o)_a_$(a)","pos_1.dat")));
 
 # 3D
 pos_data = transpose(reshape(raw_data, 3N, div(length(raw_data), 3N)));
@@ -175,6 +182,18 @@ for i in sortperm(vals)
     nn_means[:, i] = mean(nn_data, 2)
 
 end
+
+### ================================== ###
+i = 16
+raw_data = reinterpret(Float64, read(folder_path * "/" * order_files[i]))
+order_data = reshape(raw_data, length(times), div(length(raw_data), length(times)))
+
+plot(times, mean(order_data, 2), xscale = :log10)
+plot(times, mean(order_data, 2), xscale = :log10, yscale = :log10)
+
+plot(times, orders, xscale = :log10)
+plot(times, means, xscale = :log10)
+plot(times, nn_means, xscale = :log10)
 
 ### ================================== ###
 

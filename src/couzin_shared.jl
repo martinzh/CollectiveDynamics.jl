@@ -55,22 +55,15 @@ end
 
 function calc_Rij(Rij::SharedArray, pos::SharedArray)
 
-    # N = size(Rij, 1)
-
-    # @parallel for j in 1:N
-    #     for i in 1+j:N
-    #     Rij[i,j] = norm(pos[i] - pos[j])
-    # end
-
     @parallel for i in 1:3:length(pos)
 
         ri = div(i,3) + 1
 
-        for j in (i+3):3:length(pos)
+        @parallel for j in (i+3):3:length(pos)
 
             rj = div(j,3) + 1
 
-            R_ij[rj,ri] = sqrt((pos[i]-pos[j])^2 + (pos[i+1]-pos[j+1])^2 + (pos[i+2]-pos[j+2])^2)
+            Rij[rj,ri] = sqrt((pos[i]-pos[j])^2 + (pos[i+1]-pos[j+1])^2 + (pos[i+2]-pos[j+2])^2)
         end
     end
 
@@ -122,8 +115,11 @@ end
             # orient_neighbors = find( x-> x > zor && x < zoo, Symmetric(Rij,:L)[:, i])
             # atract_neighbors = find( x-> x > zoo && x < zoa, Symmetric(Rij,:L)[:, i])
 
-            orient_neighbors = find( x-> x > zor && x < zoo, Symmetric(Rij,:L)[(i*N)+1:(i+1)*N])
-            atract_neighbors = find( x-> x > zoo && x < zoa, Symmetric(Rij,:L)[(i*N)+1:(i+1)*N])
+            # orient_neighbors = find( x-> x > zor && x < zoo, Symmetric(Rij,:L)[(i*N)+1:(i+1)*N])
+            # atract_neighbors = find( x-> x > zoo && x < zoa, Symmetric(Rij,:L)[(i*N)+1:(i+1)*N])
+
+            orient_neighbors = find( x-> x > zor && x < zoo, F_Rij[(i*N)+1:(i+1)*N])
+            atract_neighbors = find( x-> x > zoo && x < zoa, F_Rij[(i*N)+1:(i+1)*N])
 
             v_o = zeros(Float64, 3)
             v_a = zeros(Float64, 3)
@@ -275,11 +271,12 @@ end
 # zoa = zoo + ((v0 * dt) / l)^2 # zone of attraction
 
 n = parse(Int64, ARGS[1])
-# N = 512
+# n = 128
 
 o = parse(Float64, ARGS[2])
 a = parse(Float64, ARGS[3])
-# δr = 10.0
+# o = 0.5
+# a = 0.5
 
 T = parse(Int64, ARGS[4])
 # T = 1000
@@ -303,7 +300,7 @@ pos = SharedArray{Float64}(3N) # particles positions
 vel = SharedArray{Float64}(3N) # array of particles' velocities
 v_r = SharedArray{Float64}(3N) # local metric interactions
 
-Rij = SharedArray{Int64}(N,N)
+Rij = SharedArray{Float64}(N,N)
 
 ### ============ RANDOM INITIAL CONDITIONS ============ ###
 
@@ -327,9 +324,9 @@ pos_file = open(joinpath(output_path,"pos_$(rep).dat"), "w+")
 vel_file = open(joinpath(output_path,"vel_$(rep).dat"), "w+")
 
 # write initial conditions
-println("//////// ", 1)
 write(pos_file, pos)
 write(vel_file, vel)
+println("//////// ", 1)
 
 ### ============ TIME EVOLUTION ============ ###
 
@@ -362,6 +359,30 @@ rmprocs(workers())
 println("Done all")
 
 ### ============== ### ============== ### ============== ###
+
+
+# @time @parallel for i in 1:3:length(pos)
+#
+#     ri = div(i,3) + 1
+#
+#     @parallel for j in (i+3):3:length(pos)
+#
+#         rj = div(j,3) + 1
+#
+#         Rij[rj,ri] = (pos[i]-pos[j])^2 + (pos[i+1]-pos[j+1])^2 + (pos[i+2]-pos[j+2])^2
+#     end
+# end
+#
+# fetch(pos)
+# pos
+# vel
+# Rij
+#
+# calc_Rij(Rij, pos)
+# compute_interactions(v_r, pos, vel, Symmetric(Rij, :L), zor, zoo, zoa)
+# update_particles(v_r, pos, vel, θ, v0)
+#
+# fetch(Rij)
 
 # for t in 1:T
 #     println(t)
