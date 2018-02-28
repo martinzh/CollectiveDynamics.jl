@@ -168,8 +168,8 @@ end
 
 folder = ARGS[1]
 N = parse(Int, ARGS[2])
-k = ARGS[3]
-w = ARGS[4]
+k = parse(Float64, ARGS[3])
+w = parse(Float64, ARGS[4])
 Ti = parse(Int, ARGS[5])
 Tf = parse(Int, ARGS[6])
 # w = ARGS[4]
