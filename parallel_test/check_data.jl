@@ -1,5 +1,6 @@
 using Plots, Polynomials, LaTeXStrings
 using Plots
+using PyPlot
 ### ================================== ###
 
 function get_times(Ti, Tf)
@@ -83,8 +84,8 @@ r = 3
 raw_data = reinterpret(Float64, read(data_path * "/pos_$(r).dat"))
 raw_data = reinterpret(Float64, read(joinpath(folder_path,eta_folders[9],"pos_$(r).dat")))
 
-o = "0.5"
-a = "2.0"
+o = "1.0"
+a = "1.0"
 
 raw_data = reinterpret(Float64, read(joinpath(homedir(),"art_DATA","COUZIN_3D","DATA","data_N_128","data_N_$(N)_o_$(o)_a_$(a)","pos_1.dat")));
 
@@ -158,8 +159,11 @@ vals = [parse(Float64, vcat(capt...)[i]) for i in find(x -> x != nothing, vcat(c
 # para NLOC
 vals = [ parse(Float64, match(r"^\w+_(\d+\.\d+)", x).captures[1]) for x in order_files ]
 
+vals = [ (parse(Float64, match(r"^\w+_(\d+\.\d+)_\w+_(\d+\.\d+)", x).captures[1]), parse(Float64, match(r"^\w+_(\d+\.\d+)_\w+_(\d+\.\d+)", x).captures[2]))  for x in order_files ]
+
 # para TFLOCK
 vals = [ parse(Float64, match(r"(\d\.\d+)\.\w+$", x).captures[1]) for x in order_files ]
+
 
 ### ================================== ###
 # i = 3
@@ -182,6 +186,28 @@ for i in sortperm(vals)
     nn_means[:, i] = mean(nn_data, 2)
 
 end
+
+pyplot()
+
+o = [first(vals[i]) for i in sortperm(vals)]
+a = [last(vals[i]) for i in sortperm(vals)]
+p = orders[end, :]
+
+gui()
+
+length(orders[end,:])
+collect(0.25:0.25:2.0)
+
+scatter3d(o, a, orders[end,:])
+surface(o, a, orders[end,:])
+xlabel!("")
+ylabel!("")
+
+savefig("fase_couzin.svg")
+
+
+scatter3d(fill(1.0, 8), collect(0.25:0.25:2.0), fill(1.0, 8))
+scatter3d!(collect(0.25:0.25:2.0), fill(1.0, 8), fill(1.0, 8))
 
 ### ================================== ###
 i = 16
@@ -224,6 +250,8 @@ plot(times, nn_means, xscale = :log10, yscale = :log10, leg = false, xlabel = "t
 plot(times, nn_means, xscale = :log10, yscale = :log10, leg = :topleft, xlabel = "t", ylabel = "rnn", label = [repr(vals[i]) for i in sortperm(vals)])
 png("rnn_t_t_1k")
 png("rnn_t_m_1k")
+
+plot([vals[i] for i in sortperm(vals)][1:end], orders[end, 1:end], leg = false, m = :o, xlabel = "k", ylabel = "psi", xlims = [0.0, 2.1])
 
 plot([vals[i] for i in sortperm(vals)][1:end], orders[end, 1:end], leg = false, m = :o, xscale = :log10, xlabel = "k", ylabel = "psi", xlims = [9exp10(-4), 9.1])
 plot([vals[i] for i in sortperm(vals)][1:end], orders[end, :][1:end], leg = false, m = :o, xscale = :log10, xlabel = "k", ylabel = "psi", xlims = [9exp10(-4), 1.1])

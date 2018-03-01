@@ -124,6 +124,7 @@ end
             v_o = zeros(Float64, 3)
             v_a = zeros(Float64, 3)
 
+            # for j in find( x-> x > zor && x < zoo, F_Rij[(i*N)+1:(i+1)*N])
             for j in orient_neighbors
                 v_o[1] += vel[3(j-1)+1]
                 v_o[2] += vel[3(j-1)+2]
@@ -131,6 +132,7 @@ end
             end
 
             # for j in find( x-> x > zoo && x < zoa, Symmetric(Rij,:L)[:, i])
+            # for j in find( x-> x > zoo && x < zoa, F_Rij[(i*N)+1:(i+1)*N])
             for j in atract_neighbors
                 # v_a[1] += pos[3(j-1)+1] - pos[3i+1] / Symmetric(Rij,:L)[j,i]
                 # v_a[2] += pos[3(j-1)+2] - pos[3i+2] / Symmetric(Rij,:L)[j,i]
@@ -257,12 +259,13 @@ end
 
 ### ============ SYSTEM'S PARAMETERS ============ ###
 
-@everywhere dt = 1.0
-@everywhere ρ = 0.3
-@everywhere l = 0.5
-@everywhere v0 = 1.0
-@everywhere η = 0.15
-@everywhere θ = 40.0
+@everywhere dt = 1.0 # time step
+@everywhere ρ = 0.3 # initial density
+# @everywhere l = 0.5
+@everywhere v0 = 1.0 # speed
+@everywhere η = 0.15 # noise intensity
+@everywhere θ = 40.0 # maximum turn
+@everywhere δ = 0.05 # deviation from aligned velocity
 
 ### ============ METRIC BEHAVIORAL THRESHOLDS ============ ###
 
@@ -284,6 +287,10 @@ T = parse(Int64, ARGS[4])
 rep = parse(Int64, ARGS[5])
 # rep = 1
 
+init = ARGS[6] # random or aligned initial velocities
+
+@eval @everywhere init_e = $init
+
 @eval @everywhere N = $n
 @eval @everywhere Δo = $o
 @eval @everywhere Δa = $a
@@ -302,12 +309,40 @@ v_r = SharedArray{Float64}(3N) # local metric interactions
 
 Rij = SharedArray{Float64}(N,N)
 
-### ============ RANDOM INITIAL CONDITIONS ============ ###
+output_path = ""
 
-for i in 1:length(pos)
-    pos[i] = 2*rand()*L - L
-    vel[i] = 2*rand() - 1
+if init_e == "R"
+
+    output_path = set_output_data_structure_lnl("COUZIN_3D", N, ARGS[2], ARGS[3])
+    println(output_path)
+
+    ### ============ RANDOM INITIAL CONDITIONS ============ ###
+    for i in 1:length(pos)
+        pos[i] = 2*rand()*L - L
+        vel[i] = 2*rand() - 1
+    end
+
+elseif init_e == "A"
+
+    output_path = set_output_data_structure_lnl("COUZIN_3D_VAL", N, ARGS[2], ARGS[3])
+    println(output_path)
+
+    ### ============ RANDOM POSITIONS BUT ALIGNED VELOCITIES ============ ###
+
+    vel_0 = [2*rand() - 1, 2*rand() - 1, 2*rand() - 1]
+
+    for i in 1:3:length(pos)
+        pos[i]   = 2*rand()*L - L
+        pos[i+1] = 2*rand()*L - L
+        pos[i+2] = 2*rand()*L - L
+        vel[i]   = vel_0[1] + δ*rand() - δ
+        vel[i+1] = vel_0[2] + δ*rand() - δ
+        vel[i+2] = vel_0[3] + δ*rand() - δ
+    end
+
 end
+
+### ============ VELOCITY NORMALIZATION ============ ###
 
 for i in 1:3:length(vel)
     norm = sqrt(vel[i]^2 + vel[i+1]^2 + vel[i+2]^2)
@@ -317,8 +352,6 @@ for i in 1:3:length(vel)
 end
 
 ### ============ SET OUTPUT ============ ###
-
-output_path = set_output_data_structure_lnl("COUZIN_3D", N, ARGS[2], ARGS[3])
 
 pos_file = open(joinpath(output_path,"pos_$(rep).dat"), "w+")
 vel_file = open(joinpath(output_path,"vel_$(rep).dat"), "w+")
@@ -361,7 +394,7 @@ println("Done all")
 ### ============== ### ============== ### ============== ###
 
 
-# @time @parallel for i in 1:3:length(pos)
+# @time @parallel for i in 1:3:lngth(pos)
 #
 #     ri = div(i,3) + 1
 #
