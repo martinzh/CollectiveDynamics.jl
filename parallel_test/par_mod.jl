@@ -43,7 +43,7 @@ end
 
 ### ============== ### ============== ### ============== ###
 
-function set_output_data_structure_lnl(path, N, κ, ω. η)
+function set_output_data_structure_lnl(path, N, κ, ω, η)
 
     parent_folder_path = "$(homedir())/art_DATA/$(path)"
     folder_path        = parent_folder_path * "/DATA/data_N_$(N)"
