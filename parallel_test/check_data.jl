@@ -1,5 +1,5 @@
 using Plots, Polynomials, LaTeXStrings
-using Plots
+using Plots, LaTeXStrings
 using PyPlot
 ### ================================== ###
 
@@ -65,6 +65,7 @@ folder = "NLOC_MET_3D_EXT"
 folder = "NLOC_P_TOP_3D"
 
 folder = "COUZIN_3D"
+folder = "COUZIN_3D_VAL"
 
 folder_path = "$(homedir())/art_DATA/$(folder)/DATA/data_N_$(N)"
 folder_path = "$(homedir())/art_DATA/$(folder)/EXP_N/exp_data_N_$(N)"
@@ -108,6 +109,7 @@ folder = "NLOC_T_TOP_3D"
 
 folder_path = "$(homedir())/art_DATA/$(folder)/DATA/data_N_$(N)"
 folder_path = "$(homedir())/art_DATA/$(folder)/EXP/exp_data_N_$(N)"
+folder_path = "$(homedir())/art_DATA/$(folder)/EXP_N/exp_data_N_$(N)"
 
 eta_folders = readdir(folder_path)
 
@@ -189,22 +191,41 @@ end
 
 pyplot()
 
+tc = 50
+
 o = [first(vals[i]) for i in sortperm(vals)]
 a = [last(vals[i]) for i in sortperm(vals)]
-p = orders[end, :]
+m_ord = [mean(orders[end-tc:end, i]) for i in 1:size(orders,2)]
 
-gui()
+pyplot(size = (800,600))
 
 length(orders[end,:])
 collect(0.25:0.25:2.0)
 
 scatter3d(o, a, orders[end,:])
-surface(o, a, orders[end,:])
-xlabel!("")
-ylabel!("")
+surface(o, a, p, label = "psi")
 
-savefig("fase_couzin.svg")
+p = zeros( length(unique(a)), length(unique(o)))
 
+for i in 1:length(orders[end,:])
+    p[i] = orders[end,:][i]
+end
+
+Plots.scalefontsizes(1.5)
+
+font = Plots.font("Helvetica", 9)
+pyplot(xtickfont = font, ytickfont = font)
+heatmap(unique(o),unique(a), p, aspect_ratio = 1, xrotation = 90, colorbar_title = L"\Psi")
+xticks!(unique(o))
+yticks!(unique(a))
+
+xlabel!(L"\frac{\Delta r_o}{L_o}")
+ylabel!(L"\frac{\Delta r_a}{L_o}")
+
+png("fase_couzin_random")
+png("fase_couzin_aligned")
+
+plot(times[end-tc:end], orders[end-tc:end, :], leg = false, xscale = :log10)
 
 scatter3d(fill(1.0, 8), collect(0.25:0.25:2.0), fill(1.0, 8))
 scatter3d!(collect(0.25:0.25:2.0), fill(1.0, 8), fill(1.0, 8))

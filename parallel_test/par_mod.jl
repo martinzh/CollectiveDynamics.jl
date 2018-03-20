@@ -42,6 +42,47 @@ function set_output_data_structure_lnl(path, N, κ, ω)
 end
 
 ### ============== ### ============== ### ============== ###
+
+function set_output_data_structure_lnl(path, N, κ, ω. η)
+
+    parent_folder_path = "$(homedir())/art_DATA/$(path)"
+    folder_path        = parent_folder_path * "/DATA/data_N_$(N)"
+    reps_path          = folder_path * "/data_N_$(N)_k_$(κ)_w_$(ω)_e_$(η)"
+
+    try
+        mkdir("$(homedir())/art_DATA")
+    catch error
+        println("Main data folder already exists")
+    end
+
+    try
+        mkdir(parent_folder_path)
+    catch error
+        println("Parent folder already exists")
+    end
+
+    try
+        mkdir(parent_folder_path * "/DATA")
+    catch error
+        println("Parent folder already exists")
+    end
+
+    try
+        mkdir(folder_path)
+    catch error
+        println("Folder already exists")
+    end
+
+    try
+        mkdir(reps_path)
+    catch error
+        println("Parameter folder already exists")
+    end
+
+    return reps_path
+end
+
+### ============== ### ============== ### ============== ###
 ### COMPUTE RELATIVE DISTANCES WITH METRIC THRESHOLD
 ### ============== ### ============== ### ============== ###
 

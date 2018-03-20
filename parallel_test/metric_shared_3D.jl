@@ -15,11 +15,12 @@ file = ARGS[1]
 n   = parse(Int64, ARGS[2]) # average non-local interactions
 k   = parse(Float64, ARGS[3]) # average non-local interactions
 w   = parse(Float64, ARGS[4]) # interactions relative weight
+e   = parse(Float64, ARGS[5]) # noise intensity
 
-Ti   = parse(Int, ARGS[5]) # integration time steps
-Tf   = parse(Int, ARGS[6]) # integration time steps
+Ti   = parse(Int, ARGS[6]) # integration time steps
+Tf   = parse(Int, ARGS[7]) # integration time steps
 
-rep = parse(Int, ARGS[7])
+rep = parse(Int, ARGS[8])
 
 ### ============== ### ============== ### ============== ###
 
@@ -32,9 +33,9 @@ rep = parse(Int, ARGS[7])
 @eval @everywhere N = $n
 @eval @everywhere κ = $k
 @eval @everywhere ω = $w
+@eval @everywhere η = $e
 
 @everywhere ρ = 0.3
-@everywhere η = 0.15
 @everywhere v0 = 1.0
 @everywhere dt = 1.0
 @everywhere l = 0.5
@@ -112,7 +113,8 @@ else
     ### SET OUTPUT
     ### ============== ### ============== ### ============== ###
 
-    output_path = set_output_data_structure_lnl("NLOC_MET_3D_EXT", N, κ, ω)
+    # output_path = set_output_data_structure_lnl("NLOC_MET_3D_EXT", N, κ, ω)
+    output_path = set_output_data_structure_lnl("NLOC_MET_3D_EXT", N, κ, ω, η)
 
     pos_file = open(joinpath(output_path,"pos_$(rep).dat"), "w+")
     vel_file = open(joinpath(output_path,"vel_$(rep).dat"), "w+")
@@ -149,20 +151,5 @@ close(pos_file)
 close(vel_file)
 
 println("Done all")
-
-### ============== ### ============== ### ============== ###
-
-# for t in 1:T
-#     println("//////// ", t)
-#
-#     evolve_metric_system(pos, vel, v_r, v_n, R_ij, r0)
-#     write(pos_file, pos)
-#     write(vel_file, vel)
-# end
-
-# close(pos_file)
-# close(vel_file)
-#
-# println("Done all")
 
 ### ============== ### ============== ### ============== ###
