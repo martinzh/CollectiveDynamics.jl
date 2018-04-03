@@ -1,6 +1,7 @@
 using Plots, Polynomials, LaTeXStrings
 using Plots, LaTeXStrings
 using PyPlot
+using Plots
 ### ================================== ###
 
 function get_times(Ti, Tf)
@@ -107,6 +108,9 @@ o = plot(x, y, z, leg = false, size = (800,800))
 folder = "NLOC_T_MET_3D"
 folder = "NLOC_T_TOP_3D"
 
+folder = "NLOC_MET_3D_EXT"
+folder = "NLOC_TOP_3D_EXT"
+
 folder_path = "$(homedir())/art_DATA/$(folder)/DATA/data_N_$(N)"
 folder_path = "$(homedir())/art_DATA/$(folder)/EXP/exp_data_N_$(N)"
 folder_path = "$(homedir())/art_DATA/$(folder)/EXP_N/exp_data_N_$(N)"
@@ -192,10 +196,27 @@ for i in sortperm(vals)
 
 end
 
-first(vals[i]) for i in length(vals)
+# for v_k in unique(k)
+v_k = 0.75
+plot(times, orders[:, find(x-> first(x) == v_k, vals)], xscale = :log10, leg = false)
+# end
 
-plt[:plot](times, orders)
-plt[:xscale]("log")
+k = [first(vals[i]) for i in sortperm(vals)]
+
+n_trans = plot()
+
+for v_k in unique(k)
+
+    plot(times, orders[:, find(x-> first(x) == v_k, vals)], xscale = :log10, leg = false)
+    e = [last(vals[i]) for i in find(x-> first(x) == v_k, vals)]
+
+    psi = [mean(orders[end-tc:end, i]) for i in find(x-> first(x) == v_k, vals)]
+
+    plot!(n_trans, e, psi, m= :o, lab = v_k)
+
+end
+
+n_trans
 
 pyplot()
 
