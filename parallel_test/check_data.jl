@@ -163,6 +163,9 @@ vals = [ parse(Float64, match(r"^\w+_(\d+\.\d+)", x).captures[1]) for x in order
 
 vals = [ (parse(Float64, match(r"^\w+_(\d+\.\d+)_\w+_(\d+\.\d+)", x).captures[1]), parse(Float64, match(r"^\w+_(\d+\.\d+)_\w+_(\d+\.\d+)", x).captures[2]))  for x in order_files ]
 
+# k, w, e
+vals = [ (parse(Float64, match(r"^\w+_(\d+\.\d+)_\w+_(\d+\.\d+)_\w+_(\d+\.\d+)", x).captures[1]), parse(Float64, match(r"^\w+_(\d+\.\d+)_\w+_(\d+\.\d+)_\w+_(\d+\.\d+)", x).captures[2]), parse(Float64, match(r"^\w+_(\d+\.\d+)_\w+_(\d+\.\d+)_\w+_(\d+\.\d+)", x).captures[3]))  for x in order_files ]
+
 # para TFLOCK
 vals = [ parse(Float64, match(r"(\d\.\d+)\.\w+$", x).captures[1]) for x in order_files ]
 
@@ -188,6 +191,11 @@ for i in sortperm(vals)
     nn_means[:, i] = mean(nn_data, 2)
 
 end
+
+first(vals[i]) for i in length(vals)
+
+plt[:plot](times, orders)
+plt[:xscale]("log")
 
 pyplot()
 
