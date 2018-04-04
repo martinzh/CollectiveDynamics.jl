@@ -193,7 +193,6 @@ for i in sortperm(vals)
     std_means[:, i] = std(exp_data, 2)
     orders[:, i] = mean(order_data, 2)
     nn_means[:, i] = mean(nn_data, 2)
-
 end
 
 # for v_k in unique(k)
