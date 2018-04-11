@@ -193,7 +193,7 @@ end
 
             # rot_ang = acos(signal_angle) + η * (2.0 * rand() * pi - pi)
 
-            q_r = qrotation(cross(p_vel, signal),  acos(signal_angle) + η * (2.0 * rand() * pi - pi)) * Quaternion(vel[i])
+            q_r = qrotation(cross(p_vel, signal),  acos(signal_angle) + η * (2.0 * rand() * pi - pi)) * Quaternion(p_vel)
 
             # if rot_ang < θ
             #     q_r = qrotation(cross(p_vel, signal),  rot_ang) * Quaternion(p_vel)
@@ -222,7 +222,7 @@ end
             # signal_angle = ifelse( signal_angle > 1, 1, signal_angle)
 
             # q_r = qrotation( cross(vel[i], noise), η * acos(signal_angle) ) * Quaternion(vel[i])
-            q_r = qrotation(cross(p_vel, noise),  η * (2.0 * rand() * pi - pi)) * Quaternion(vel[i])
+            q_r = qrotation(cross(p_vel, noise),  η * (2.0 * rand() * pi - pi)) * Quaternion(p_vel)
 
             # pos[3i+1] += v0 * p_vel[1]
             # pos[3i+2] += v0 * p_vel[2]
