@@ -24,6 +24,8 @@ v0 = 1.0
 folder = "NLOC_DATA"
 folder = "NLOC_DATA_3D"
 
+folder = "COUZIN_3D"
+
 folder = "NLOC_MET_2D"
 folder = "NLOC_TOP_2D"
 
@@ -41,7 +43,7 @@ folder_path = "$(homedir())/art_DATA/$(folder)/DATA/data_N_$(N)/eta_1.5"
 
 eta_folders = readdir(folder_path)
 
-f = 3
+f = 7
 data_path = folder_path * "/" * eta_folders[f]
 
 reps = [match(r"\w+(\d+).\w+", x).captures[1]  for x in filter(x -> ismatch(r"^pos_", x), readdir(data_path))]
@@ -145,6 +147,10 @@ ax[:set_xlabel](L"\mathrm{x \times 10^4}", labelpad =-8, fontsize = fs)
 ax[:set_ylabel](L"\mathrm{y \times 10^4}", labelpad =-8, fontsize = fs)
 ax[:set_zlabel](L"\mathrm{z \times 10^4}", labelpad =-8, fontsize = fs)
 
+ax[:set_xlabel](L"\mathrm{x \times 10^3}", labelpad =-3, fontsize = fs)
+ax[:set_ylabel](L"\mathrm{y \times 10^3}", labelpad =-3, fontsize = fs)
+ax[:set_zlabel](L"\mathrm{z \times 10^3}", labelpad =-3, fontsize = fs)
+
 ax[:set_xlabel](L"\mathrm{x \times 10^3}", labelpad =-8, fontsize = fs)
 ax[:set_ylabel](L"\mathrm{y \times 10^3}", labelpad =-8, fontsize = fs)
 ax[:set_zlabel](L"\mathrm{z \times 10^3}", labelpad =-8, fontsize = fs)
@@ -155,17 +161,18 @@ ax[:set_ylabel](L"\mathrm{y \times 10^4}", labelpad = 2, fontsize = fs)
 ax[:relim]()
 ax[:autoscale_view](tight = true)
 
-fig[:subplots_adjust](top=1.1)
-fig[:subplots_adjust](bottom=0)
+fig[:subplots_adjust](top=1.0)
+fig[:subplots_adjust](bottom=0.1)
 fig[:subplots_adjust](right=0.9)
 fig[:subplots_adjust](left=0)
 
 ax[:elev] = 16
 ax[:azim] = -45
+ax[:azim] = -180
 
 ###==============###==============###==============###
 
-plt[:tick_params](which = "both", labelsize = ls, direction = "in", pad = -3)
+plt[:tick_params](which = "both", labelsize = ls, direction = "in", pad = -1)
 plt[:tick_params](which = "both", labelsize = ls, direction = "in", pad = 2)
 
 ### K = 0
@@ -173,6 +180,15 @@ plt[:tick_params](which = "both", labelsize = ls, direction = "in", pad = 2)
 ax[:set_xticks](collect(linspace(-15exp10(4),0, 4)))
 ax[:set_yticks](collect(linspace(-2exp10(4),8exp10(4), 6)))
 ax[:set_zticks](collect(linspace(-3exp10(3),0,4)))
+
+ax[:set_xticklabels](collect(-10:2.5:10))
+ax[:set_yticklabels](collect(-10:2.5:10))
+ax[:set_zticklabels](collect(-7.5:2.5:7.5))
+
+ax[:set_xticklabels](collect(-7.5:2.5:10))
+ax[:set_yticklabels](collect(-10:2.5:7.5))
+ax[:set_yticklabels](collect(-6:2:8))
+ax[:set_zticklabels](collect(-8:2:8))
 
 ax[:set_xticklabels](collect(-15:5:0))
 ax[:set_yticklabels](collect(-2:2:8))
@@ -296,6 +312,28 @@ fig[:savefig]("3D_top_k_001.png", format = "png", bbox_inches = "tight")
 fig[:savefig]("3D_top_k_01_r8.eps", format = "eps", bbox_inches = "tight")
 fig[:savefig]("3D_top_k_01.png", format = "png", bbox_inches = "tight")
 
+fig[:savefig]("couzin_test.eps", format = "eps", bbox_inches = "tight")
+
+fig[:savefig]("couzin_o_0.15_a_0.15.eps", format = "eps", bbox_inches = "tight")
+fig[:savefig]("couzin_o_0.15_a_0.15.png", format = "png", bbox_inches = "tight")
+
+fig[:savefig]("couzin_o_0.5_a_0.65.eps", format = "eps", bbox_inches = "tight")
+fig[:savefig]("couzin_o_0.5_a_0.65.png", format = "png", bbox_inches = "tight")
+
+fig[:savefig]("couzin_o_0.5_a_0.75.eps", format = "eps", bbox_inches = "tight")
+fig[:savefig]("couzin_o_0.5_a_0.75.png", format = "png", bbox_inches = "tight")
+
+fig[:savefig]("couzin_o_1.0_a_1.0.eps", format = "eps", bbox_inches = "tight")
+fig[:savefig]("couzin_o_1.0_a_1.0.png", format = "png", bbox_inches = "tight")
+
+fig[:savefig]("couzin_o_1.5_a_1.5.eps", format = "eps", bbox_inches = "tight")
+fig[:savefig]("couzin_o_1.5_a_1.5.png", format = "png", bbox_inches = "tight")
+
+fig[:savefig]("couzin_o_1.5_a_0.65.eps", format = "eps", bbox_inches = "tight")
+fig[:savefig]("couzin_o_1.5_a_0.65.png", format = "png", bbox_inches = "tight")
+
+fig[:savefig]("couzin_o_2.0_a_1.25.eps", format = "eps", bbox_inches = "tight")
+fig[:savefig]("couzin_o_2.0_a_1.25.png", format = "png", bbox_inches = "tight")
 ###==============###==============###==============###
 
 

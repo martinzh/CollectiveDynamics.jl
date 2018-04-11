@@ -175,6 +175,11 @@ vals = [ parse(Float64, match(r"(\d\.\d+)\.\w+$", x).captures[1]) for x in order
 
 
 ### ================================== ###
+raw_data = reinterpret(Float64, read(folder_path * "/" * order_files[1]))
+length(raw_data)
+div(length(raw_data), length(times))
+
+### ================================== ###
 # i = 3
 for i in sortperm(vals)
 
@@ -196,7 +201,7 @@ for i in sortperm(vals)
 end
 
 # for v_k in unique(k)
-v_k = 0.75
+v_k = 0.5
 plot(times, orders[:, find(x-> first(x) == v_k, vals)], xscale = :log10, leg = false)
 # end
 
@@ -206,13 +211,12 @@ n_trans = plot()
 
 for v_k in unique(k)
 
-    plot(times, orders[:, find(x-> first(x) == v_k, vals)], xscale = :log10, leg = false)
+    # plot(times, orders[:, find(x-> first(x) == v_k, vals)], xscale = :log10, leg = false)
     e = [last(vals[i]) for i in find(x-> first(x) == v_k, vals)]
 
     psi = [mean(orders[end-tc:end, i]) for i in find(x-> first(x) == v_k, vals)]
 
     plot!(n_trans, e, psi, m= :o, lab = v_k)
-
 end
 
 n_trans
@@ -239,9 +243,9 @@ for i in 1:length(orders[end,:])
     p[i] = orders[end,:][i]
 end
 
-Plots.scalefontsizes(1.5)
+Plots.scalefontsizes(0.85)
 
-font = Plots.font("Helvetica", 9)
+font = Plots.font("Helvetica", 11)
 pyplot(xtickfont = font, ytickfont = font)
 heatmap(unique(o),unique(a), p, aspect_ratio = 1, xrotation = 90, colorbar_title = L"\Psi")
 xticks!(unique(o))
@@ -249,6 +253,8 @@ yticks!(unique(a))
 
 xlabel!(L"\frac{\Delta r_o}{L_o}")
 ylabel!(L"\frac{\Delta r_a}{L_o}")
+
+savefig("fase_couzin_random.eps")
 
 png("fase_couzin_random")
 png("fase_couzin_aligned")

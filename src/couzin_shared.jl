@@ -191,16 +191,16 @@ end
             signal_angle = ifelse( signal_angle < -1, -1, signal_angle)
             signal_angle = ifelse( signal_angle > 1, 1, signal_angle)
 
-            rot_ang = acos(signal_angle) + η * (2.0 * rand() * pi - pi)
+            # rot_ang = acos(signal_angle) + η * (2.0 * rand() * pi - pi)
 
-            # q_r = qrotation(cross(vel[i], v_r[i]),  rot_ang) * Quaternion(vel[i])
+            q_r = qrotation(cross(p_vel, signal),  acos(signal_angle) + η * (2.0 * rand() * pi - pi)) * Quaternion(vel[i])
 
-            if rot_ang < θ
-                q_r = qrotation(cross(p_vel, signal),  rot_ang) * Quaternion(p_vel)
-            else
-                # q_r = qrotation(cross(vel[i], v_r[i]), θ + η * (2.0 * rand() * pi - pi)) * Quaternion(vel[i])
-                q_r = qrotation(cross(p_vel, signal), θ) * Quaternion(vel[i])
-            end
+            # if rot_ang < θ
+            #     q_r = qrotation(cross(p_vel, signal),  rot_ang) * Quaternion(p_vel)
+            # else
+            #     # q_r = qrotation(cross(vel[i], v_r[i]), θ + η * (2.0 * rand() * pi - pi)) * Quaternion(vel[i])
+            #     q_r = qrotation(cross(p_vel, signal), θ) * Quaternion(vel[i])
+            # end
 
             u_vel = normalize([q_r.v1, q_r.v2, q_r.v3])
 
@@ -214,18 +214,29 @@ end
 
         else
 
-            # noise = randn(3)
-            #
+            noise = randn(3)
+
             # signal_angle = dot(noise, vel[i]) / (norm(noise)*norm(vel[i]))
             #
             # signal_angle = ifelse( signal_angle < -1, -1, signal_angle)
             # signal_angle = ifelse( signal_angle > 1, 1, signal_angle)
-            #
-            # q_r = qrotation( cross(vel[i], noise), η * acos(signal_angle) ) * Quaternion(vel[i])
 
-            pos[3i+1] += v0 * p_vel[1]
-            pos[3i+2] += v0 * p_vel[2]
-            pos[3i+3] += v0 * p_vel[3]
+            # q_r = qrotation( cross(vel[i], noise), η * acos(signal_angle) ) * Quaternion(vel[i])
+            q_r = qrotation(cross(p_vel, noise),  η * (2.0 * rand() * pi - pi)) * Quaternion(vel[i])
+
+            # pos[3i+1] += v0 * p_vel[1]
+            # pos[3i+2] += v0 * p_vel[2]
+            # pos[3i+3] += v0 * p_vel[3]
+
+            u_vel = normalize([q_r.v1, q_r.v2, q_r.v3])
+
+            vel[3i+1] = u_vel[1]
+            vel[3i+2] = u_vel[2]
+            vel[3i+3] = u_vel[3]
+
+            pos[3i+1] += v0 * u_vel[1]
+            pos[3i+2] += v0 * u_vel[2]
+            pos[3i+3] += v0 * u_vel[3]
 
         end
 

@@ -254,10 +254,10 @@ function update_particles(pos::SharedArray,vel::SharedArray,v_r::SharedArray,v_n
 
             noise = randn(3)
 
-            signal_angle = dot(noise, p_vel) / (norm(noise)*norm(p_vel))
-
-            signal_angle = ifelse( signal_angle < -1, -1, signal_angle)
-            signal_angle = ifelse( signal_angle > 1, 1, signal_angle)
+            # signal_angle = dot(noise, p_vel) / (norm(noise)*norm(p_vel))
+            #
+            # signal_angle = ifelse( signal_angle < -1, -1, signal_angle)
+            # signal_angle = ifelse( signal_angle > 1, 1, signal_angle)
 
             # q_r = qrotation( cross(p_vel, noise), η * acos(signal_angle) ) * Quaternion(p_vel)
             # q_r = qrotation(cross(p_vel, noise), acos(signal_angle) + η * (2.0 * rand() * pi - pi)) * Quaternion(p_vel)

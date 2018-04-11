@@ -50,9 +50,11 @@ folder = "NLOC_DATA_3D"
 
 folder = "NLOC_MET_2D"
 folder = "NLOC_MET_3D"
+folder = "NLOC_MET_3D_EXT"
 
 folder = "NLOC_TOP_2D"
 folder = "NLOC_TOP_3D"
+folder = "NLOC_TOP_3D_EXT"
 
 folder = "NLOC_TOP_3D_MEAN"
 
@@ -63,6 +65,7 @@ folder = "SVM_GRID_FN_3D"
 folder = "SVM_GRID_FN_2D"
 
 folder_path = "$(homedir())/art_DATA/$(folder)/EXP/exp_data_N_$(N)"
+folder_path = "$(homedir())/art_DATA/$(folder)/EXP_N/exp_data_N_$(N)"
 folder_path = "$(homedir())/art_DATA/$(folder)/DATA/data_N_$(N)"
 
 # eta_folders = readdir(folder_path)
@@ -89,6 +92,9 @@ vals = [ parse(Float64, match(r"^\w+_(\d+\.\d+)", x).captures[1]) for x in order
 
 # para TFLOCK
 vals = [ parse(Float64, match(r"(\d\.\d+)\.\w+$", x).captures[1]) for x in order_files ]
+
+# k, w, e
+vals = [ (parse(Float64, match(r"^\w+_(\d+\.\d+)_\w+_(\d+\.\d+)_\w+_(\d+\.\d+)", x).captures[1]), parse(Float64, match(r"^\w+_(\d+\.\d+)_\w+_(\d+\.\d+)_\w+_(\d+\.\d+)", x).captures[2]), parse(Float64, match(r"^\w+_(\d+\.\d+)_\w+_(\d+\.\d+)_\w+_(\d+\.\d+)", x).captures[3]))  for x in order_files ]
 
 # 1,2,3,6
 # [order_files[i] for i in [4,5,7,10,13,15]]
@@ -209,12 +215,47 @@ ls = 10
 fig = plt[:figure](num = 1, dpi = 300, facecolor="w", edgecolor="k")
 fig[:set_size_inches](2.4, 1.92, forward = true)
 fig[:set_size_inches](2, 2, forward = true)
+fig[:set_size_inches](4, 4, forward = true)
 
 ax = fig[:add_subplot](111)
+ax[:set_aspect]("equal")
+###==============###==============###==============###
+tc = 100
+k = [first(vals[i]) for i in sortperm(vals)]
+
+unique(k)
+
+for i in 1:length(unique(k))
+    e = [last(vals[i]) for i in find(x-> first(x) == unique(k)[i], vals)]
+    psi = [mean(orders[end-tc:end, i]) for i in find(x-> first(x) == unique(k)[i], vals)]
+
+    if i == 1 ax[:plot](e, psi, "-o", ms = 2, lw = 0.5, label = unique(k)[i]) end
+    if i == 2 ax[:plot](e, psi, "-^", ms = 2, lw = 0.5, label = unique(k)[i]) end
+    if i == 3 ax[:plot](e, psi, "-v", ms = 2, lw = 0.5, label = unique(k)[i]) end
+end
+
+plt[:xticks](collect(0.0:0.25:1.0))
+plt[:yticks](collect(0.0:0.5:1.0))
+
+plt[:tick_params](which = "both", labelsize = ls, direction = "in", pad = 4)
+ax[:text](-0.17, 1.15, L"\Psi(\eta)", ha="center", va="center", size=fs)
+ax[:text](1.11, -0.125, L"\eta", ha="center", va="center", size=fs)
+
+plt[:legend](bbox_to_anchor=(0., 1.1, 1., .102), loc=2, ncol=3, mode="expand", borderaxespad=0., fontsize = 7.5)
+plt[:legend](bbox_to_anchor=(0., 1.1, 1., .102), loc=2, ncol=3, mode="expand", borderaxespad=0., fontsize = 6.2)
+
+plt[:tight_layout]()
+
+fig[:savefig]("order_eta_met.eps", dpi = 300, format = "eps", bbox_inches = "tight" , pad_inches = 0.1)
+fig[:savefig]("order_eta_met.png", dpi = 300, format = "png", bbox_inches = "tight" , pad_inches = 0.1)
+
+fig[:savefig]("order_eta_top.eps", dpi = 300, format = "eps", bbox_inches = "tight" , pad_inches = 0.1)
+fig[:savefig]("order_eta_top.png", dpi = 300, format = "png", bbox_inches = "tight" , pad_inches = 0.1)
 
 ###==============###==============###==============###
 
 plt[:clf]()
+
 
 ###==============###==============###==============###
 ax = fig[:add_subplot](111)
