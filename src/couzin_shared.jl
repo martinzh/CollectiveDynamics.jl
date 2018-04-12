@@ -170,6 +170,87 @@ end
 
 end
 
+### ============ COMPUTE INTERACTIONS (OPTIMIZE TEST)============ ###
+
+@everywhere function compute_interactions_opt(v_r::SharedArray, pos::SharedArray, vel::SharedArray, Rij::SharedArray, N::Int64, zor::Float64, zoo::Float64, zoa::Float64)
+
+    F_Rij = Symmetric(Rij, :L)
+
+    for id in first(localindexes(pos)):3:last(localindexes(pos))
+
+        i = div(id,3)
+        i_st = (i*N) # posicion inicial de la columna de distancias de la part i
+        # println(i)
+
+        v_rep = zeros(Float64, 3) # auxiliar repulsion interaction vector
+        v_o = zeros(Float64, 3) # auxiliar orientation interaction vector
+        v_a = zeros(Float64, 3) # auxiliar attraction interaction vector
+
+        k_int = zeros(Int, 3) # number of neighbors
+
+        v_r[3i+1] = 0.0
+        v_r[3i+2] = 0.0
+        v_r[3i+3] = 0.0
+
+        for j in 1:N
+
+            rij = F_Rij[i_st + j]
+
+            if rij > 0.0 && rij <= zor
+                v_rep[1] -= pos[3(j-1)+1] - pos[3i+1] / rij
+                v_rep[2] -= pos[3(j-1)+2] - pos[3i+2] / rij
+                v_rep[3] -= pos[3(j-1)+3] - pos[3i+3] / rij
+                k_int[1] += 1
+            else
+                if rij < zoo
+                    v_o[1] += vel[3(j-1)+1]
+                    v_o[2] += vel[3(j-1)+2]
+                    v_o[3] += vel[3(j-1)+3]
+                    k_int[2] += 1
+                elseif rij < zoa
+                    v_a[1] += pos[3(j-1)+1] - pos[3i+1] / rij
+                    v_a[2] += pos[3(j-1)+2] - pos[3i+2] / rij
+                    v_a[3] += pos[3(j-1)+3] - pos[3i+3] / rij
+                    k_int[3] += 1
+                end
+            end
+
+        end
+
+        if k_int[1] > 0
+
+            v_r[3i+1] = v_rep[1]
+            v_r[3i+2] = v_rep[2]
+            v_r[3i+3] = v_rep[3]
+
+        else
+
+            if k_int[2] > 0 && k_int[3] > 0
+
+                v_r[3i+1] = 0.5 * (v_o[1] + v_a[1])
+                v_r[3i+2] = 0.5 * (v_o[2] + v_a[2])
+                v_r[3i+3] = 0.5 * (v_o[3] + v_a[3])
+
+            elseif k_int[2] > 0
+
+                v_r[3i+1] = v_o[1]
+                v_r[3i+2] = v_o[2]
+                v_r[3i+3] = v_o[3]
+
+            elseif k_int[3] > 0
+
+                v_r[3i+1] = v_a[1]
+                v_r[3i+2] = v_a[2]
+                v_r[3i+3] = v_a[3]
+
+            end
+
+        end
+
+    end
+
+end
+
 ### ============ UPDATE PARTICLE'S POSITIONS AND VELOCITIES ============ ###
 
 @everywhere function update_particles(v_r::SharedArray, pos::SharedArray, vel::SharedArray, η::Float64, θ::Float64, v0::Float64)
@@ -191,9 +272,9 @@ end
             signal_angle = ifelse( signal_angle < -1, -1, signal_angle)
             signal_angle = ifelse( signal_angle > 1, 1, signal_angle)
 
-            # rot_ang = acos(signal_angle) + η * (2.0 * rand() * pi - pi)
-
             q_r = qrotation(cross(p_vel, signal),  acos(signal_angle) + η * (2.0 * rand() * pi - pi)) * Quaternion(p_vel)
+
+            # rot_ang = acos(signal_angle) + η * (2.0 * rand() * pi - pi)
 
             # if rot_ang < θ
             #     q_r = qrotation(cross(p_vel, signal),  rot_ang) * Quaternion(p_vel)
@@ -216,17 +297,7 @@ end
 
             noise = randn(3)
 
-            # signal_angle = dot(noise, vel[i]) / (norm(noise)*norm(vel[i]))
-            #
-            # signal_angle = ifelse( signal_angle < -1, -1, signal_angle)
-            # signal_angle = ifelse( signal_angle > 1, 1, signal_angle)
-
-            # q_r = qrotation( cross(vel[i], noise), η * acos(signal_angle) ) * Quaternion(vel[i])
             q_r = qrotation(cross(p_vel, noise),  η * (2.0 * rand() * pi - pi)) * Quaternion(p_vel)
-
-            # pos[3i+1] += v0 * p_vel[1]
-            # pos[3i+2] += v0 * p_vel[2]
-            # pos[3i+3] += v0 * p_vel[3]
 
             u_vel = normalize([q_r.v1, q_r.v2, q_r.v3])
 
@@ -256,7 +327,8 @@ function evolve_system(pos::SharedArray, vel::SharedArray, v_r::SharedArray, R_i
 
     @sync begin
         for p in workers()
-            @async remotecall_wait(compute_interactions, p, v_r, pos, vel, R_ij, N, zor, zoo, zoa)
+            # @async remotecall_wait(compute_interactions, p, v_r, pos, vel, R_ij, N, zor, zoo, zoa)
+            @async remotecall_wait(compute_interactions_opt, p, v_r, pos, vel, R_ij, N, zor, zoo, zoa)
         end
     end
 
