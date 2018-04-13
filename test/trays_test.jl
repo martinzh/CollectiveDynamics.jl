@@ -25,6 +25,7 @@ folder = "NLOC_DATA"
 folder = "NLOC_DATA_3D"
 
 folder = "COUZIN_3D"
+folder = "COUZIN_3D_TEST"
 
 folder = "NLOC_MET_2D"
 folder = "NLOC_TOP_2D"
@@ -43,7 +44,7 @@ folder_path = "$(homedir())/art_DATA/$(folder)/DATA/data_N_$(N)/eta_1.5"
 
 eta_folders = readdir(folder_path)
 
-f = 7
+f = 3
 data_path = folder_path * "/" * eta_folders[f]
 
 reps = [match(r"\w+(\d+).\w+", x).captures[1]  for x in filter(x -> ismatch(r"^pos_", x), readdir(data_path))]

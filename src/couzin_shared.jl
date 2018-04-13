@@ -176,6 +176,7 @@ end
 
     F_Rij = Symmetric(Rij, :L)
 
+
     for id in first(localindexes(pos)):3:last(localindexes(pos))
 
         i = div(id,3)
@@ -265,7 +266,7 @@ end
         signal = [v_r[3i+1],v_r[3i+2],v_r[3i+3]]
         p_vel = [vel[3i+1],vel[3i+2],vel[3i+3]]
 
-        if norm(signal) > 0.0
+        if norm(signal) > zero(Float64)
 
             signal_angle = dot(p_vel, signal) / (norm(signal)*norm(p_vel))
 
@@ -283,38 +284,23 @@ end
             #     q_r = qrotation(cross(p_vel, signal), θ) * Quaternion(vel[i])
             # end
 
-            u_vel = normalize([q_r.v1, q_r.v2, q_r.v3])
-
-            vel[3i+1] = u_vel[1]
-            vel[3i+2] = u_vel[2]
-            vel[3i+3] = u_vel[3]
-
-            pos[3i+1] += v0 * u_vel[1]
-            pos[3i+2] += v0 * u_vel[2]
-            pos[3i+3] += v0 * u_vel[3]
-
         else
 
             noise = randn(3)
 
             q_r = qrotation(cross(p_vel, noise),  η * (2.0 * rand() * pi - pi)) * Quaternion(p_vel)
 
-            u_vel = normalize([q_r.v1, q_r.v2, q_r.v3])
-
-            vel[3i+1] = u_vel[1]
-            vel[3i+2] = u_vel[2]
-            vel[3i+3] = u_vel[3]
-
-            pos[3i+1] += v0 * u_vel[1]
-            pos[3i+2] += v0 * u_vel[2]
-            pos[3i+3] += v0 * u_vel[3]
-
         end
 
-        # u_vel = normalize([q_r.v1, q_r.v2, q_r.v3])
-        #
-        # vel[i] = u_vel
-        # pos[i] += v0 * u_vel
+        u_vel = normalize([q_r.v1, q_r.v2, q_r.v3])
+
+        vel[3i+1] = u_vel[1]
+        vel[3i+2] = u_vel[2]
+        vel[3i+3] = u_vel[3]
+
+        pos[3i+1] += v0 * u_vel[1]
+        pos[3i+2] += v0 * u_vel[2]
+        pos[3i+3] += v0 * u_vel[3]
 
     end
 end
