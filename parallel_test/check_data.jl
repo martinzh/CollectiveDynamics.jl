@@ -67,6 +67,7 @@ folder = "NLOC_P_TOP_3D"
 
 folder = "COUZIN_3D"
 folder = "COUZIN_3D_VAL"
+folder = "COUZIN_3D_TEST"
 
 folder_path = "$(homedir())/art_DATA/$(folder)/DATA/data_N_$(N)"
 folder_path = "$(homedir())/art_DATA/$(folder)/EXP_N/exp_data_N_$(N)"
@@ -75,13 +76,13 @@ eta_folders = readdir(folder_path)
 
 readdir(joinpath(folder_path,eta_folders[11]))
 
-f = 1
+f = 9
 data_path = folder_path * "/" * eta_folders[f]
 
 reps = [match(r"\w+(\d+).\w+", x).captures[1]  for x in filter(x -> ismatch(r"^pos_", x), readdir(data_path))]
 
 # r = rand(reps)
-r = 3
+r = 2
 
 raw_data = reinterpret(Float64, read(data_path * "/pos_$(r).dat"))
 raw_data = reinterpret(Float64, read(joinpath(folder_path,eta_folders[9],"pos_$(r).dat")))

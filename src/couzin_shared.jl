@@ -176,7 +176,6 @@ end
 
     F_Rij = Symmetric(Rij, :L)
 
-
     for id in first(localindexes(pos)):3:last(localindexes(pos))
 
         i = div(id,3)
@@ -184,8 +183,8 @@ end
         # println(i)
 
         v_rep = zeros(Float64, 3) # auxiliar repulsion interaction vector
-        v_o = zeros(Float64, 3) # auxiliar orientation interaction vector
-        v_a = zeros(Float64, 3) # auxiliar attraction interaction vector
+        v_o   = zeros(Float64, 3) # auxiliar orientation interaction vector
+        v_a   = zeros(Float64, 3) # auxiliar attraction interaction vector
 
         k_int = zeros(Int, 3) # number of neighbors
 
@@ -203,12 +202,12 @@ end
                 v_rep[3] -= pos[3(j-1)+3] - pos[3i+3] / rij
                 k_int[1] += 1
             else
-                if rij < zoo
+                if rij > zor && rij < zoo
                     v_o[1] += vel[3(j-1)+1]
                     v_o[2] += vel[3(j-1)+2]
                     v_o[3] += vel[3(j-1)+3]
                     k_int[2] += 1
-                elseif rij < zoa
+                elseif rij > zoo && rij < zoa
                     v_a[1] += pos[3(j-1)+1] - pos[3i+1] / rij
                     v_a[2] += pos[3(j-1)+2] - pos[3i+2] / rij
                     v_a[3] += pos[3(j-1)+3] - pos[3i+3] / rij
@@ -288,13 +287,7 @@ end
 
             noise = randn(3)
 
-            signal_angle = dot(p_vel, noise) / (norm(noise)*norm(p_vel))
-
-            signal_angle = ifelse( signal_angle < -1, -1, signal_angle)
-            signal_angle = ifelse( signal_angle > 1, 1, signal_angle)
-
-            q_r = qrotation(cross(p_vel, noise),  acos(signal_angle) + η * (2.0 * rand() * pi - pi)) * Quaternion(p_vel)
-
+            q_r = qrotation(cross(p_vel, noise),  η * (2.0 * rand() * pi - pi)) * Quaternion(p_vel)
         end
 
         u_vel = normalize([q_r.v1, q_r.v2, q_r.v3])
@@ -344,23 +337,14 @@ end
 
 ### ============ METRIC BEHAVIORAL THRESHOLDS ============ ###
 
-# zor = ((v0 * dt) / l)^2 # zone of repulsion
-# zoo = zor + ((v0 * dt) / l)^2 # zone of orientation
-# zoa = zoo + ((v0 * dt) / l)^2 # zone of attraction
-
 n = parse(Int64, ARGS[1])
-# n = 128
 
 o = parse(Float64, ARGS[2])
 a = parse(Float64, ARGS[3])
-# o = 0.5
-# a = 0.5
 
 T = parse(Int64, ARGS[4])
-# T = 1000
 
 rep = parse(Int64, ARGS[5])
-# rep = 1
 
 init = ARGS[6] # random or aligned initial velocities
 
@@ -372,10 +356,11 @@ init = ARGS[6] # random or aligned initial velocities
 
 @everywhere L  = cbrt(N / ρ) # size of box
 
-# @everywhere zor = 1.0 # zone of repulsion
-@everywhere zor = 0.0 # zone of repulsion
+@everywhere zor = 1.0 # zone of repulsion
 @everywhere zoo = zor + Δo*L # zone of orientation
 @everywhere zoa = zoo + Δa*L # zone of attraction
+
+println("rep:\t", zor, "\torient:\t", zoo, "\tattr:\t", zoa )
 
 ### ============ SHARED ARRAY INITIALIZATION ============ ###
 
