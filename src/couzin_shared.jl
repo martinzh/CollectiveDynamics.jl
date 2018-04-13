@@ -288,7 +288,12 @@ end
 
             noise = randn(3)
 
-            q_r = qrotation(cross(p_vel, noise),  η * (2.0 * rand() * pi - pi)) * Quaternion(p_vel)
+            signal_angle = dot(p_vel, noise) / (norm(noise)*norm(p_vel))
+
+            signal_angle = ifelse( signal_angle < -1, -1, signal_angle)
+            signal_angle = ifelse( signal_angle > 1, 1, signal_angle)
+
+            q_r = qrotation(cross(p_vel, noise),  acos(signal_angle) + η * (2.0 * rand() * pi - pi)) * Quaternion(p_vel)
 
         end
 
@@ -333,6 +338,7 @@ end
 # @everywhere l = 0.5
 @everywhere v0 = 1.0 # speed
 @everywhere η = 0.15 # noise intensity
+# @everywhere η = 0.25 # noise intensity
 @everywhere θ = 40.0 # maximum turn
 @everywhere δ = 0.05 # deviation from aligned velocity
 
@@ -366,7 +372,8 @@ init = ARGS[6] # random or aligned initial velocities
 
 @everywhere L  = cbrt(N / ρ) # size of box
 
-@everywhere zor = 1.0 # zone of repulsion
+# @everywhere zor = 1.0 # zone of repulsion
+@everywhere zor = 0.0 # zone of repulsion
 @everywhere zoo = zor + Δo*L # zone of orientation
 @everywhere zoa = zoo + Δa*L # zone of attraction
 
