@@ -382,7 +382,7 @@ output_path = ""
 
 if init_e == "R"
 
-    output_path = set_output_data_structure_lnl("COUZIN_3D", N, ARGS[2], ARGS[3])
+    output_path = set_output_data_structure_lnl("COUZIN_3D_TEST", N, ARGS[2], ARGS[3])
     println(output_path)
 
     ### ============ RANDOM INITIAL CONDITIONS ============ ###
