@@ -372,8 +372,8 @@ init = ARGS[6] # random or aligned initial velocities
 
 @everywhere L  = cbrt(N / ρ) # size of box
 
-@everywhere zor = 1.0 # zone of repulsion
-# @everywhere zor = 0.0 # zone of repulsion
+# @everywhere zor = 1.0 # zone of repulsion
+@everywhere zor = 0.0 # zone of repulsion
 @everywhere zoo = zor + Δo*L # zone of orientation
 @everywhere zoa = zoo + Δa*L # zone of attraction
 
