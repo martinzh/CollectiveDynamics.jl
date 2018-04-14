@@ -84,39 +84,18 @@ end
         v_r[3i+2] = 0.0
         v_r[3i+3] = 0.0
 
-        # repel_neighbors = find( x-> x > 0.0 && x <= zor, F_Rij[:, i])
-        # repel_neighbors = find( x-> x > 0.0 && x <= zor, Symmetric(Rij,:L)[(i*N)+1:(i+1)*N])
         repel_neighbors = find( x-> x > 0.0 && x <= zor, F_Rij[(i*N)+1:(i+1)*N])
 
         if length(repel_neighbors) > 0
 
             for j in repel_neighbors
-                # v_r[3i+1] -= pos[3(j-1)+1] - pos[3i+1] / Symmetric(Rij,:L)[j,i]
-                # v_r[3i+2] -= pos[3(j-1)+2] - pos[3i+2] / Symmetric(Rij,:L)[j,i]
-                # v_r[3i+3] -= pos[3(j-1)+3] - pos[3i+3] / Symmetric(Rij,:L)[j,i]
-
-                # v_r[3i+1] -= pos[3(j-1)+1] - pos[3i+1] / Symmetric(Rij,:L)[(i*N) + j]
-                # v_r[3i+2] -= pos[3(j-1)+2] - pos[3i+2] / Symmetric(Rij,:L)[(i*N) + j]
-                # v_r[3i+3] -= pos[3(j-1)+3] - pos[3i+3] / Symmetric(Rij,:L)[(i*N) + j]
 
                 v_r[3i+1] -= pos[3(j-1)+1] - pos[3i+1] / F_Rij[(i*N) + j]
                 v_r[3i+2] -= pos[3(j-1)+2] - pos[3i+2] / F_Rij[(i*N) + j]
                 v_r[3i+3] -= pos[3(j-1)+3] - pos[3i+3] / F_Rij[(i*N) + j]
-
-                # norm = sqrt((pos[3(j-1)+1] - pos[3i+1])^2 + (pos[3(j-1)+2] - pos[3i+2])^2 + (pos[3(j-1)+3] - pos[3i+3])^2)
-                #
-                # v_r[3i+1] -= (pos[3(j-1)+1] - pos[3i+1]) / norm
-                # v_r[3i+2] -= (pos[3(j-1)+2] - pos[3i+2]) / norm
-                # v_r[3i+3] -= (pos[3(j-1)+3] - pos[3i+3]) / norm
             end
 
         else
-
-            # orient_neighbors = find( x-> x > zor && x < zoo, Symmetric(Rij,:L)[:, i])
-            # atract_neighbors = find( x-> x > zoo && x < zoa, Symmetric(Rij,:L)[:, i])
-
-            # orient_neighbors = find( x-> x > zor && x < zoo, Symmetric(Rij,:L)[(i*N)+1:(i+1)*N])
-            # atract_neighbors = find( x-> x > zoo && x < zoa, Symmetric(Rij,:L)[(i*N)+1:(i+1)*N])
 
             orient_neighbors = find( x-> x > zor && x < zoo, F_Rij[(i*N)+1:(i+1)*N])
             atract_neighbors = find( x-> x > zoo && x < zoa, F_Rij[(i*N)+1:(i+1)*N])
@@ -124,34 +103,16 @@ end
             v_o = zeros(Float64, 3)
             v_a = zeros(Float64, 3)
 
-            # for j in find( x-> x > zor && x < zoo, F_Rij[(i*N)+1:(i+1)*N])
             for j in orient_neighbors
                 v_o[1] += vel[3(j-1)+1]
                 v_o[2] += vel[3(j-1)+2]
                 v_o[3] += vel[3(j-1)+3]
             end
 
-            # for j in find( x-> x > zoo && x < zoa, Symmetric(Rij,:L)[:, i])
-            # for j in find( x-> x > zoo && x < zoa, F_Rij[(i*N)+1:(i+1)*N])
             for j in atract_neighbors
-                # v_a[1] += pos[3(j-1)+1] - pos[3i+1] / Symmetric(Rij,:L)[j,i]
-                # v_a[2] += pos[3(j-1)+2] - pos[3i+2] / Symmetric(Rij,:L)[j,i]
-                # v_a[3] += pos[3(j-1)+3] - pos[3i+3] / Symmetric(Rij,:L)[j,i]
-
-                # v_a[1] += pos[3(j-1)+1] - pos[3i+1] / Symmetric(Rij,:L)[(i*N) + j]
-                # v_a[2] += pos[3(j-1)+2] - pos[3i+2] / Symmetric(Rij,:L)[(i*N) + j]
-                # v_a[3] += pos[3(j-1)+3] - pos[3i+3] / Symmetric(Rij,:L)[(i*N) + j]
-
                 v_a[1] += pos[3(j-1)+1] - pos[3i+1] / F_Rij[(i*N) + j]
                 v_a[2] += pos[3(j-1)+2] - pos[3i+2] / F_Rij[(i*N) + j]
                 v_a[3] += pos[3(j-1)+3] - pos[3i+3] / F_Rij[(i*N) + j]
-
-                # norm = sqrt((pos[3(j-1)+1] - pos[3i+1])^2 + (pos[3(j-1)+2] - pos[3i+2])^2 + (pos[3(j-1)+3] - pos[3i+3])^2)
-                #
-                # v_a[1] += (pos[3(j-1)+1] - pos[3i+1]) / norm
-                # v_a[2] += (pos[3(j-1)+2] - pos[3i+2]) / norm
-                # v_a[3] += (pos[3(j-1)+3] - pos[3i+3]) / norm
-
             end
 
             if length(atract_neighbors) > 0
@@ -172,7 +133,95 @@ end
 
 ### ============ COMPUTE INTERACTIONS (OPTIMIZE TEST)============ ###
 
-@everywhere function compute_interactions_opt(v_r::SharedArray, pos::SharedArray, vel::SharedArray, Rij::SharedArray, N::Int64, zor::Float64, zoo::Float64, zoa::Float64)
+@everywhere function compute_interactions_opt(v_int::SharedArray, v_r::SharedArray, v_o::SharedArray, v_a::SharedArray, pos::SharedArray, vel::SharedArray, Rij::SharedArray, N::Int64, zor::Float64, zoo::Float64, zoa::Float64)
+
+    F_Rij = Symmetric(Rij, :L)
+
+    for id in first(localindexes(pos)):3:last(localindexes(pos))
+
+        i = div(id,3)
+        i_st = (i*N) # posicion inicial de la columna de distancias de la part i
+        # println(i)
+
+        k_int = zeros(Int, 3) # number of neighbors
+
+        v_int[3i+1] = 0.0
+        v_int[3i+2] = 0.0
+        v_int[3i+3] = 0.0
+
+        v_r[3i+1] = 0.0
+        v_r[3i+2] = 0.0
+        v_r[3i+3] = 0.0
+
+        v_o[3i+1] = 0.0
+        v_o[3i+2] = 0.0
+        v_o[3i+3] = 0.0
+
+        v_a[3i+1] = 0.0
+        v_a[3i+2] = 0.0
+        v_a[3i+3] = 0.0
+
+        for j in 1:N
+
+            rij = F_Rij[i_st + j]
+
+            if rij > 0.0 && rij <= zor
+                v_r[3i+1] -= pos[3(j-1)+1] - pos[3i+1] / rij
+                v_r[3i+2] -= pos[3(j-1)+2] - pos[3i+2] / rij
+                v_r[3i+3] -= pos[3(j-1)+3] - pos[3i+3] / rij
+                k_int[1] += 1
+            else
+                if rij > zor && rij < zoo
+                    v_o[3i+1] += vel[3(j-1)+1]
+                    v_o[3i+2] += vel[3(j-1)+2]
+                    v_o[3i+3] += vel[3(j-1)+3]
+                    k_int[2] += 1
+                elseif rij > zoo && rij < zoa
+                    v_a[3i+1] += pos[3(j-1)+1] - pos[3i+1] / rij
+                    v_a[3i+2] += pos[3(j-1)+2] - pos[3i+2] / rij
+                    v_a[3i+3] += pos[3(j-1)+3] - pos[3i+3] / rij
+                    k_int[3] += 1
+                end
+            end
+
+        end
+
+        if k_int[1] > 0
+
+            v_int[3i+1] = v_r[3i+1]
+            v_int[3i+2] = v_r[3i+2]
+            v_int[3i+3] = v_r[3i+3]
+
+        else
+
+            if k_int[2] > 0 && k_int[3] > 0
+
+                v_int[3i+1] = 0.5 * (v_o[3i+1] + v_a[3i+1])
+                v_int[3i+2] = 0.5 * (v_o[3i+2] + v_a[3i+2])
+                v_int[3i+3] = 0.5 * (v_o[3i+3] + v_a[3i+3])
+
+            elseif k_int[2] > 0
+
+                v_int[3i+1] = v_o[3i+1]
+                v_int[3i+2] = v_o[3i+2]
+                v_int[3i+3] = v_o[3i+3]
+
+            elseif k_int[3] > 0
+
+                v_int[3i+1] = v_a[3i+1]
+                v_int[3i+2] = v_a[3i+2]
+                v_int[3i+3] = v_a[3i+3]
+
+            end
+
+        end
+
+    end
+
+end
+### ============ COMPUTE INTERACTIONS (OPTIMIZE TEST)============ ###
+
+@everywhere function compute_interactions_opt_2(v_r::SharedArray, pos::SharedArray, vel::SharedArray, Rij::SharedArray, N::Int64, zor::Float64, zoo::Float64, zoa::Float64)
 
     F_Rij = Symmetric(Rij, :L)
 
@@ -187,10 +236,6 @@ end
         v_a   = zeros(Float64, 3) # auxiliar attraction interaction vector
 
         k_int = zeros(Int, 3) # number of neighbors
-
-        v_r[3i+1] = 0.0
-        v_r[3i+2] = 0.0
-        v_r[3i+3] = 0.0
 
         for j in 1:N
 
@@ -284,9 +329,7 @@ end
             # end
 
         else
-
             noise = randn(3)
-
             q_r = qrotation(cross(p_vel, noise),  η * (2.0 * rand() * pi - pi)) * Quaternion(p_vel)
         end
 
@@ -305,20 +348,23 @@ end
 
 ### ============ SYSTEM UPDATE ============ ###
 
-function evolve_system(pos::SharedArray, vel::SharedArray, v_r::SharedArray, R_ij::SharedArray, N::Int64, zor::Float64, zoo::Float64, zoa::Float64, η::Float64, θ::Float64, v0::Float64)
+# function evolve_system(pos::SharedArray, vel::SharedArray, v_r::SharedArray, R_ij::SharedArray, N::Int64, zor::Float64, zoo::Float64, zoa::Float64, η::Float64, θ::Float64, v0::Float64)
+function evolve_system(pos::SharedArray, vel::SharedArray, v_int::SharedArray, v_r::SharedArray, v_o::SharedArray, v_a::SharedArray, R_ij::SharedArray, N::Int64, zor::Float64, zoo::Float64, zoa::Float64, η::Float64, θ::Float64, v0::Float64)
 
     calc_Rij(R_ij, pos)
 
     @sync begin
         for p in workers()
             # @async remotecall_wait(compute_interactions, p, v_r, pos, vel, R_ij, N, zor, zoo, zoa)
-            @async remotecall_wait(compute_interactions_opt, p, v_r, pos, vel, R_ij, N, zor, zoo, zoa)
+            @async remotecall_wait(compute_interactions_opt, p, v_int, v_r, v_o, v_a, pos, vel, R_ij, N, zor, zoo, zoa)
+            # @async remotecall_wait(compute_interactions_opt_2, p, v_r, pos, vel, R_ij, N, zor, zoo, zoa)
         end
     end
 
     @sync begin
         for p in workers()
-            @async remotecall_wait(update_particles, p, v_r, pos, vel, η, θ, v0)
+            # @async remotecall_wait(update_particles, p, v_r, pos, vel, η, θ, v0)
+            @async remotecall_wait(update_particles, p, v_int, pos, vel, η, θ, v0)
         end
     end
 
@@ -366,7 +412,11 @@ println("rep:\t", zor, "\torient:\t", zoo, "\tattr:\t", zoa )
 
 pos = SharedArray{Float64}(3N) # particles positions
 vel = SharedArray{Float64}(3N) # array of particles' velocities
+
+v_int = SharedArray{Float64}(3N) # local metric interactions
 v_r = SharedArray{Float64}(3N) # local metric interactions
+v_o = SharedArray{Float64}(3N) # local metric interactions
+v_a = SharedArray{Float64}(3N) # local metric interactions
 
 Rij = SharedArray{Float64}(N,N)
 
@@ -430,11 +480,8 @@ for i in 1:(length(times) - 1)
 
     for t in (times[i]+1):times[i+1]
 
-        # calc_Rij(Rij)
-        # compute_interactions(v_r, pos, vel, Symmetric(Rij, :L), zor, zoo, zoa)
-        # update_particles(v_r, pos, vel, θ, v0)
-
-        evolve_system(pos, vel, v_r, Rij, N, zor, zoo, zoa, η, θ, v0)
+        evolve_system(pos, vel, v_int, v_r, v_o, v_a, Rij, N, zor, zoo, zoa, η, θ, v0)
+        # evolve_system(pos, vel, v_r, Rij, N, zor, zoo, zoa, η, θ, v0)
 
         if t % times[i] == 0 || t % div(times[i], exp10(1)) == 0
             println("//////// ", t)
