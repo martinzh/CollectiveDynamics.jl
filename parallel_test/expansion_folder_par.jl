@@ -220,7 +220,7 @@ make_dir_from_path(output_folder_path)
 make_dir_from_path(output_folder_path * "/exp_data_N_$(N)")
 
 # params = "_k_$(k)_w_$(w)_e_$(e)"
-params = "o_$(k)_a_$(w)"
+params = "_o_$(k)_a_$(w)"
 println(params)
 
 ### ================================== ###
