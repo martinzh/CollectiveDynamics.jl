@@ -9,8 +9,8 @@
 @everywhere ρ = 0.3 # initial density
 # @everywhere l = 0.5
 @everywhere v0 = 1.0 # speed
-@everywhere η = 0.15 # noise intensity
-# @everywhere η = 0.25 # noise intensity
+# @everywhere η = 0.15 # noise intensity
+@everywhere η = 0.25 # noise intensity
 @everywhere θ = 40.0 # maximum turn
 @everywhere δ = 0.05 # deviation from aligned velocity
 
