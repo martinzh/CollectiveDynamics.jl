@@ -170,10 +170,12 @@ folder = ARGS[1]
 N = parse(Int, ARGS[2])
 k = parse(Float64, ARGS[3])
 w = parse(Float64, ARGS[4])
-e = parse(Float64, ARGS[5])
-Ti = parse(Int, ARGS[6])
-Tf = parse(Int, ARGS[7])
 # w = ARGS[4]
+# e = parse(Float64, ARGS[5])
+# Ti = parse(Int, ARGS[6])
+# Tf = parse(Int, ARGS[7])
+Ti = parse(Int, ARGS[5])
+Tf = parse(Int, ARGS[6])
 
 # folder = "NLOC_MET_3D"
 # folder = "NLOC_TOP_3D"
@@ -209,15 +211,16 @@ times = get_times(Ti, Tf)
 ### ================================== ###
 
 # data_folder_path = joinpath(homedir(),"art_DATA",folder,"DATA","data_N_$(N)","data_N_$(N)_k_$(k)_w_$(w)")
-data_folder_path = joinpath(homedir(),"art_DATA",folder,"DATA","data_N_$(N)","data_N_$(N)_k_$(k)_w_$(w)_e_$(e)")
-# data_folder_path = joinpath(homedir(),"art_DATA",folder,"DATA","data_N_$(N)","data_N_$(N)_o_$(k)_a_$(w)")
+# data_folder_path = joinpath(homedir(),"art_DATA",folder,"DATA","data_N_$(N)","data_N_$(N)_k_$(k)_w_$(w)_e_$(e)")
+data_folder_path = joinpath(homedir(),"art_DATA",folder,"DATA","data_N_$(N)","data_N_$(N)_o_$(k)_a_$(w)")
 
 output_folder_path = joinpath(homedir(),"art_DATA",folder,"EXP_N")
 
 make_dir_from_path(output_folder_path)
 make_dir_from_path(output_folder_path * "/exp_data_N_$(N)")
 
-params = "_k_$(k)_w_$(w)_e_$(e)"
+# params = "_k_$(k)_w_$(w)_e_$(e)"
+params = "o_$(k)_a_$(w)"
 println(params)
 
 ### ================================== ###
