@@ -164,6 +164,7 @@ end
         for j in 1:N
 
             rij = F_Rij[i_st + j]
+            # rij = Symmetric(Rij, :L)[i_st + j]
 
             if rij > 0.0 && rij <= zor
                 v_r[3i+1] -= pos[3(j-1)+1] - pos[3i+1] / rij
@@ -171,12 +172,12 @@ end
                 v_r[3i+3] -= pos[3(j-1)+3] - pos[3i+3] / rij
                 k_int[1] += 1
             else
-                if rij > zor && rij < zoo
+                if rij > zor && rij <= zoo
                     v_o[3i+1] += vel[3(j-1)+1]
                     v_o[3i+2] += vel[3(j-1)+2]
                     v_o[3i+3] += vel[3(j-1)+3]
                     k_int[2] += 1
-                elseif rij > zoo && rij < zoa
+                elseif rij > zoo && rij <= zoa
                     v_a[3i+1] += pos[3(j-1)+1] - pos[3i+1] / rij
                     v_a[3i+2] += pos[3(j-1)+2] - pos[3i+2] / rij
                     v_a[3i+3] += pos[3(j-1)+3] - pos[3i+3] / rij
@@ -200,13 +201,13 @@ end
                 v_int[3i+2] = 0.5 * (v_o[3i+2] + v_a[3i+2])
                 v_int[3i+3] = 0.5 * (v_o[3i+3] + v_a[3i+3])
 
-            elseif k_int[2] > 0
+            elseif k_int[2] > 0 && k_int[3] == 0
 
                 v_int[3i+1] = v_o[3i+1]
                 v_int[3i+2] = v_o[3i+2]
                 v_int[3i+3] = v_o[3i+3]
 
-            elseif k_int[3] > 0
+            elseif k_int[3] > 0 && k_int[2] == 0
 
                 v_int[3i+1] = v_a[3i+1]
                 v_int[3i+2] = v_a[3i+2]
@@ -376,8 +377,8 @@ end
 @everywhere ρ = 0.3 # initial density
 # @everywhere l = 0.5
 @everywhere v0 = 1.0 # speed
-@everywhere η = 0.15 # noise intensity
-# @everywhere η = 0.25 # noise intensity
+# @everywhere η = 0.15 # noise intensity
+@everywhere η = 0.25 # noise intensity
 @everywhere θ = 40.0 # maximum turn
 @everywhere δ = 0.05 # deviation from aligned velocity
 
@@ -402,7 +403,8 @@ init = ARGS[6] # random or aligned initial velocities
 
 @everywhere L  = cbrt(N / ρ) # size of box
 
-@everywhere zor = 1.0 # zone of repulsion
+# @everywhere zor = 1.0 # zone of repulsion
+@everywhere zor = 0.1 # zone of repulsion
 @everywhere zoo = zor + Δo*L # zone of orientation
 @everywhere zoa = zoo + Δa*L # zone of attraction
 
