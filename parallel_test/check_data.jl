@@ -77,7 +77,7 @@ eta_folders = readdir(folder_path)
 
 readdir(joinpath(folder_path,eta_folders[11]))
 
-f = 4
+f = 2
 data_path = folder_path * "/" * eta_folders[f]
 
 reps = [match(r"\w+(\d+).\w+", x).captures[1]  for x in filter(x -> ismatch(r"^pos_", x), readdir(data_path))]
@@ -104,7 +104,8 @@ z = view(pos_data, :, 3:3:3N);
 plot(x, y, z, leg = false, size = (800,800))
 o = plot(x, y, z, leg = false, size = (800,800))
 
-gui()
+pyplot()
+gui() 
 
 ### ================================== ###
 

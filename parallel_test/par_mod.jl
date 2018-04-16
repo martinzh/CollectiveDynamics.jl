@@ -289,13 +289,11 @@ function evolve_metric_system(pos::SharedArray, vel::SharedArray, v_r::SharedArr
     @sync begin
         for p in workers()
             @async remotecall_wait(compute_metric_interactions, p, vel, v_r, v_n, R_ij, N, κ_dist)
-            # @async remotecall_wait(update_particles, p, pos, vel, v_r, v_n)
         end
     end
 
     @sync begin
         for p in workers()
-            # @async remotecall_wait(compute_metric_interactions, p, vel, v_r, v_n, R_ij)
             @async remotecall_wait(update_particles, p, pos, vel, v_r, v_n, η, ω)
         end
     end
@@ -313,13 +311,11 @@ function evolve_topological_system(pos::SharedArray, vel::SharedArray, v_r::Shar
     @sync begin
         for p in workers()
             @async remotecall_wait(compute_topological_interactions, p, vel, v_r, v_n, R_ij, N, k_sh, κ_dist)
-            # @async remotecall_wait(update_particles, p, pos, vel, v_r, v_n)
         end
     end
 
     @sync begin
         for p in workers()
-            # @async remotecall_wait(compute_metric_interactions, p, vel, v_r, v_n, R_ij)
             @async remotecall_wait(update_particles, p, pos, vel, v_r, v_n, η, ω)
         end
     end

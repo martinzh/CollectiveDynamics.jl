@@ -151,6 +151,8 @@ end
 close(pos_file)
 close(vel_file)
 
+rmprocs(workers())
+
 println("Done all")
 
 ### ============== ### ============== ### ============== ###
