@@ -38,7 +38,8 @@ init = ARGS[6] # random or aligned initial velocities
 
 @everywhere L  = cbrt(N / ρ) # size of box
 
-@everywhere zor = 0.25 # zone of repulsion
+@everywhere zor = 0.1 # zone of repulsion
+# @everywhere zor = 0.25 # zone of repulsion
 # @everywhere zor = 1.0 # zone of repulsion
 @everywhere zoo = zor + Δo*L # zone of orientation
 @everywhere zoa = zoo + Δa*L # zone of attraction
@@ -61,7 +62,8 @@ output_path = ""
 
 if init_e == "R"
 
-    output_path = set_output_data_structure_lnl("COUZIN_3D_TEST", N, ARGS[2], ARGS[3])
+    # output_path = set_output_data_structure_lnl("COUZIN_3D_TEST", N, ARGS[2], ARGS[3])
+    output_path = set_output_data_structure_lnl("COUZIN_3D_LST", N, ARGS[2], ARGS[3])
     println(output_path)
 
     ### ============ RANDOM INITIAL CONDITIONS ============ ###
