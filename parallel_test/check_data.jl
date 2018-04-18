@@ -294,6 +294,31 @@ scatter3d!(collect(0.25:0.25:2.0), fill(1.0, 8), fill(1.0, 8))
 
 ### ================================== ###
 
+plt[:rc]("text", usetex=true)
+plt[:rc]("font", family="serif")
+plt[:rc]("font", serif="New Century Schoolbook")
+
+fs = 24
+ls = 14
+
+fig = plt[:figure](num = 1, dpi = 100, facecolor="w", edgecolor="k")
+fig[:set_size_inches](2.4, 1.92, forward = true)
+
+ax = fig[:add_subplot](111)
+
+plt[:clf]()
+plt[:plot](unique(a), p[9,:], "-o", ms = 6, color = "#000000")
+
+ax[:set_xlabel](L"\frac{\Delta r_o}{L_0}", labelpad = 4, fontsize = fs)
+ax[:set_ylabel](L"\Psi", labelpad =4, fontsize = fs)
+
+plt[:tick_params](which = "both", labelsize = ls, direction = "in", pad = 4)
+
+fig[:savefig]("couzin_psi_a_1.0.eps", format = "eps", bbox_inches = "tight")
+fig[:savefig]("couzin_psi_a_1.0.png", format = "png", bbox_inches = "tight")
+
+### ================================== ###
+
 o = collect(1:5)
 a = collect(1:5)
 
