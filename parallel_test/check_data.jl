@@ -1,6 +1,6 @@
 using Plots, Polynomials, LaTeXStrings
 using Plots, LaTeXStrings
-using PyPlot
+using PyPlot, LaTeXStrings
 using Plots
 ### ================================== ###
 
@@ -69,6 +69,9 @@ folder = "COUZIN_3D"
 folder = "COUZIN_3D_VAL"
 folder = "COUZIN_3D_TEST"
 folder = "COUZIN_3D_LST"
+folder = "COUZIN_3D_NS"
+folder = "COUZIN_3D_R_1_N_015"
+folder = "COUZIN_3D_R_01_N_015"
 
 folder_path = "$(homedir())/art_DATA/$(folder)/DATA/data_N_$(N)"
 folder_path = "$(homedir())/art_DATA/$(folder)/DATA_T/data_N_$(N)"
@@ -179,6 +182,9 @@ vals = [ (parse(Float64, match(r"^\w+_(\d+\.\d+)_\w+_(\d+\.\d+)_\w+_(\d+\.\d+)",
 # para TFLOCK
 vals = [ parse(Float64, match(r"(\d\.\d+)\.\w+$", x).captures[1]) for x in order_files ]
 
+for i in sortperm(vals)
+    println(vals[i])
+end
 
 ### ================================== ###
 raw_data = reinterpret(Float64, read(folder_path * "/" * order_files[1]))
@@ -189,7 +195,7 @@ div(length(raw_data), length(times))
 # i = 3
 for i in sortperm(vals)
 
-    println(i)
+    println(i,"\t",vals[i])
 
     raw_data = reinterpret(Float64, read(folder_path * "/" * exp_files[i]))
     exp_data = reshape(raw_data, length(times), div(length(raw_data), length(times)))
@@ -229,13 +235,14 @@ n_trans
 
 pyplot()
 
-tc = 50
+tc = 100
 
 o = [first(vals[i]) for i in sortperm(vals)]
 a = [last(vals[i]) for i in sortperm(vals)]
 m_ord = [mean(orders[end-tc:end, i]) for i in 1:size(orders,2)]
 
-pyplot(size = (800,600))
+up_sc = 1
+pyplot(size = (800*up_sc,600*up_sc))
 
 length(orders[end,:])
 collect(0.25:0.25:2.0)
@@ -244,31 +251,58 @@ scatter3d(o, a, orders[end,:])
 surface(o, a, p, label = "psi")
 
 p = zeros( length(unique(a)), length(unique(o)))
+# p = zeros( length(unique(a)) * length(unique(o)))
 
 for i in 1:length(orders[end,:])
-    p[i] = orders[end,:][i]
+    # p[i] = orders[end,:][i]
+    p[i] = [mean(orders[end-tc:end, i]) for i in 1:size(orders,2)][i]
 end
 
-Plots.scalefontsizes(0.85)
+Plots.scalefontsizes(0.9)
+Plots.scalefontsizes(1.2)
+Plots.scalefontsizes(1.8)
+Plots.scalefontsizes(3.0)
 
-font = Plots.font("Helvetica", 11)
-pyplot(xtickfont = font, ytickfont = font)
-heatmap(unique(o),unique(a), p, aspect_ratio = 1, xrotation = 90, colorbar_title = L"\Psi")
+font_t = Plots.font(14, "serif")
+font_l = Plots.font(14, "serif")
+
+pyplot(xtickfont = font, ytickfont = font, titlefont = font, legendfont = font, guidefont = font)
+
+heatmap(unique(o),unique(a), p, tickfont = font_t, legendfont = font_t, yguide = font_l, xguide = font_l, aspect_ratio = 1, xrotation = 90, colorbar_title = L"\Psi", xlabel = L"\frac{\Delta r_a}{L_o}", ylabel = L"\frac{\Delta r_o}{L_o}")
+
+heatmap(unique(a),unique(o), transpose(p), tickfont = font_t, legendfont = font_t, yguide = font_l, xguide = font_l, aspect_ratio = 1, xrotation = 90, colorbar_title = L"\Psi", xlabel = L"\frac{\Delta r_a}{L_o}", ylabel = L"\frac{\Delta r_o}{L_o}")
+
 xticks!(unique(o))
 yticks!(unique(a))
 
-xlabel!(L"\frac{\Delta r_o}{L_o}")
-ylabel!(L"\frac{\Delta r_a}{L_o}")
+plot(collect(1:10), sin.(collect(1:10)))
 
-savefig("fase_couzin_random.eps")
+surface(unique(o), unique(a), transpose(p))
+gui()
 
-png("fase_couzin_random")
-png("fase_couzin_aligned")
+PyPlot.savefig("couzin_r_1_n_015/fase_couzin_rep_1_noise_015.eps", format = "eps", bbox_inches = "tight")
+PyPlot.savefig("couzin_r_1_n_015/fase_couzin_rep_1_noise_015.png", format = "png", bbox_inches = "tight")
+
+PyPlot.savefig("couzin_r_01_n_015/fase_couzin_rep_01_noise_015.eps", format = "eps", bbox_inches = "tight")
+PyPlot.savefig("couzin_r_01_n_015/fase_couzin_rep_01_noise_015.png", format = "png", bbox_inches = "tight")
 
 plot(times[end-tc:end], orders[end-tc:end, :], leg = false, xscale = :log10)
+plot(times, orders, leg = false, xscale = :log10)
 
 scatter3d(fill(1.0, 8), collect(0.25:0.25:2.0), fill(1.0, 8))
 scatter3d!(collect(0.25:0.25:2.0), fill(1.0, 8), fill(1.0, 8))
+
+### ================================== ###
+
+o = collect(1:5)
+a = collect(1:5)
+
+p = zeros(25)
+
+for i in 0:4, j in 1:5
+    p[i*5+j] = i
+end
+heatmap(o, a, p, aspect_ratio = 1)
 
 ### ================================== ###
 i = 16
