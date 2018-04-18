@@ -7,10 +7,11 @@
 
 @everywhere dt = 1.0 # time step
 @everywhere ρ = 0.3 # initial density
-# @everywhere l = 0.5
+
 @everywhere v0 = 1.0 # speed
-# @everywhere η = 0.15 # noise intensity
-@everywhere η = 0.25 # noise intensity
+
+@everywhere η = 0.15 # noise intensity
+
 @everywhere θ = 40.0 # maximum turn
 @everywhere δ = 0.05 # deviation from aligned velocity
 
@@ -62,8 +63,7 @@ output_path = ""
 
 if init_e == "R"
 
-    # output_path = set_output_data_structure_lnl("COUZIN_3D_TEST", N, ARGS[2], ARGS[3])
-    output_path = set_output_data_structure_lnl("COUZIN_3D_LST", N, ARGS[2], ARGS[3])
+    output_path = set_output_data_structure_lnl("COUZIN_3D_R_01_N_015", N, ARGS[2], ARGS[3])
     println(output_path)
 
     ### ============ RANDOM INITIAL CONDITIONS ============ ###
@@ -74,7 +74,7 @@ if init_e == "R"
 
 elseif init_e == "A"
 
-    output_path = set_output_data_structure_lnl("COUZIN_3D_VAL", N, ARGS[2], ARGS[3])
+    output_path = set_output_data_structure_lnl("COUZIN_3D_R_01_N_015_AL", N, ARGS[2], ARGS[3])
     println(output_path)
 
     ### ============ RANDOM POSITIONS BUT ALIGNED VELOCITIES ============ ###

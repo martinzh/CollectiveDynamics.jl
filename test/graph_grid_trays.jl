@@ -27,13 +27,15 @@ w = ARGS[4]
 
 ### ================================== ###
 
-data_folder_path   = "$(homedir())/art_DATA/$(folder)/DATA/data_N_$(N)/data_N_$(N)_k_$(k)_w_$(w)"
+# data_folder_path   = "$(homedir())/art_DATA/$(folder)/DATA/data_N_$(N)/data_N_$(N)_k_$(k)_w_$(w)"
+data_folder_path   = "$(homedir())/art_DATA/$(folder)/DATA/data_N_$(N)/data_N_$(N)_o_$(k)_a_$(w)"
 
 output_folder_path = "$(homedir())/graphs/$(folder)"
 
 make_dir_from_path(output_folder_path)
 
-params = "_k_$(k)_w_$(w)"
+# params = "_k_$(k)_w_$(w)"
+params = "_o_$(k)_a_$(w)"
 
 reps = [match(r"\w+_(\d+).\w+", x).captures[1] for x in filter(x -> ismatch(r"pos_\d+.\w+", x), readdir(data_folder_path))]
 
