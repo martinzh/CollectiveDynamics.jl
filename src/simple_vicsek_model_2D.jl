@@ -1,7 +1,46 @@
 ### ============== ### ============== ###
-### UTILITY FUNCTIONS FOR SVM 2D
-### IN PERIODIC BOUNDARY CONDITION
+### SIMPLE VICSEK MODEL 2D
+### PERIODIC BOUNDARY CONDITION
 ### ============== ### ============== ###
+
+function set_output_data_structure_vsk(path, N, ρ)
+
+    parent_folder_path = "$(homedir())/art_DATA/$(path)"
+    folder_path        = parent_folder_path * "/DATA/data_N_$(N)"
+    reps_path          = folder_path * "/data_N_$(N)_rho_$(ρ)"
+
+    try
+        mkdir("$(homedir())/art_DATA")
+    catch error
+        println("Main data folder already exists")
+    end
+
+    try
+        mkdir(parent_folder_path)
+    catch error
+        println("Parent folder already exists")
+    end
+
+    try
+        mkdir(parent_folder_path * "/DATA")
+    catch error
+        println("Parent folder already exists")
+    end
+
+    try
+        mkdir(folder_path)
+    catch error
+        println("Folder already exists")
+    end
+
+    try
+        mkdir(reps_path)
+    catch error
+        println("Parameter folder already exists")
+    end
+
+    return reps_path
+end
 
 ### ============== ### ============== ###
 """
@@ -160,7 +199,7 @@ function assign_cell(flock, box, cell_size)
 
     box.p_per_cell = Dict{Array{Int,1}, Array{Int, 1}}()
 
-    for i in 1:N
+    for i in 1:flock.N
         flock.p_cell_id[i] = convert(Array{Int}, div.(floor.(flock.pos[i]), cell_size)) + 1
 
         haskey(box.p_per_cell, flock.p_cell_id[i]) ? push!(box.p_per_cell[flock.p_cell_id[i]], i) : box.p_per_cell[flock.p_cell_id[i]] = [i]
@@ -169,7 +208,7 @@ function assign_cell(flock, box, cell_size)
 end
 
 ### ============== ### ============== ###
-function check_bulk_cells(p_id, cell_id, p_per_cell)
+function check_bulk_cells(flock, p_id, cell_id, p_per_cell)
 
     k_t = Vector{Float64}(9)
     v_t = Vector{Vector{Float64}}(9)
@@ -191,7 +230,7 @@ function check_bulk_cells(p_id, cell_id, p_per_cell)
 end
 
 ### ============== ### ============== ###
-function check_corners(p_id, cell_id, p_per_cell, L)
+function check_corners(flock, p_id, cell_id, p_per_cell, L, M)
 
     k_t = Vector{Float64}(9)
     v_t = Vector{Vector{Float64}}(9)
@@ -235,7 +274,7 @@ function check_corners(p_id, cell_id, p_per_cell, L)
 end
 
 ### ============== ### ============== ###
-function check_bottom_cells(p_id, cell_id, p_per_cell, L)
+function check_bottom_cells(flock, p_id, cell_id, p_per_cell, L, M)
 
     k_t = Vector{Float64}(9)
     v_t = Vector{Vector{Float64}}(9)
@@ -258,7 +297,7 @@ function check_bottom_cells(p_id, cell_id, p_per_cell, L)
 end
 
 ### ============== ### ============== ###
-function check_top_cells(p_id, cell_id, p_per_cell, L)
+function check_top_cells(flock, p_id, cell_id, p_per_cell, L, M)
     k_t = Vector{Float64}(9)
     v_t = Vector{Vector{Float64}}(9)
 
@@ -280,7 +319,7 @@ function check_top_cells(p_id, cell_id, p_per_cell, L)
 end
 
 ### ============== ### ============== ###
-function check_left_cells(p_id, cell_id, p_per_cell, L)
+function check_left_cells(flock, p_id, cell_id, p_per_cell, L, M)
 
     k_t = Vector{Float64}(9)
     v_t = Vector{Vector{Float64}}(9)
@@ -303,7 +342,7 @@ function check_left_cells(p_id, cell_id, p_per_cell, L)
 end
 
 ### ============== ### ============== ###
-function check_right_cells(p_id, cell_id, p_per_cell, L)
+function check_right_cells(flock, p_id, cell_id, p_per_cell, L, M)
 
     k_t = Vector{Float64}(9)
     v_t = Vector{Vector{Float64}}(9)
@@ -330,22 +369,22 @@ end
 function get_neighbors(p_id, flock, box)
     if flock.p_cell_id[p_id] in box.bulk_cells
         # println("bulk_cells")
-        flock.v_r[p_id] = check_bulk_cells(p_id, flock.p_cell_id[p_id], box.p_per_cell)
+        flock.v_r[p_id] = check_bulk_cells(flock, p_id, flock.p_cell_id[p_id], box.p_per_cell)
     elseif flock.p_cell_id[p_id] in box.bottom_cells
         # println("bottom_cells")
-        flock.v_r[p_id] = check_bottom_cells(p_id, flock.p_cell_id[p_id], box.p_per_cell, box.L)
+        flock.v_r[p_id] = check_bottom_cells(flock, p_id, flock.p_cell_id[p_id], box.p_per_cell, box.L, box.M)
     elseif flock.p_cell_id[p_id] in box.top_cells
         # println("top_cells")
-        flock.v_r[p_id] = check_top_cells(p_id, flock.p_cell_id[p_id], box.p_per_cell, box.L)
+        flock.v_r[p_id] = check_top_cells(flock, p_id, flock.p_cell_id[p_id], box.p_per_cell, box.L, box.M)
     elseif flock.p_cell_id[p_id] in box.left_cells
         # println("left_cells")
-        flock.v_r[p_id] = check_left_cells(p_id, flock.p_cell_id[p_id], box.p_per_cell, box.L)
+        flock.v_r[p_id] = check_left_cells(flock, p_id, flock.p_cell_id[p_id], box.p_per_cell, box.L, box.M)
     elseif flock.p_cell_id[p_id] in box.right_cells
         # println("right_cells")
-        flock.v_r[p_id] = check_right_cells(p_id, flock.p_cell_id[p_id], box.p_per_cell, box.L)
+        flock.v_r[p_id] = check_right_cells(flock, p_id, flock.p_cell_id[p_id], box.p_per_cell, box.L, box.M)
     elseif flock.p_cell_id[p_id] in box.corners
         # println("corners")
-        flock.v_r[p_id] = check_corners(p_id, flock.p_cell_id[p_id], box.p_per_cell, box.L)
+        flock.v_r[p_id] = check_corners(flock, p_id, flock.p_cell_id[p_id], box.p_per_cell, box.L, box.M)
     end
 end
 
@@ -423,3 +462,29 @@ function update_part(pos, vel, v_r, η, L)
 end
 
 ### ============== ### ============== ###
+###          SYSTEM EVOLUTION         ###
+### ============== ### ============== ###
+
+function evolve_system(flock, box, cell_size)
+
+    # compute each particle cell_id and assgin particles id to each box
+    assign_cell(flock, box, cell_size)
+
+    # for i in eachindex(flock.v_r)
+    #     println(i, "\t",flock.vel[i])
+    # end
+
+    # Search interactions in adjacent cells
+    for i in eachindex(flock.pos)
+        get_neighbors(i, flock, box)
+        # println("pass")
+    end
+
+    # for i in eachindex(flock.v_r)
+    #     println(i, "\t",flock.v_r[i])
+    # end
+
+    # update particles' position
+    broadcast(update_part, flock.pos, flock.vel, flock.v_r, flock.η, box.L)
+
+end

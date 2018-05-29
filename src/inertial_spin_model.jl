@@ -385,12 +385,12 @@ end
 ##                 OUTPUT DATA STRUCTURE                  ##
 ### ============== ### ============== ### ============== ###
 """
-    set_output_data_structure_2D(N, κ, ω)
+    set_output_data_structure_inertial(path, N, η, T))
 Set up folders for output data
 # Arguments
 * N -> numer of particles
-* κ -> non-local average conectivity
-* ω -> interactions relative weight
+* η -> friction coefficient
+* T -> temperature (noise)
 """
 function set_output_data_structure_inertial(path, N, η, T)
 
@@ -440,12 +440,13 @@ end
 
 ### ============== ### ============== ### ============== ###
 """
-    set_output_data_structure_2D(N, κ, ω)
+    set_output_data_structure_inertial_nonLocal(path, N, η, T, n_nl))
 Set up folders for output data
 # Arguments
 * N -> numer of particles
-* κ -> non-local average conectivity
-* ω -> interactions relative weight
+* η -> friction coefficient
+* T -> temperature (noise)
+* n_nl -> non-local connectivity
 """
 function set_output_data_structure_inertial_nonLocal(path, N, η, T, n_nl)
 
