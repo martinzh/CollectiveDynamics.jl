@@ -15,7 +15,9 @@ Implementation of the Inertial Spin Model introduced in *Cavagna, A. et al. Floc
 
 ### Collective Motion Model with Short and Long-range Interactions
 A Collective Motion Model based on short and long-range alignment interactions between particles in open space. Short-range interactions can be defined either metric or topologically.
+
 ---
+
 ### M.C Martin Zumaya
 ### Centro de Ciencias de la Complejidad, UNAM
 ### Instituto de Ciencas Físicas, UNAM
