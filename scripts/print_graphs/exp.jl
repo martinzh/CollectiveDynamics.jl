@@ -58,6 +58,7 @@ folder = "NLOC_MET_3D"
 folder = "NLOC_MET_2D"
 
 folder = "new/NLOC_MET_3D_EXT"
+folder = "NLOC_MET_3D_EXT"
 folder = "NLOC_MET_2D"
 
 folder = "NLOC_TOP_3D_EXT"
@@ -488,6 +489,9 @@ plt[:clf]()
 vals_m = readcsv("3D_met_diff_vals.csv")
 vals_t = readcsv("3D_top_diff_vals.csv")
 
+vals_m = readcsv("met_diff_vals.csv")
+vals_t = readcsv("top_diff_vals.csv")
+
 ax = fig[:add_subplot](111)
 
 # ax[:plot](vals[sortperm(vals)][2:end], [r_fit_vals[i][1] for i in 2:length(r_fit_vals)], "-<", color = "#00ae88", ms = 3, lw = 0.5)
@@ -496,6 +500,9 @@ ax = fig[:add_subplot](111)
 ax[:plot](vals[sortperm(vals)][2:end], [exp10(r_fit_vals[i][0]) for i in 2:length(r_fit_vals)], "-o", color = "#552299", ms = 3, lw = 0.5, label = L"\langle \Delta r \rangle_{\kappa}"  )
 ax[:plot](vals[sortperm(vals)][2:end], [exp10(r_nn_fit_vals[i][0]) for i in 2:length(r_fit_vals)], "-x", color = "#d24760", ms = 3, lw = 0.5, label = L"\langle \Delta r_{\mathrm{nn}} \rangle_{\kappa}")
 
+
+ax[:plot](vals_m[2:end, 1], vals_m[2:end, 4], "-o", color = "#000000",  ms = 3, lw = 0.5, label = "metric")
+ax[:plot](vals_t[2:end, 1], vals_t[2:end, 2], "-^", color = "#BB0407", ms = 3, lw = 0.5, label = "topological")
 
 ax[:plot](vals_t[2:end, 1], vals_t[2:end, 2], "-o", color = "#552299", ms = 3, lw = 0.5, label = L"\langle \Delta r \rangle")
 ax[:plot](vals_t[2:end, 1], vals_t[2:end, 4], "-x", color = "#d24760", ms = 3, lw = 0.5, label = L"\langle \Delta r_{\mathrm{nn}} \rangle")
@@ -515,9 +522,14 @@ plt[:xlim](0.6exp10(-3), 1.5exp10(0))
 plt[:yticks]([exp10(-2), exp10(0), exp10(2)])
 plt[:yticks]([exp10(-1), exp10(0), exp10(1)])
 
+plt[:xticks]([exp10(-3), exp10(-2), exp10(-1), exp10(0), exp10(1)])
+
 # 3D met
 ax[:text](3.2exp10(-3), 5.5exp10(2), L"D(\kappa)", ha="center", va="center", size=fs)
 ax[:text](20, 6exp10(-4), L"\kappa", ha="center", va="center", size=fs)
+
+ax[:text](2exp10(-4), 4exp10(1), L"D(\kappa)", ha="center", va="center", size=fs)
+ax[:text](24, 0.9exp10(-3), L"\kappa", ha="center", va="center", size=fs)
 
 # 3D top
 # ax[:text](3.2exp10(-4), 3exp10(3), L"D(\kappa)", ha="center", va="center", size=fs)
@@ -534,6 +546,9 @@ plt[:legend](bbox_to_anchor=(0., 1.02, 1., .102), loc=3,
            ncol=2, mode="expand", borderaxespad=0., fontsize = 8.5)
 
 plt[:tight_layout]()
+
+fig[:savefig]("coef_diff_r.eps", dpi = 300, format = "eps", bbox_inches = "tight" , pad_inches = 0.1)
+fig[:savefig]("coef_diff_r.png", dpi = 300, format = "png", bbox_inches = "tight" , pad_inches = 0.1)
 
 fig[:savefig]("coef_diff_met.eps", dpi = 300, format = "eps", bbox_inches = "tight" , pad_inches = 0.1)
 fig[:savefig]("coef_diff_met.png", dpi = 300, format = "png", bbox_inches = "tight" , pad_inches = 0.1)

@@ -107,19 +107,19 @@ for i in sortperm(vals)
 
     println(i)
 
-    # raw_data = reinterpret(Float64, read(folder_path * "/" * exp_files[i]))
-    # exp_data = reshape(raw_data, length(times), div(length(raw_data), length(times)))
+    raw_data = reinterpret(Float64, read(folder_path * "/" * exp_files[i]))
+    exp_data = reshape(raw_data, length(times), div(length(raw_data), length(times)))
 
     raw_data = reinterpret(Float64, read(folder_path * "/" * order_files[i]))
     order_data = reshape(raw_data, length(times), div(length(raw_data), length(times)))
 
-    # raw_data = reinterpret(Float64, read(folder_path * "/" * nn_files[i]))
-    # nn_data = reshape(raw_data, length(times), div(length(raw_data), length(times)))
+    raw_data = reinterpret(Float64, read(folder_path * "/" * nn_files[i]))
+    nn_data = reshape(raw_data, length(times), div(length(raw_data), length(times)))
 
     orders[:, i] = mean(order_data, 2)
-    # means[:, i] = mean(exp_data, 2)
-    # std_means[:, i] = std(exp_data, 2)
-    # nn_means[:, i] = mean(nn_data, 2)
+    means[:, i] = mean(exp_data, 2)
+    std_means[:, i] = std(exp_data, 2)
+    nn_means[:, i] = mean(nn_data, 2)
 
 end
 
