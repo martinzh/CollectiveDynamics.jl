@@ -5,7 +5,7 @@ A Julia language package of different models of collective motion of self-propel
 ## Included Collective Motion Models
 
 ### Simple Vicsek Model
-Implementation of the Simple Vicsek Model within periodic boundaries condition introduced in *Vicsek, T., Cziro ́k, A., Ben-Jacob, E., Cohen, I. & Shochet, O. Novel type of phase transition in a system of self-driven particles. Phys. Rev. Lett. 75, 1226–1229 (1995). DOI 10.1103/physrevlett.75.1226.* in 2D and 3D
+Implementation of the Simple Vicsek Model within periodic boundaries condition introduced in *Vicsek, T., Czirók, A., Ben-Jacob, E., Cohen, I. & Shochet, O. Novel type of phase transition in a system of self-driven particles. Phys. Rev. Lett. 75, 1226–1229 (1995). DOI 10.1103/physrevlett.75.1226.* in 2D and 3D
 
 #### Usage
 
