@@ -38,7 +38,7 @@ The script `behavioural_rules_simulation.jl` in the `Examples` folder shows an e
 * rep:    Ensemble index
 * init: Initialization scheme, if `init = R` then Random Initial Conditions if `init = A` Random Initial Positions but aligned orientations.
 
-The script will create a folder `art_DATA/"BEHAV_R_01_N_015` for the random initial conditions simulations and `art_DATA/"BEHAV_R_01_N_015_AL` for simulations starting from an ordered state and a folder structure within in the home directory were the files `pos_rep.dat` and `vels_rep.dat` with the positions and velocities of the particles will be saved. Both files are in binary format.
+The script will create a folder `art_DATA/BEHAV_R_01_N_015` for the random initial conditions simulations and `art_DATA/"BEHAV_R_01_N_015_AL` for simulations starting from an ordered state and a folder structure within in the home directory were the files `pos_rep.dat` and `vels_rep.dat` with the positions and velocities of the particles will be saved. Both files are in binary format.
 
 ### Extended Inertial Spin Model
 Implementation of the Inertial Spin Model introduced in *Cavagna, A. et al. Flocking and turning: a new model for self-organized collective motion. J. Stat. Phys. 158, 601–627 (2014). DOI 10.1007/s10955-014-1119-3.* extended with long-range interactions.
@@ -56,7 +56,7 @@ The scripts `inertial_spin_simulation.jl` and `inertial_spin_long_range_simulati
 * tau: 10^tau iterations
 * rep:    Ensemble index
 
-The script will create a folder `art_DATA/"INERTIAL_SPIN` or `art_DATA/"EXTENDED_INERTIAL_SPIN` and a folder structure within in the home directory were the files `pos_rep.dat` and `vels_rep.dat` with the positions and velocities of the particles will be saved. Both files are in binary format.
+The script will create a folder `art_DATA/INERTIAL_SPIN` or `art_DATA/EXTENDED_INERTIAL_SPIN` and a folder structure within in the home directory were the files `pos_rep.dat` and `vels_rep.dat` with the positions and velocities of the particles will be saved. Both files are in binary format.
 
 
 ### Collective Motion Model with Short and Long-range Interactions
