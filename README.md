@@ -11,11 +11,11 @@ Implementation of the Simple Vicsek Model within periodic boundaries condition i
 
 Add module with `using CollectiveDynamics.SVM2D` for the 2D version and `using CollectiveDynamics.SVM3D` for the 3D version.
 
-The scripts `vicsek_2D_simulation.jl` and `vicsek_3D_simulation.jl` in the `Examples` folder shows an example of using the module. Both scripts receive command line arguments, run them as: `julia vicsek_2D_simulation.jl N $\rho$ $\eta$ T rep`
+The scripts `vicsek_2D_simulation.jl` and `vicsek_3D_simulation.jl` in the `Examples` folder shows an example of using the module. Both scripts receive command line arguments, run them as: `julia vicsek_2D_simulation.jl N rho eta T rep`
 
 * N: Number of particles
-* $\rho$: Density
-* $\eta$: Noise Intensity
+* rho: Density
+* eta: Noise Intensity
 * T:      10^T iterations
 * rep:    Ensemble index
 
@@ -47,13 +47,13 @@ Implementation of the Inertial Spin Model introduced in *Cavagna, A. et al. Floc
 
 Add module with `using CollectiveDynamics.InertialSpin`
 
-The scripts `inertial_spin_simulation.jl` and `inertial_spin_long_range_simulation.jl` in the `Examples` folder show examples of using the module. The scripts receive command line arguments, run them as: `julia inertial_spin_simulation.jl N $\eta$ T $\tau$ rep` or `julia inertial_spin_long_range_simulation.jl N $\eta$ T n_nl $\tau$ rep`
+The scripts `inertial_spin_simulation.jl` and `inertial_spin_long_range_simulation.jl` in the `Examples` folder show examples of using the module. The scripts receive command line arguments, run them as: `julia inertial_spin_simulation.jl N eta T tau rep` or `julia inertial_spin_long_range_simulation.jl N eta T n_nl tau rep`
 
 * N: Number of particles
-* $\eta$: Dissipation term
+* eta: Dissipation term
 * T: Temperature or noise
 * n_nl: Average number of long-range interactions per particle
-* $\tau$: 10^$\tau$ iterations
+* tau: 10^tau iterations
 * rep:    Ensemble index
 
 The script will create a folder `art_DATA/"INERTIAL_SPIN` or `art_DATA/"EXTENDED_INERTIAL_SPIN` and a folder structure within in the home directory were the files `pos_rep.dat` and `vels_rep.dat` with the positions and velocities of the particles will be saved. Both files are in binary format.
@@ -66,18 +66,19 @@ A Collective Motion Model based on short and long-range alignment interactions b
 
 Add module with `using CollectiveDynamics.ShortLongRange`
 
-The scripts `SLR_metric_simulation.jl` and `SLR_top_simulation.jl` in the `Examples` folder show examples of using the module for the case of metric or topological short-range interactions. The scripts can be run in parallel and receive command line arguments, run them as: `julia -p np SLR_metric_simulation.jl N $\kappa$ $\omega$ $\eta$ Ti Tf rep` or `julia -p np SLR_top_simulation.jl N $\kappa$ $\omega$ $\eta$ Ti Tf rep`
+The scripts `SLR_metric_simulation.jl` and `SLR_top_simulation.jl` in the `Examples` folder show examples of using the module for the case of metric or topological short-range interactions. The scripts can be run in parallel and receive command line arguments, run them as: `julia -p np SLR_metric_simulation.jl N kappa omega eta Ti Tf rep` or `julia -p np SLR_top_simulation.jl N kappa omega eta Ti Tf rep`
 
 * np: Number of processors
 * N: Number of particles
-* $\kappa$: Average long-range interactions per particle
-* $\omega$: Relative weight between short and long-range interactions in the system
-* $\eta$: Noise Intensity
+* kappa: Average long-range interactions per particle
+* omega: Relative weight between short and long-range interactions in the system
+* eta: Noise Intensity
 * Ti: Start iterations at 10^Ti
 * Tf: End iterations at 10^Tf
 * rep: Ensemble index
 
-The script will create a folder `art_DATA/"SLR_MET` or `art_DATA/"SLR_TOP` and a folder structure within in the home directory were the files `pos_rep.dat` and `vels_rep.dat` with the positions and velocities of the particles will be saved. Both files are in binary format.
+The script will create a folder `art_DATA/SLR_MET` or `art_DATA/SLR_TOP` and a folder structure within in the home directory were the files `pos_rep.dat` and `vels_rep.dat` with the positions and velocities of the particles will be saved. Both files are in binary format.
+
 ---
 
 ### M.C Martin Zumaya
