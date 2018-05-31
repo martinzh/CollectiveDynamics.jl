@@ -81,8 +81,6 @@ The script will create a folder `art_DATA/SLR_MET` or `art_DATA/SLR_TOP` and a f
 
 ---
 
-![](doc/logos.png)
-
 ### M.C Martin Zumaya
-### Centro de Ciencias de la Complejidad, UNAM
-### Instituto de Ciencas Físicas, UNAM
+
+![logos](doc/logos.png)
