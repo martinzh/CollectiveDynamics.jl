@@ -14,17 +14,15 @@
 ### SYSTEM'S PARAMETERS
 ### ============== ### ============== ### ============== ###
 
-file = ARGS[1] # initialization from file
+n   = parse(Int64, ARGS[1]) # number of particles
+k   = parse(Float64, ARGS[2]) # average non-local interactions
+w   = parse(Float64, ARGS[3]) # interactions relative weight
+e   = parse(Float64, ARGS[4]) # noise intensity
 
-n   = parse(Int64, ARGS[2]) # number of particles
-k   = parse(Float64, ARGS[3]) # average non-local interactions
-w   = parse(Float64, ARGS[4]) # interactions relative weight
-e   = parse(Float64, ARGS[5]) # noise intensity
+Ti   = parse(Int, ARGS[5]) # start of integration time steps (10^Ti)
+Tf   = parse(Int, ARGS[6]) # end of integration time steps (10^Tf)
 
-Ti   = parse(Int, ARGS[6]) # start of integration time steps (10^Ti)
-Tf   = parse(Int, ARGS[7]) # end of integration time steps (10^Tf)
-
-rep = parse(Int, ARGS[8]) # ensemble index
+rep = parse(Int, ARGS[7]) # ensemble index
 
 ### ============== ### ============== ### ============== ###
 
@@ -53,71 +51,35 @@ v_n = SharedArray{Float64}(3N) # non local topological interactions
 R_ij = SharedArray{Int64}(N,N)
 
 ### ============== ### ============== ### ============== ###
+### RANDOM INITIAL CONDITIONS
+### ============== ### ============== ### ============== ###
 
-if file == "f"
-
-    ### ============== ### ============== ### ============== ###
-    ### INITIALIZATION FROM FILE
-    ### ============== ### ============== ### ============== ###
-
-    data_path = joinpath(homedir(),"art_DATA","SLR_MET_CP","DATA","data_N_$(N)","data_N_$(N)_k_$(κ)_w_$(ω)")
-
-    raw_data = reinterpret(Float64, read(joinpath(data_path,"pos_$(rep).dat")))
-    pos_data = raw_data[(end-3N+1):end]
-
-    raw_data = reinterpret(Float64, read(joinpath(data_path,"vel_$(rep).dat")))
-    vel_data = raw_data[(end-3N+1):end]
-
-    for i in 1:length(pos)
-        pos[i] = pos_data[i]
-        vel[i] = vel_data[i]
-    end
-
-    ### ============== ### ============== ### ============== ###
-    ### SET OUTPUT
-    ### ============== ### ============== ### ============== ###
-
-    output_path = set_output_data_structure("SLR_MET", N, κ, ω)
-
-    cp(joinpath(data_path,"pos_$(rep).dat"), joinpath(output_path,"pos_$(rep).dat"), remove_destination = true)
-    cp(joinpath(data_path,"vel_$(rep).dat"), joinpath(output_path,"vel_$(rep).dat"), remove_destination = true)
-
-    pos_file = open(joinpath(output_path,"pos_$(rep).dat"), "a+")
-    vel_file = open(joinpath(output_path,"vel_$(rep).dat"), "a+")
-
-else
-
-    ### ============== ### ============== ### ============== ###
-    ### RANDOM INITIAL CONDITIONS
-    ### ============== ### ============== ### ============== ###
-
-    for i in 1:length(pos)
-        pos[i] = 2*rand()*L - L
-        vel[i] = 2*rand() - 1
-    end
-
-    for i in 1:3:length(vel)
-        norm = sqrt(vel[i]^2 + vel[i+1]^2 + vel[i+2]^2)
-        vel[i] /= norm
-        vel[i+1] /= norm
-        vel[i+2] /= norm
-    end
-
-    ### ============== ### ============== ### ============== ###
-    ### SET OUTPUT
-    ### ============== ### ============== ### ============== ###
-
-    # output_path = set_output_data_structure("SLR_MET", N, κ, ω)
-    output_path = set_output_data_structure("SLR_MET", N, κ, ω, η)
-
-    pos_file = open(joinpath(output_path,"pos_$(rep).dat"), "w+")
-    vel_file = open(joinpath(output_path,"vel_$(rep).dat"), "w+")
-
-    # write initial conditions
-    println("//////// ", 1)
-    write(pos_file, pos)
-    write(vel_file, vel)
+for i in 1:length(pos)
+    pos[i] = 2*rand()*L - L
+    vel[i] = 2*rand() - 1
 end
+
+for i in 1:3:length(vel)
+    norm = sqrt(vel[i]^2 + vel[i+1]^2 + vel[i+2]^2)
+    vel[i] /= norm
+    vel[i+1] /= norm
+    vel[i+2] /= norm
+end
+
+### ============== ### ============== ### ============== ###
+### SET OUTPUT
+### ============== ### ============== ### ============== ###
+
+# output_path = set_output_data_structure("SLR_MET", N, κ, ω)
+output_path = set_output_data_structure("SLR_MET", N, κ, ω, η)
+
+pos_file = open(joinpath(output_path,"pos_$(rep).dat"), "w+")
+vel_file = open(joinpath(output_path,"vel_$(rep).dat"), "w+")
+
+# write initial conditions
+println("//////// ", 1)
+write(pos_file, pos)
+write(vel_file, vel)
 
 ### ============== ### ============== ### ============== ###
 ### TIME EVOLUTION

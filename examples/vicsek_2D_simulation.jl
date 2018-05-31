@@ -10,12 +10,13 @@ using CollectiveDynamics.SVM2D
 
 ### ============ SYSTEM'S PARAMETERS ============ ###
 
-N = parse(Int, ARGS[1]) # number of particles
-ρ = parse(Float64, ARGS[2]) # density
-T = parse(Int, ARGS[3]) # integration time steps
-rep = parse(Int, ARGS[4]) # ensemble index
+N   = parse(Int, ARGS[1]) # number of particles
+ρ   = parse(Float64, ARGS[2]) # density
+η   = parse(Float64, ARGS[3]) # noise intensity
+T   = parse(Int, ARGS[4]) # integration time steps
+rep = parse(Int, ARGS[5]) # ensemble index
 
-η = 0.15 # noise intensity
+### =============== ### =============== ###
 
 v0 = 1.0 # particle's speed
 dt = 1.0 # integration timestep

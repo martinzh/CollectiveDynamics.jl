@@ -12,17 +12,15 @@
 ### SYSTEM'S PARAMETERS
 ### ============== ### ============== ### ============== ###
 
-file = ARGS[1]
+n   = parse(Int64, ARGS[1]) # number of particles
+k   = parse(Float64, ARGS[2]) # average non-local interactions
+w   = parse(Float64, ARGS[3]) # interactions relative weight
+e   = parse(Float64, ARGS[4]) # noise intensity
 
-n   = parse(Int64, ARGS[2]) # number of particles
-k   = parse(Float64, ARGS[3]) # average non-local interactions
-w   = parse(Float64, ARGS[4]) # interactions relative weight
-e   = parse(Float64, ARGS[5]) # noise intensity
+Ti   = parse(Int, ARGS[5]) # start of integration time steps (10^Ti)
+Tf   = parse(Int, ARGS[6]) # end of integration time steps (10^Tf)
 
-Ti   = parse(Int, ARGS[6]) # start of integration time steps (10^Ti)
-Tf   = parse(Int, ARGS[7]) # end of integration time steps (10^Tf)
-
-rep = parse(Int, ARGS[8])
+rep = parse(Int, ARGS[7])
 
 ### ============== ### ============== ### ============== ###
 
