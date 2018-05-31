@@ -1,7 +1,12 @@
+### ============== ### ============== ###
+##    Behavioural Rules Model          ##
+##    Martin Zumaya Hernandez          ##
+##    EXAMPLE SIMULATION SCRIPT        ##
+### ============== ### ============== ###
+
 ### ============ INCLUDE PACKAGES ============ ###
 
-@everywhere using Quaternions
-@everywhere include(joinpath(homedir(),"GitRepos","CollectiveDynamics.jl","src","couzin_shared.jl"))
+@everywhere using CollectiveDynamics.BehaviouralRules
 
 ### ============ SYSTEM'S PARAMETERS ============ ###
 
@@ -17,17 +22,14 @@
 
 ### ============ METRIC BEHAVIORAL THRESHOLDS ============ ###
 
-n = parse(Int64, ARGS[1])
-# n = 128
+n = parse(Int64, ARGS[1]) # number of particles
 
-o = parse(Float64, ARGS[2])
-a = parse(Float64, ARGS[3])
-# o = 0.5
-# a = 0.5
+o = parse(Float64, ARGS[2]) # size of the orientation zone relative to system size
+a = parse(Float64, ARGS[3]) # size of the attraction zone relative to system size
 
-T = parse(Int64, ARGS[4])
+T = parse(Int64, ARGS[4]) # 10 ^ T iterations
 
-rep = parse(Int64, ARGS[5])
+rep = parse(Int64, ARGS[5]) # ensemble index
 
 init = ARGS[6] # random or aligned initial velocities
 
@@ -40,7 +42,6 @@ init = ARGS[6] # random or aligned initial velocities
 @everywhere L  = cbrt(N / ρ) # size of box
 
 @everywhere zor = 0.1 # zone of repulsion
-# @everywhere zor = 0.25 # zone of repulsion
 # @everywhere zor = 1.0 # zone of repulsion
 @everywhere zoo = zor + Δo*L # zone of orientation
 @everywhere zoa = zoo + Δa*L # zone of attraction
@@ -61,9 +62,9 @@ Rij = SharedArray{Float64}(N,N)
 
 output_path = ""
 
-if init_e == "R"
+if init_e == "R" # random initial conditions
 
-    output_path = set_output_data_structure_lnl("COUZIN_3D_R_01_N_015", N, ARGS[2], ARGS[3])
+    output_path = set_output_data_structure("BEHAV_R_01_N_015", N, ARGS[2], ARGS[3])
     println(output_path)
 
     ### ============ RANDOM INITIAL CONDITIONS ============ ###
@@ -72,9 +73,9 @@ if init_e == "R"
         vel[i] = 2*rand() - 1
     end
 
-elseif init_e == "A"
+elseif init_e == "A" # ordered state initial condition
 
-    output_path = set_output_data_structure_lnl("COUZIN_3D_R_01_N_015_AL", N, ARGS[2], ARGS[3])
+    output_path = set_output_data_structure("BEHAV_R_01_N_015_AL", N, ARGS[2], ARGS[3])
     println(output_path)
 
     ### ============ RANDOM POSITIONS BUT ALIGNED VELOCITIES ============ ###
@@ -106,7 +107,7 @@ end
 pos_file = open(joinpath(output_path,"pos_$(rep).dat"), "w+")
 vel_file = open(joinpath(output_path,"vel_$(rep).dat"), "w+")
 
-# write initial conditions
+# write initial conditions 
 write(pos_file, pos)
 write(vel_file, vel)
 println("//////// ", 1)
@@ -120,7 +121,6 @@ for i in 1:(length(times) - 1)
     for t in (times[i]+1):times[i+1]
 
         evolve_system(pos, vel, v_int, v_r, v_o, v_a, Rij, N, zor, zoo, zoa, η, θ, v0)
-        # evolve_system_vr(pos, vel, v_r, Rij, N, zor, zoo, zoa, η, θ, v0)
 
         if t % times[i] == 0 || t % div(times[i], exp10(1)) == 0
             println("//////// ", t)

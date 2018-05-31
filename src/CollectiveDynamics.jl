@@ -1,5 +1,5 @@
 ## =========================== ## ## =========================== ##
-## 	   Package of functions of collective motion models			 ##
+## 	   Package of collective motion models			 ##
 ##	   Martin Zumaya Hernandez 						             ##
 ##	   Release Version 0.1.0 						             ##
 ##     29 / 05 / 2018									         ##
@@ -21,24 +21,25 @@ include("simple_vicsek_model_3D.jl")
 end
 
 ## BEHAVIOURAL RULES MODEL
-# module BehaviouralRules
-# using Quaternions
-# export
-# include("behavioural_rules_model.jl")
-# end
-#
-# ## INTERIAL SPIN MODEL MODEL
-# module InertialSpin
-# using Quaternions
-# export
-# include("inertial_spin_model.jl")
-# end
-#
-# ## SHORT AND LONG RANGE INTERACTIONS MODEL
-# module ShortLongRange
-# using Quaternions
-# export
-# include("short_long_range_model.jl")
-# end
+module BehaviouralRules
+using Quaternions
+export set_output_data_structure, evolve_system
+include("behavioural_rules_model.jl")
+end
+
+## SHORT AND LONG RANGE INTERACTIONS MODEL
+module ShortLongRange
+using Distributions, Quaternions
+export set_output_data_structure, evolve_metric_system, evolve_metric_system_2D, evolve_topological_system, evolve_topological_system_2D
+include("short_long_range_model.jl")
+end
+
+## INTERIAL SPIN MODEL MODEL
+module InertialSpin
+using Quaternions
+export InertialFlock, InertialExtFlock, InertialParameters, set_output_data_structure, set_output_data_structure_lr, evolve_system, evolve_extended_system
+include("inertial_spin_model.jl")
+end
+
 
 end

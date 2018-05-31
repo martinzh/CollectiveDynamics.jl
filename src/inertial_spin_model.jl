@@ -20,7 +20,7 @@ Inertial Flock type
 # Fields
 * pos  -> particles positions
 * vel  -> particles velocities
-* v_t  -> local topological ineraction
+* v_t  -> short-range topological ineraction
 * Rij  -> relative distances matrix
 * spin -> particles spin
 """
@@ -32,6 +32,7 @@ type InertialFlock
     spin ::Array{Array{Float64,1},1}
 
     function InertialFlock(N, L, v0)
+
         Rij = zeros(Float64, N, N)
 
         # array of random initial particles' postitions
@@ -42,7 +43,7 @@ type InertialFlock
         vel = v0 * [ normalize([2*rand() - 1, 2*rand() - 1, 2*rand() - 1]) for i in 1:N ]
         # vel = v0 * [normalize([1.0, 0.0, 0.0] - [2*δ*rand() - δ, 2*δ*rand() - δ, 2*δ*rand() - δ]) for i in 1:N]
 
-        # local topological interactions
+        # short-range topological interactions
         v_t  = [zeros(Float64, 3) for i in 1:N]
 
         # initialize spins as zero vectors\
@@ -60,7 +61,7 @@ end
 ### ============== ### ============== ### ============== ###
 
 """
-    InertialNonLocFlock(N, L, v0)
+    InertialExtFlock(N, L, v0)
 Inertial Flock type (with non local interactions)
 # Constructor Arguments
 * N -> number of particles
@@ -69,12 +70,12 @@ Inertial Flock type (with non local interactions)
 # Fields
 * pos  -> particles positions
 * vel  -> particles velocities
-* v_t  -> local topological ineraction
-* v_nl  -> non local topological ineraction
+* v_t  -> short-range topological ineraction
+* v_nl  -> long-range topological ineraction
 * Rij  -> relative distances matrix
 * spin -> particles spin
 """
-type InertialNonLocFlock
+type InertialExtFlock
     pos ::Array{Array{Float64,1},1}
     vel ::Array{Array{Float64,1},1}
     v_t ::Array{Array{Float64,1},1}
@@ -82,7 +83,7 @@ type InertialNonLocFlock
     Rij ::Array{Float64,2}
     spin ::Array{Array{Float64,1},1}
 
-    function InertialNonLocFlock(N, L, v0)
+    function InertialExtFlock(N, L, v0)
 
         Rij = zeros(Float64, N, N)
 
@@ -94,10 +95,10 @@ type InertialNonLocFlock
         vel = v0 * [ normalize([2*rand() - 1, 2*rand() - 1, 2*rand() - 1]) for i in 1:N ]
         # vel = v0 * [normalize([1.0, 0.0, 0.0] - [2*δ*rand() - δ, 2*δ*rand() - δ, 2*δ*rand() - δ]) for i in 1:N]
 
-        # local topological interactions
+        # short-range topological interactions
         v_t  = [zeros(Float64, 3) for i in 1:N]
 
-        # non-local topological interactions
+        # long-range topological interactions
         v_nl = [zeros(Float64, 3) for i in 1:N]
 
         # initialize spins as zero vectors\
@@ -109,7 +110,7 @@ type InertialNonLocFlock
         map!((x,y) -> normalize(cross(x,y)), spin, spin, vel)
 
         new(pos, vel, v_t, v_nl, Rij, spin)
-    end
+        end
 end
 
 ### ============== ### ============== ### ============== ###
@@ -128,7 +129,7 @@ Paramaters for the Inertial Spin Model of Collective Motion
 * N  ::Int64  # Number of particles
 * T  ::Float64  # generalized temperature
 * n_t ::Int64  # number of topological interactions
-* n_nl ::Float64 # mean of non-local interactions
+* n_nl ::Float64 # mean of long-range interactions
 """
 immutable InertialParameters
     χ  ::Float64 # generalized moment of intertia
@@ -139,9 +140,9 @@ immutable InertialParameters
     v0 ::Float64  # Speed
     N  ::Int64  # Number of particles
     T  ::Float64  # generalized temperature
-    d  ::Float64 # unknown parameter (spatial dimension)
+    d  ::Float64 # spatial dimension
     n_t ::Int64  # number of topological interactions
-    κ_dist ::Distributions.Poisson{Float64} # mean of non-local interactions
+    κ_dist ::Distributions.Poisson{Float64} # out-degree Poisson Distribution
     # n_nl ::Float64 # mean of non-local interactions
 
     # default constructor
@@ -173,12 +174,12 @@ end
 ##       COMPUTE LOCAL TOPOLOGICAL INTERACTIONS           ##
 ### ============== ### ============== ### ============== ###
 """
-    calc_local_toplogical_interactions!(v_t, Nij, n_t)
+    calc_topological_interactions!(v_t, Nij, n_t)
 Compute and store particles interactions in v_t, given by the adjacency matrix Nij.
 #Arguments
 * n_t -> number of fixed local topological interactions
 """
-function calc_local_toplogical_interactions!(vel, v_t, Rij, n_t)
+function calc_topological_interactions!(vel, v_t, Rij, n_t)
 
     # compute local topological interaction
     for i in 1:size(Rij,1)
@@ -192,14 +193,14 @@ end
 ##  COMPUTE LOCAL AND NON LOCAL TOPOLOGICAL INTERACTIONS  ##
 ### ============== ### ============== ### ============== ###
 """
-    calc_local_nonLocal_toplogical_interactions!(vel, v_t, v_n, Rij, n_t, n_l)
+    calc_lr_topological_interactions!(vel, v_t, v_n, Rij, n_t, n_l)
 Compute and store particles local topological interactions in v_t and non-local in v_nl, given by the adjacency matrix Nij.
 Non-local interactions are chosen at random from the remaining N - (n_t + 1) particles
 #Arguments
 * n_t -> number of fixed local topological interactions
 * n_nl -> number of fixed non-local topological interactions
 """
-function calc_local_nonLocal_toplogical_interactions!(vel, v_t, v_nl, Rij, n_t, n_nl)
+function calc_lr_topological_interactions!(vel, v_t, v_nl, Rij, n_t, n_nl)
 
     # compute local topological interaction
     for i in 1:size(Rij,1)
@@ -211,7 +212,7 @@ function calc_local_nonLocal_toplogical_interactions!(vel, v_t, v_nl, Rij, n_t, 
 
 end
 
-function calc_local_nonLocal_toplogical_interactions_mean!(vel, v_t, v_nl, Rij, n_t, n_nl)
+function calc_lr_toplogical_interactions_mean!(vel, v_t, v_nl, Rij, n_t, n_nl)
 
     # compute local topological interaction
     for i in 1:size(Rij,1)
@@ -251,13 +252,13 @@ end
 ##              WITH NON-LOCAL INTERACTIONS               ##
 ### ============== ### ============== ### ============== ###
 """
-    part_vel_spin_nonLocal_update!(vel, v_t, v_nl, spin, pars, σ)
+    part_vel_spin_extended_update!(vel, v_t, v_nl, spin, pars, σ)
 Dynamical rules for velocity, spin and position update (Updates 1 particle).
 # Arguments
 * pars -> system's parameters
 * σ -> noise related standard deviation
 """
-function part_vel_spin_nonLocal_update!(vel, v_t, v_nl, spin, pars, σ)
+function part_vel_spin_extended_update!(vel, v_t, v_nl, spin, pars, σ)
 
     noise = randn(3) * σ
 
@@ -298,7 +299,7 @@ end
 
 ### ============== ### ============== ### ============== ###
 ##             DYNAMICAL RULES (WHOLE SYSTEM)             ##
-##              WITH NON-LOCAL INTERACTIONS               ##
+##              WITH LONG-RANGE INTERACTIONS               ##
 ### ============== ### ============== ### ============== ###
 """
     vel_spin_nonLocal_update!(vel, v_n, spin, pars, σ)
@@ -307,7 +308,7 @@ Dynamical rules for velocity, spin and position update.
 * pars -> system's parameters
 * σ -> noise related standard deviation
 """
-function vel_spin_nonLocal_update!(pos, vel, v_t, v_nl, spin, pars, σ)
+function vel_spin_extended_update!(pos, vel, v_t, v_nl, spin, pars, σ)
 
     for i in 1:length(vel)
         noise = randn(3) * σ
@@ -319,7 +320,7 @@ function vel_spin_nonLocal_update!(pos, vel, v_t, v_nl, spin, pars, σ)
         spin[i] = u_spin
         vel[i]  = pars.v0  * normalize(u_vel) # codition of constant speed
 
-        pos[i] += vel[i]*pars.dt
+        pos[i] += vel[i]*pars.dt # update positions
     end
 end
 
@@ -330,13 +331,13 @@ end
     evolve_inertial_system(pos, vel, v_t, spin, Rij, pars, σ)
 Time evolution of the system
 """
-function evolve_inertial_system(pos, vel, v_t, spin, Rij, pars, σ)
+function evolve_system(pos, vel, v_t, spin, Rij, pars, σ)
 
     ### COMPUTE RELATIVE DISTANCES
     calc_distance_matrix!(pos, Rij)
 
     ### COMPUTE INTERACTIONS
-    calc_local_toplogical_interactions!(vel, v_t, Rij, pars.n_t)
+    calc_topological_interactions!(vel, v_t, Rij, pars.n_t)
 
     ### SPIN UPDATE
     vel_spin_update!(pos, vel, v_t, spin, pars, σ)
@@ -363,7 +364,7 @@ Time evolution of the system, with non-local interactions
 * η -> noise intensity
 * ω -> interactions relative weight
 """
-function evolve_nonLocal_inertial_system(pos, vel, v_t, v_nl, spin, Rij, pars, σ)
+function evolve_extended_system(pos, vel, v_t, v_nl, spin, Rij, pars, σ)
 
     ### COMPUTE RELATIVE DISTANCES
     calc_distance_matrix!(pos, Rij)
@@ -371,10 +372,10 @@ function evolve_nonLocal_inertial_system(pos, vel, v_t, v_nl, spin, Rij, pars, �
     n_nl = rand(pars.κ_dist, pars.N)
 
     ### COMPUTE INTERACTIONS
-    calc_local_nonLocal_toplogical_interactions!(vel, v_t, v_nl, Rij, pars.n_t, n_nl)
+    calc_lr_topological_interactions!(vel, v_t, v_nl, Rij, pars.n_t, n_nl)
 
     ### SPIN UPDATE
-    vel_spin_nonLocal_update!(pos, vel, v_t, v_nl, spin, pars, σ)
+    vel_spin_extended_update!(pos, vel, v_t, v_nl, spin, pars, σ)
 
     # ### POSITION UPDATE
     # map!( (p,v) -> p + pars.dt * v, pos, pos, vel )
@@ -385,14 +386,14 @@ end
 ##                 OUTPUT DATA STRUCTURE                  ##
 ### ============== ### ============== ### ============== ###
 """
-    set_output_data_structure_inertial(path, N, η, T))
+    set_output_data_structure(path, N, η, T))
 Set up folders for output data
 # Arguments
 * N -> numer of particles
 * η -> friction coefficient
 * T -> temperature (noise)
 """
-function set_output_data_structure_inertial(path, N, η, T)
+function set_output_data_structure(path, N, η, T)
 
     parent_folder_path = "$(homedir())/art_DATA/$(path)"
     folder_path        = parent_folder_path * "/DATA/data_N_$(N)"
@@ -440,7 +441,7 @@ end
 
 ### ============== ### ============== ### ============== ###
 """
-    set_output_data_structure_inertial_nonLocal(path, N, η, T, n_nl))
+    set_output_data_structure_inertial_lr(path, N, η, T, n_nl))
 Set up folders for output data
 # Arguments
 * N -> numer of particles
@@ -448,7 +449,7 @@ Set up folders for output data
 * T -> temperature (noise)
 * n_nl -> non-local connectivity
 """
-function set_output_data_structure_inertial_nonLocal(path, N, η, T, n_nl)
+function set_output_data_structure_lr(path, N, η, T, n_nl)
 
     parent_folder_path = "$(homedir())/art_DATA/$(path)"
     folder_path        = parent_folder_path * "/DATA/data_N_$(N)"
@@ -492,95 +493,4 @@ function set_output_data_structure_inertial_nonLocal(path, N, η, T, n_nl)
     end
 
     return reps_path
-end
-
-### ============== ### ============== ### ============== ###
-##                   WHOLE TIME EVOLUTION                 ##
-### ============== ### ============== ### ============== ###
-"""
-    full_time_evolution_inertial_system(pos_file, vel_file, spin_file, T, flock, pars, σ)
-System time evolution wrapper
-"""
-function full_time_evolution_inertial_system(pos_file, vel_file, spin_file, T, flock, pars, σ)
-
-    times = [convert(Int, exp10(i)) for i in 0:T]
-
-    for i in 1:(length(times) - 1)
-
-        if i > 1
-
-            for t in (times[i]+1):times[i+1]
-
-                evolve_inertial_system(flock.pos, flock.vel, flock.v_t, flock.spin, flock.Rij, pars, σ)
-
-                if t % times[i] == 0 || t % times[i-1] == 0
-                    println("//////// ", t)
-                    write(pos_file, vcat(flock.pos...))
-                    write(vel_file, vcat(flock.vel...))
-                    write(spin_file, vcat(flock.spin...))
-                end
-            end
-
-        else
-
-            for t in (times[i]+1):times[i+1]
-
-                evolve_inertial_system(flock.pos, flock.vel, flock.v_t, flock.spin, flock.Rij, pars, σ)
-
-                if t % times[i] == 0
-                    println("//////// ", t)
-                    write(pos_file, vcat(flock.pos...))
-                    write(vel_file, vcat(flock.vel...))
-                    write(spin_file, vcat(flock.spin...))
-                end
-            end
-
-        end
-
-    end
-end
-
-### ============== ### ============== ### ============== ###
-
-"""
-    full_time_evolution_nonLocal_inertial_system(pos_file, vel_file, spin_file, T, flock, pars, σ)
-System time evolution wrapper
-"""
-function full_time_evolution_nonLocal_inertial_system(pos_file, vel_file, spin_file, T, flock, pars, σ)
-
-    times = [convert(Int, exp10(i)) for i in 0:T]
-
-    for i in 1:(length(times) - 1)
-
-        if i > 1
-
-            for t in (times[i]+1):times[i+1]
-
-                evolve_nonLocal_inertial_system(flock.pos, flock.vel, flock.v_t, flock.v_nl, flock.spin, flock.Rij, pars, σ)
-
-                if t % times[i] == 0 || t % times[i-1] == 0
-                    println("//////// ", t)
-                    write(pos_file, vcat(flock.pos...))
-                    write(vel_file, vcat(flock.vel...))
-                    write(spin_file, vcat(flock.spin...))
-                end
-            end
-
-        else
-
-            for t in (times[i]+1):times[i+1]
-
-                evolve_nonLocal_inertial_system(flock.pos, flock.vel, flock.v_t, flock.v_nl, flock.spin, flock.Rij, pars, σ)
-
-                if t % times[i] == 0
-                    println("//////// ", t)
-                    write(pos_file, vcat(flock.pos...))
-                    write(vel_file, vcat(flock.vel...))
-                    write(spin_file, vcat(flock.spin...))
-                end
-            end
-
-        end
-
-    end
 end

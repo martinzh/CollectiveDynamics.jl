@@ -1,16 +1,14 @@
 ### ============== ### ============== ###
 ##    Simple Vicksek Model  2D         ##
 ##    Martin Zumaya Hernandez          ##
-##    EXAMPLE SIMIULATION SCRIPT       ##
+##    EXAMPLE SIMULATION SCRIPT        ##
 ### ============== ### ============== ###
 
-### ============== ### ============== ###
+### ============ INCLUDE PACKAGES ============ ###
 
 using CollectiveDynamics.SVM2D
 
-### =============== ### =============== ###
-###   DEFINITION OF INITIAL PARAMETERS  ###
-### =============== ### =============== ###
+### ============ SYSTEM'S PARAMETERS ============ ###
 
 N = parse(Int, ARGS[1]) # number of particles
 ρ = parse(Float64, ARGS[2]) # density
@@ -37,7 +35,7 @@ L  = sqrt(N / ρ) # size of box
 
 cell_size = step(linspace(0., L , M))
 
-### ============== ### ============== ###
+### ============ SYSTEM'S INITIALIZATION ============ ###
 
 box = Box(L, M) # suqare box of size L and M partitions per dimension
 flock = Flock(N, L, dt, v0, r0, η) # flock initialization
@@ -50,6 +48,8 @@ pos_file = open(output_path * "/pos_$(rep).dat", "w+")
 vel_file = open(output_path * "/vel_$(rep).dat", "w+")
 
 times = [convert(Int, exp10(i)) for i in 0:T]
+
+### ============ TIME EVOLUTION ============ ###
 
 for i in 1:(length(times) - 1)
 

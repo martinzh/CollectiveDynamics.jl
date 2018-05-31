@@ -1,10 +1,12 @@
-### ============== ### ============== ### ============== ###
-### SHARED ARRAYS VERSION
-### TOPOLOGICAL SHORT RANGE INTERACTIONS
-### ============== ### ============== ### ============== ###
+### ============== ### ============== ###
+##    Short and Long-range             ##
+##    interactions models              ##
+##    (topological short-range)        ##
+##    Martin Zumaya Hernandez          ##
+##    EXAMPLE SIMULATION SCRIPT        ##
+### ============== ### ============== ###
 
-@everywhere using Distributions, Quaternions
-@everywhere include(joinpath(homedir(),"GitRepos","CollectiveDynamics.jl","parallel_test","par_mod.jl"))
+@everywhere using Distributions, CollectiveDynamics.ShortLongRange
 
 ### ============== ### ============== ### ============== ###
 ### SYSTEM'S PARAMETERS
@@ -12,23 +14,17 @@
 
 file = ARGS[1]
 
-n   = parse(Int64, ARGS[2]) # average non-local interactions
+n   = parse(Int64, ARGS[2]) # number of particles
 k   = parse(Float64, ARGS[3]) # average non-local interactions
 w   = parse(Float64, ARGS[4]) # interactions relative weight
 e   = parse(Float64, ARGS[5]) # noise intensity
 
-Ti   = parse(Int, ARGS[6]) # integration time steps
-Tf   = parse(Int, ARGS[7]) # integration time steps
+Ti   = parse(Int, ARGS[6]) # start of integration time steps (10^Ti)
+Tf   = parse(Int, ARGS[7]) # end of integration time steps (10^Tf)
 
 rep = parse(Int, ARGS[8])
 
 ### ============== ### ============== ### ============== ###
-
-# @everywhere N = 512
-# @everywhere κ = 12
-# @everywhere ω = 0.5
-#
-# rep = 20
 
 @eval @everywhere N = $n
 @eval @everywhere κ = $k
@@ -44,10 +40,7 @@ rep = parse(Int, ARGS[8])
 
 @everywhere L  = cbrt(N / ρ) # size of box
 
-# @everywhere r0 = ((v0 * dt) / l)^2 # local interaction range
-
 @everywhere κ_dist = Poisson(κ)
-# κ_dist = Poisson(κ)
 
 pos = SharedArray{Float64}(3N) # particles positions
 vel = SharedArray{Float64}(3N) # array of particles' velocities
@@ -65,10 +58,7 @@ if file == "f"
     ### INITIALIZATION FROM FILE
     ### ============== ### ============== ### ============== ###
 
-    # pos_data = reshape(raw_data, 3N, div(length(raw_data), 3N))
-    # vel_data = reshape(raw_data, 3N, div(length(raw_data), 3N))
-
-    data_path = joinpath(homedir(),"art_DATA","NLOC_TOP_3D_EXT_CP","DATA","data_N_$(N)","data_N_$(N)_k_$(κ)_w_$(ω)")
+    data_path = joinpath(homedir(),"art_DATA","SLR_TOP_CP","DATA","data_N_$(N)","data_N_$(N)_k_$(κ)_w_$(ω)")
 
     raw_data = reinterpret(Float64, read(joinpath(data_path,"pos_$(rep).dat")))
     pos_data = raw_data[(end-3N+1):end]
@@ -85,7 +75,7 @@ if file == "f"
     ### SET OUTPUT
     ### ============== ### ============== ### ============== ###
 
-    output_path = set_output_data_structure_lnl("NLOC_TOP_3D_EXT_LST", N, κ, ω)
+    output_path = set_output_data_structure("SLR_TOP", N, κ, ω)
 
     cp(joinpath(data_path,"pos_$(rep).dat"), joinpath(output_path,"pos_$(rep).dat"), remove_destination = true)
     cp(joinpath(data_path,"vel_$(rep).dat"), joinpath(output_path,"vel_$(rep).dat"), remove_destination = true)
@@ -115,8 +105,8 @@ else
     ### SET OUTPUT
     ### ============== ### ============== ### ============== ###
 
-    # output_path = set_output_data_structure_lnl("NLOC_TOP_3D_EXT", N, κ, ω)
-    output_path = set_output_data_structure_lnl("NLOC_TOP_3D_EXT", N, κ, ω, η)
+    # output_path = set_output_data_structure("SLR_TOP", N, κ, ω)
+    output_path = set_output_data_structure("SLR_TOP", N, κ, ω, η)
 
     pos_file = open(joinpath(output_path,"pos_$(rep).dat"), "w+")
     vel_file = open(joinpath(output_path,"vel_$(rep).dat"), "w+")
