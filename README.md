@@ -60,7 +60,8 @@ The script will create a folder `art_DATA/INERTIAL_SPIN` or `art_DATA/EXTENDED_I
 
 
 ### Collective Motion Model with Short and Long-range Interactions
-A Collective Motion Model based on short and long-range alignment interactions between particles in open space. Short-range interactions can be defined either metric or topologically.
+Implementation of the Collective Motion Model introduced in *Zumaya, Larralde, Aldana (2018) Delay in the dispersal of
+	flocks moving in unbounded space using long-range interactions* (Submitted to Scientific Reports) based on short and long-range alignment interactions between particles in open space. Short-range interactions can be defined either metric or topologically. 
 
 #### Usage
 
