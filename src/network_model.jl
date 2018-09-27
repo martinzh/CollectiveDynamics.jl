@@ -132,7 +132,7 @@ end
 ### SYSTEM UPDATE (METRIC SHORT-RANGE INTERACTIONS)
 ### ============== ### ============== ### ============== ###
 
-function evolve_system_2D(pos::SharedArray, ang::SharedArray, ang_n::SharedArray, poski::SharedArray, Nij::Float64, dt::Float64, γ::Float64, σ::Float64, ξ_dist)
+function evolve_system_2D(pos::SharedArray, ang::SharedArray, ang_n::SharedArray, poski::SharedArray, Nij::SharedArray, dt::Float64, γ::Float64, σ::Float64, ξ_dist)
 
     @sync begin
         for p in workers()
