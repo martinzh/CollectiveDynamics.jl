@@ -112,7 +112,7 @@ end
 ### UPDATE PARTICLE'S POSITIONS AND VELOCITIES
 ### ============== ### ============== ### ============== ###
 
-function update_particles_2D(pos::SharedArray, ang::SharedArray, ang_n::SharedArray, dt::Float64, γ::FLoat64, σ::Float64, ξ_dist)
+function update_particles_2D(pos::SharedArray, ang::SharedArray, ang_n::SharedArray, dt::Float64, γ::Float64, σ::Float64, ξ_dist)
 
     for i in first(localindexes(ang)):last(localindexes(ang))
 
