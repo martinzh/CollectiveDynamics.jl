@@ -90,7 +90,7 @@ function compute_network_interactions_2D(ang::SharedArray, ang_n::SharedArray, N
 
     for i in first(localindexes(ang)):last(localindexes(ang))
 
-        ang_N[i] = 0.0
+        ang_n[i] = 0.0
 
         num_phi = 0.0
         den_phi = 0.0
@@ -104,7 +104,7 @@ function compute_network_interactions_2D(ang::SharedArray, ang_n::SharedArray, N
             den_phi += sin( ang[ Nij[ init + j] ])
         end
 
-        ang_N[i] = atan2(num_phi, den_phi)
+        ang_n[i] = atan2(num_phi, den_phi)
     end
 end
 
