@@ -118,13 +118,13 @@ function update_particles_2D(pos::SharedArray, ang::SharedArray, ang_n::SharedAr
 
         new_angle = ang[i] + γ * dt * sin(ang_n[i] - ang[i]) + σ * rand(ξ_dist)
 
-        n_y = pos[2*i] + v0 * dt * sin(new_angle)
-        n_x = pos[2*i - 1] + v0 * dt * cos(new_angle)
+        n_y = pos[2i] + v0 * dt * sin(new_angle)
+        n_x = pos[2i-1] + v0 * dt * cos(new_angle)
 
         ang[i] = new_angle
 
-        pos[2*i] = n_y
-        pos[2*i -1] = n_x
+        pos[2i] = n_y
+        pos[2i-1] = n_x
     end
 end
 
