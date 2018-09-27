@@ -112,7 +112,7 @@ end
 ### UPDATE PARTICLE'S POSITIONS AND VELOCITIES
 ### ============== ### ============== ### ============== ###
 
-function update_particles_2D(pos::SharedArray, ang::SharedArray, ang_n::SharedArray, dt::Float64, γ::Float64, σ::Float64, ξ_dist)
+function update_particles_2D(pos::SharedArray, ang::SharedArray, ang_n::SharedArray, dt::Float64, v0::Float64, γ::Float64, σ::Float64, ξ_dist)
 
     for i in first(localindexes(ang)):last(localindexes(ang))
 
@@ -142,7 +142,7 @@ function evolve_system_2D(pos::SharedArray, ang::SharedArray, ang_n::SharedArray
 
     @sync begin
         for p in workers()
-            @async remotecall_wait(update_particles_2D, p, pos, ang, ang_n, dt, γ, σ, ξ_dist)
+            @async remotecall_wait(update_particles_2D, p, pos, ang, ang_n, dt, v0, γ, σ, ξ_dist)
         end
     end
 end
