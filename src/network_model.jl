@@ -123,7 +123,7 @@ function update_particles_2D(pos::SharedArray, ang::SharedArray, ang_n::SharedAr
 
         ang[i] = new_angle
 
-        pos[2*i ]   = n_y
+        pos[2*i]   = n_y
         pos[2*i -1] = n_x
     end
 end
