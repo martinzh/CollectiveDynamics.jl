@@ -98,13 +98,12 @@ function compute_network_interactions_2D(ang::SharedArray, ang_n::SharedArray, N
         ki   = Nij[poski[i]]
         init = poski[i]
 
-        # short-range
         for j in 1:ki
             num_phi += cos( ang[ Nij[ init + j] ])
             den_phi += sin( ang[ Nij[ init + j] ])
         end
 
-        ang_n[i] = atan2(num_phi, den_phi)
+        ang_n[i] = atan2(den_phi, num_phi)
     end
 end
 
