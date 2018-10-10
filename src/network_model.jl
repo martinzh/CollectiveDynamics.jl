@@ -2,11 +2,12 @@
 ### OUTPUT FOLDER STRUCTURE
 ### ============== ### ============== ### ============== ###
 
-function set_output_data_structure(path, N, κ, γ)
+function set_output_data_structure(path, N, P, γ)
 
     parent_folder_path = "$(homedir())/SIM_DATA/$(path)"
     folder_path        = parent_folder_path * "/DATA/data_N_$(N)"
-    reps_path          = folder_path * "/data_N_$(N)_k_$(κ)_g_$(γ)"
+    reps_path          = folder_path * "/data_N_$(N)_p_$(P)_g_$(γ)"
+    # reps_path          = folder_path * "/data_N_$(N)_k_$(κ)_g_$(γ)"
 
     try
         mkdir("$(homedir())/SIM_DATA")
