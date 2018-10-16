@@ -100,7 +100,6 @@ function calc_Rij_th(R_ij::SharedArray, pos::SharedArray, r0::Float64)
             d <= r0 ? R_ij[rj,ri] = 1 : R_ij[rj,ri] = -1
         end
     end
-
 end
 
 ### ============== ### ============== ### ============== ###
@@ -119,7 +118,6 @@ function calc_Rij_th_2D(R_ij::SharedArray, pos::SharedArray, r0::Float64)
             d <= r0 ? R_ij[rj,ri] = 1 : R_ij[rj,ri] = -1
         end
     end
-
 end
 
 ### ============== ### ============== ### ============== ###
@@ -139,7 +137,6 @@ function calc_Rij(R_ij::SharedArray, pos::SharedArray)
             R_ij[rj,ri] = (pos[i]-pos[j])^2 + (pos[i+1]-pos[j+1])^2 + (pos[i+2]-pos[j+2])^2
         end
     end
-
 end
 
 ### ============== ### ============== ### ============== ###
@@ -342,7 +339,6 @@ function compute_topological_interactions_2D(vel::SharedArray,v_r::SharedArray,v
             v_n[2i+1] /= k_ln
             v_n[2i+2] /= k_ln
         end
-
     end
 end
 

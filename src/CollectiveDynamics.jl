@@ -37,11 +37,11 @@ end
 ## INTERIAL SPIN MODEL MODEL
 module InertialSpin
 using Quaternions
-export InertialFlock, InertialExtFlock, InertialParameters, set_output_data_structure, set_output_data_structure_lr, evolve_system, evolve_extended_system
+export InertialFlock, InertialExtFlock, SharedInertialExtFlock, InertialParameters, set_output_data_structure, set_output_data_structure_lr, evolve_system, evolve_extended_system, evolve_extended_system_sh
 include("inertial_spin_model.jl")
 end
 
-## INTERIAL SPIN MODEL MODEL
+## NETWORK BASED MODEL
 module NetworkModel
 using Distributions
 export set_output_data_structure, set_directed_random_network, evolve_system_2D

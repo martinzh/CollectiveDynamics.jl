@@ -123,31 +123,43 @@ type SharedInertialExtFlock
     Rij  ::SharedArray{Float64}
     spin ::SharedArray{Float64}
 
-    function InertialExtFlock(N, L, v0)
+    function SharedInertialExtFlock(N, L, v0)
 
-        Rij = zeros(Float64, N, N)
+        Rij = SharedArray{Float64}(N, N)
 
-        # array of random initial particles' postitions
-        pos = [ [2*rand()*L - L, 2*rand()*L - L, 2*rand()*L - L] for i in 1:N ]
-        # pos = [ [2*rand()*L - L, 2*rand()*L - L, 0.0] for i in 1:N ]
+        pos  = SharedArray{Float64}(3N) # particles positions
+        vel  = SharedArray{Float64}(3N) # array of particles' velocities
+        v_t  = SharedArray{Float64}(3N) # short-range topological interactions
+        v_nl = SharedArray{Float64}(3N) # long-range topological interactions
+        spin = SharedArray{Float64}(3N) # long-range topological interactions
 
-        # array of particles' velocities
-        vel = v0 * [ normalize([2*rand() - 1, 2*rand() - 1, 2*rand() - 1]) for i in 1:N ]
-        # vel = v0 * [normalize([1.0, 0.0, 0.0] - [2*δ*rand() - δ, 2*δ*rand() - δ, 2*δ*rand() - δ]) for i in 1:N]
+        for i in 1:length(pos)
+            pos[i]  = 2*rand()*L - L
+            vel[i]  = 2*rand() - 1
+            spin[i] = 2*rand() - 1
+        end
 
-        # short-range topological interactions
-        v_t  = [zeros(Float64, 3) for i in 1:N]
+        for i in 1:3:length(vel)
+            norm = sqrt(vel[i]^2 + vel[i+1]^2 + vel[i+2]^2)
+            vel[i]   /= norm
+            vel[i+1] /= norm
+            vel[i+2] /= norm
 
-        # long-range topological interactions
-        v_nl = [zeros(Float64, 3) for i in 1:N]
+            vel[i]   *= v0
+            vel[i+1] *= v0
+            vel[i+2] *= v0
 
-        # initialize spins as zero vectors\
-        # spin = [zeros(Float64, 3) for i in 1:N]
+            norm = sqrt(spin[i]^2 + spin[i+1]^2 + spin[i+2]^2)
+            spin[i]   /= norm
+            spin[i+1] /= norm
+            spin[i+2] /= norm
 
-        # array of  particles' spin (initial random directions)
-        spin = [ normalize([2*rand() - 1, 2*rand() - 1, 2*rand() - 1]) for i in 1:N ]
-        # # cross product because dot(si, vi) must = 0, then normalize
-        map!((x,y) -> normalize(cross(x,y)), spin, spin, vel)
+            temp_spin = normalize(cross([spin[i],spin[i+1],spin[i+2]],[vel[i],vel[i+1],vel[i+2]]))
+
+            spin[i]   = temp_spin[1]
+            spin[i+1] = temp_spin[2]
+            spin[i+2] = temp_spin[3]
+        end
 
         new(pos, vel, v_t, v_nl, Rij, spin)
         end
@@ -211,6 +223,25 @@ function calc_distance_matrix!(vec, Rij)
 end
 
 ### ============== ### ============== ### ============== ###
+### COMPUTE RAW RELATIVE (SQUARED) DISTANCES
+### ============== ### ============== ### ============== ###
+
+function calc_Rij(R_ij::SharedArray, pos::SharedArray)
+
+    @parallel for i in 1:3:length(pos)
+
+        ri = div(i,3) + 1
+
+        for j in (i+3):3:length(pos)
+
+            rj = div(j,3) + 1
+
+            R_ij[rj,ri] = (pos[i]-pos[j])^2 + (pos[i+1]-pos[j+1])^2 + (pos[i+2]-pos[j+2])^2
+        end
+    end
+end
+
+### ============== ### ============== ### ============== ###
 ##       COMPUTE LOCAL TOPOLOGICAL INTERACTIONS           ##
 ### ============== ### ============== ### ============== ###
 """
@@ -262,6 +293,50 @@ function calc_lr_toplogical_interactions_mean!(vel, v_t, v_nl, Rij, n_t, n_nl)
         n_nl[i] != zero(Int64) ? v_nl[i] = mean( [ vel[j] for j in rand(findin(Rij[:,i], sort(Rij[:,i])[n_t+2:end]), n_nl[i]) ] ) : v_nl[i] = zeros(Float64, length(v_nl[i]))
     end
 
+end
+
+function calc_lr_topological_interactions_sh(vel::SharedArray,v_r::SharedArray,v_n::SharedArray,R_ij::SharedArray,N::Int64,k_sh::Int64, κ_dist)
+
+    for id in first(localindexes(vel)):3:last(localindexes(vel))
+
+        i = div(id, 3)
+
+        v_r[3i+1] = 0.0
+        v_r[3i+2] = 0.0
+        v_r[3i+3] = 0.0
+
+        v_n[3i+1] = 0.0
+        v_n[3i+2] = 0.0
+        v_n[3i+3] = 0.0
+
+        neighbors = sortperm(Symmetric(R_ij, :L)[(i*N)+1:(i+1)*N])
+
+        # short-range
+        for j in neighbors[2:k_sh+1]
+            v_r[3i+1] += vel[3(j-1)+1]
+            v_r[3i+2] += vel[3(j-1)+2]
+            v_r[3i+3] += vel[3(j-1)+3]
+        end
+
+        # v_r[3i+1] /= k_sh
+        # v_r[3i+2] /= k_sh
+        # v_r[3i+3] /= k_sh
+
+        k_ln = rand(κ_dist)
+
+        # possible long range
+        if k_ln > 0
+            for j in sample(neighbors[k_sh+2:end], k_ln, replace = true)
+                v_n[3i+1] += vel[3(j-1)+1]
+                v_n[3i+2] += vel[3(j-1)+2]
+                v_n[3i+3] += vel[3(j-1)+3]
+            end
+            # v_n[3i+1] /= k_ln
+            # v_n[3i+2] /= k_ln
+            # v_n[3i+3] /= k_ln
+        end
+
+    end
 end
 
 ### ============== ### ============== ### ============== ###
@@ -366,6 +441,37 @@ function vel_spin_extended_update!(pos, vel, v_t, v_nl, spin, pars, σ)
 end
 
 ### ============== ### ============== ### ============== ###
+
+function vel_spin_extended_update_sh(pos::SharedArray, vel::SharedArray, v_t::SharedArray, v_nl::SharedArray, spin::SharedArray, pars, σ::Float64)
+
+    for id in first(localindexes(vel)):3:last(localindexes(vel))
+
+        i = div(id, 3)
+
+        noise = randn(3) * σ
+
+        u_vel = [vel[3i+1],vel[3i+2],vel[3i+3]] + (pars.dt/pars.χ) * cross([spin[3i+1],spin[3i+2],spin[3i+3]], [vel[3i+1],vel[3i+2],vel[3i+3]])
+
+        # u_spin =  ( 1.0 - pars.η * pars.dt / pars.χ ) * spin[i] + (pars.J * pars.dt / pars.v0^2) * (cross(vel[i], v_t[i]) + cross(vel[i], v_nl[i]) ) + (pars.dt/ pars.v0) * cross(vel[i], noise)
+        u_spin =  ( 1.0 - pars.η * pars.dt / pars.χ ) * [spin[3i+1],spin[3i+2],spin[3i+3]] + (pars.J * pars.dt / pars.v0^2) * (cross([vel[3i+1],vel[3i+2],vel[3i+3]], [v_t[3i+1],v_t[3i+2],v_t[3i+3]]) + cross([vel[3i+1],vel[3i+2],vel[3i+3]], [v_nl[3i+1],v_nl[3i+2],v_nl[3i+3]]) ) + (1.0/ pars.v0) * cross([vel[3i+1],vel[3i+2],vel[3i+3]], noise)
+
+        spin[3i+1] = u_spin[1]
+        spin[3i+2] = u_spin[2]
+        spin[3i+3] = u_spin[3]
+
+        normalize!(u_vel)  # codition of constant speed
+
+        vel[3i+1]  = pars.v0  * u_vel[1]
+        vel[3i+2]  = pars.v0  * u_vel[2]
+        vel[3i+3]  = pars.v0  * u_vel[3]
+
+        pos[3i+1] += vel[3i+1]*pars.dt # update positions
+        pos[3i+2] += vel[3i+2]*pars.dt # update positions
+        pos[3i+3] += vel[3i+3]*pars.dt # update positions
+    end
+end
+
+### ============== ### ============== ### ============== ###
 ##                     SYSTEM EVOLUTION                   ##
 ### ============== ### ============== ### ============== ###
 """
@@ -421,6 +527,28 @@ function evolve_extended_system(pos, vel, v_t, v_nl, spin, Rij, pars, σ)
     # ### POSITION UPDATE
     # map!( (p,v) -> p + pars.dt * v, pos, pos, vel )
 
+end
+
+### ============== ### ============== ### ============== ###
+
+function evolve_extended_system_sh(pos::SharedArray, vel::SharedArray, v_t::SharedArray, v_nl::SharedArray, spin::SharedArray, Rij::SharedArray, pars, σ::Float64)
+
+    ### COMPUTE RELATIVE DISTANCES
+    calc_Rij(pos, Rij)
+
+    ### COMPUTE INTERACTIONS
+    @sync begin
+        for p in workers()
+            @async remotecall_wait(calc_lr_topological_interactions_sh, p, vel, v_t, v_nl, Rij, pars.N, pars.n_t, pars.κ_dist)
+        end
+    end
+
+    ### PARTICLES UPDATE
+    @sync begin
+        for p in workers()
+            @async remotecall_wait(vel_spin_extended_update_sh, p, pos, vel, v_t, v_nl, spin, pars, σ)
+        end
+    end
 end
 
 ### ============== ### ============== ### ============== ###
