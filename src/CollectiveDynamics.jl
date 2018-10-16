@@ -41,5 +41,12 @@ export InertialFlock, InertialExtFlock, InertialParameters, set_output_data_stru
 include("inertial_spin_model.jl")
 end
 
+## INTERIAL SPIN MODEL MODEL
+module NetworkModel
+using Distributions
+export set_output_data_structure, set_directed_random_network, evolve_system_2D
+include("network_model.jl")
+end
+
 
 end
