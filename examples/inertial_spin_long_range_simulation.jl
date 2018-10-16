@@ -34,7 +34,8 @@ n_t = 6
 
 pars = InertialParameters(χ, J, η, v0*sqrt(J/χ), ρ, v0, N, T, n_t, n_nl)
 
-σ = sqrt((2pars.d) * η * T) # noise std deviation ( square root of variance )
+# σ = sqrt((2pars.d) * η * T) # noise std deviation ( square root of variance )
+σ = sqrt((2pars.d) * η * T * pars.dt) # noise std deviation ( square root of variance )
 L = cbrt(N / pars.ρ) # 3D
 
 ### =============== ### =============== ###
@@ -49,47 +50,37 @@ pos_file  = open(output_path * "/pos_$(rep).dat", "w+")
 vel_file  = open(output_path * "/vel_$(rep).dat", "w+")
 spin_file = open(output_path * "/spin_$(rep).dat", "w+")
 
+# write initial conditions
+println("//////// ", 1)
+write(pos_file, vcat(flock.pos...))
+write(vel_file, vcat(flock.vel...))
+write(spin_file, vcat(flock.spin...))
+
+
 ### ============== ### ============== ###
 ###          SYSTEM EVOLUTION         ###
 ### ============== ### ============== ###
 
 times = [convert(Int, exp10(i)) for i in 0:τ]
 
-  for i in 1:(length(times) - 1)
+for i in 1:(length(times) - 1)
 
-      if i > 1
+    for t in (times[i]+1):times[i+1]
 
-          for t in (times[i]+1):times[i+1]
+        evolve_extended_system(flock.pos, flock.vel, flock.v_t, flock.v_nl, flock.spin, flock.Rij, pars, σ)
 
-              evolve_extended_system(flock.pos, flock.vel, flock.v_t, flock.v_nl, flock.spin, flock.Rij, pars, σ)
+        if t % times[i] == 0 || t % div(times[i], exp10(1)) == 0
+            println("//////// ", t)
+            write(pos_file, vcat(flock.pos...))
+            write(vel_file, vcat(flock.vel...))
+            write(spin_file, vcat(flock.spin...))
+        end
+    end
 
-              if t % times[i] == 0 || t % times[i-1] == 0
-                  println("//////// ", t)
-                  write(pos_file, vcat(flock.pos...))
-                  write(vel_file, vcat(flock.vel...))
-                  write(spin_file, vcat(flock.spin...))
-              end
-          end
-
-      else
-
-          for t in (times[i]+1):times[i+1]
-
-              evolve_extended_system(flock.pos, flock.vel, flock.v_t, flock.v_nl, flock.spin, flock.Rij, pars, σ)
-
-              if t % times[i] == 0
-                  println("//////// ", t)
-                  write(pos_file, vcat(flock.pos...))
-                  write(vel_file, vcat(flock.vel...))
-                  write(spin_file, vcat(flock.spin...))
-              end
-          end
-
-      end
-
-  end
+end
 
 close(pos_file)
 close(vel_file)
+close(spin_file)
 
 println("Done all")

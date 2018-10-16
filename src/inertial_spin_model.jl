@@ -114,6 +114,46 @@ type InertialExtFlock
 end
 
 ### ============== ### ============== ### ============== ###
+
+type SharedInertialExtFlock
+    pos  ::SharedArray{Float64}
+    vel  ::SharedArray{Float64}
+    v_t  ::SharedArray{Float64}
+    v_nl ::SharedArray{Float64}
+    Rij  ::SharedArray{Float64}
+    spin ::SharedArray{Float64}
+
+    function InertialExtFlock(N, L, v0)
+
+        Rij = zeros(Float64, N, N)
+
+        # array of random initial particles' postitions
+        pos = [ [2*rand()*L - L, 2*rand()*L - L, 2*rand()*L - L] for i in 1:N ]
+        # pos = [ [2*rand()*L - L, 2*rand()*L - L, 0.0] for i in 1:N ]
+
+        # array of particles' velocities
+        vel = v0 * [ normalize([2*rand() - 1, 2*rand() - 1, 2*rand() - 1]) for i in 1:N ]
+        # vel = v0 * [normalize([1.0, 0.0, 0.0] - [2*δ*rand() - δ, 2*δ*rand() - δ, 2*δ*rand() - δ]) for i in 1:N]
+
+        # short-range topological interactions
+        v_t  = [zeros(Float64, 3) for i in 1:N]
+
+        # long-range topological interactions
+        v_nl = [zeros(Float64, 3) for i in 1:N]
+
+        # initialize spins as zero vectors\
+        # spin = [zeros(Float64, 3) for i in 1:N]
+
+        # array of  particles' spin (initial random directions)
+        spin = [ normalize([2*rand() - 1, 2*rand() - 1, 2*rand() - 1]) for i in 1:N ]
+        # # cross product because dot(si, vi) must = 0, then normalize
+        map!((x,y) -> normalize(cross(x,y)), spin, spin, vel)
+
+        new(pos, vel, v_t, v_nl, Rij, spin)
+        end
+end
+
+### ============== ### ============== ### ============== ###
 ##                  SYSTEM'S PARAMETERS                   ##
 ### ============== ### ============== ### ============== ###
 """
@@ -315,7 +355,8 @@ function vel_spin_extended_update!(pos, vel, v_t, v_nl, spin, pars, σ)
 
         u_vel = vel[i] + (pars.dt/pars.χ) * cross(spin[i], vel[i])
 
-        u_spin =  ( 1.0 - pars.η * pars.dt / pars.χ ) * spin[i] + (pars.J * pars.dt / pars.v0^2) * (cross(vel[i], v_t[i]) + cross(vel[i], v_nl[i]) ) + (pars.dt/ pars.v0) * cross(vel[i], noise)
+        # u_spin =  ( 1.0 - pars.η * pars.dt / pars.χ ) * spin[i] + (pars.J * pars.dt / pars.v0^2) * (cross(vel[i], v_t[i]) + cross(vel[i], v_nl[i]) ) + (pars.dt/ pars.v0) * cross(vel[i], noise)
+        u_spin =  ( 1.0 - pars.η * pars.dt / pars.χ ) * spin[i] + (pars.J * pars.dt / pars.v0^2) * (cross(vel[i], v_t[i]) + cross(vel[i], v_nl[i]) ) + (1.0/ pars.v0) * cross(vel[i], noise)
 
         spin[i] = u_spin
         vel[i]  = pars.v0  * normalize(u_vel) # codition of constant speed
