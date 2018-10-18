@@ -467,9 +467,9 @@ function vel_spin_extended_update_sh(pos::SharedArray, vel::SharedArray, v_t::Sh
 
         # u_spin =  ( 1.0 - pars.η * pars.dt / pars.χ ) * [spin[3i+1],spin[3i+2],spin[3i+3]] + (pars.J * pars.dt / pars.v0^2) * (cross([vel[3i+1],vel[3i+2],vel[3i+3]], [v_t[3i+1],v_t[3i+2],v_t[3i+3]]) + cross([vel[3i+1],vel[3i+2],vel[3i+3]], [v_nl[3i+1],v_nl[3i+2],v_nl[3i+3]]) ) + (1.0/ pars.v0) * cross([vel[3i+1],vel[3i+2],vel[3i+3]], noise)
 
-        u_spin[1] = coeff_1 * spin[3i+1] + coeff_2 * ((vel[3i+2]*v_t[3i+3]-vel[3i+3]*v_t[3i+2]) + (vel[3i+2]*v_nl[3i+3]-vel[3i+3]*v_nl[3i+2]) ) + coeff_3 * (vel[3i+2]*noise[3i+3]-vel[3i+3]*noise[3i+2])
-        u_spin[2] = coeff_1 * spin[3i+2] + coeff_2 * ((vel[3i+3]*v_t[3i+1]-vel[3i+1]*v_t[3i+3]) + (vel[3i+3]*v_nl[3i+1]-vel[3i+1]*v_nl[3i+3]) ) + coeff_3 * (vel[3i+3]*noise[3i+1]-vel[3i+1]*noise[3i+3])
-        u_spin[3] = coeff_1 * spin[3i+3] + coeff_2 * ((vel[3i+1]*v_t[3i+2]-vel[3i+2]*v_t[3i+1]) + (vel[3i+1]*v_nl[3i+2]-vel[3i+2]*v_nl[3i+1]) ) + coeff_3 * (vel[3i+1]*noise[3i+2]-vel[3i+2]*noise[3i+1])
+        u_spin[1] = coeff_1 * spin[3i+1] + coeff_2 * ((vel[3i+2]*v_t[3i+3]-vel[3i+3]*v_t[3i+2]) + (vel[3i+2]*v_nl[3i+3]-vel[3i+3]*v_nl[3i+2]) ) + coeff_3 * (vel[3i+2]*noise[3]-vel[3i+3]*noise[2])
+        u_spin[2] = coeff_1 * spin[3i+2] + coeff_2 * ((vel[3i+3]*v_t[3i+1]-vel[3i+1]*v_t[3i+3]) + (vel[3i+3]*v_nl[3i+1]-vel[3i+1]*v_nl[3i+3]) ) + coeff_3 * (vel[3i+3]*noise[1]-vel[3i+1]*noise[3])
+        u_spin[3] = coeff_1 * spin[3i+3] + coeff_2 * ((vel[3i+1]*v_t[3i+2]-vel[3i+2]*v_t[3i+1]) + (vel[3i+1]*v_nl[3i+2]-vel[3i+2]*v_nl[3i+1]) ) + coeff_3 * (vel[3i+1]*noise[2]-vel[3i+2]*noise[1])
 
         spin[3i+1] = u_spin[1]
         spin[3i+2] = u_spin[2]
