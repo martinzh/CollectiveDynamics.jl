@@ -31,13 +31,13 @@ rep = parse(Int, ARGS[4]) # repetition number
 @eval @everywhere N    = $n
 @eval @everywhere n_nl = $k
 
-@eval @everywhere χ   = 1.25
-@eval @everywhere η   = 1.5
-@eval @everywhere J   = 0.8
-@eval @everywhere T   = 0.01
-@eval @everywhere n_t = 6
-@eval @everywhere ρ   = 0.3
-@eval @everywhere v0  = 0.1
+@everywhere χ   = 1.25
+@everywhere η   = 1.5
+@everywhere J   = 0.8
+@everywhere T   = 0.01
+@everywhere n_t = 6
+@everywhere ρ   = 0.3
+@everywhere v0  = 0.1
 
 @everywhere pars = InertialParameters(χ, J, η, v0*sqrt(J/χ), ρ, v0, N, T, n_t, n_nl)
 
@@ -45,11 +45,15 @@ rep = parse(Int, ARGS[4]) # repetition number
 @everywhere σ = sqrt((2pars.d) * η * T * pars.dt) # noise std deviation ( square root of variance )
 @everywhere L = cbrt(N / pars.ρ) # 3D
 
+# @everywhere κ_dist = Poisson(n_nl)
+
 ### =============== ### =============== ###
 ### SET UP SYSTEM AND OUTPUT STRUCTURE  ###
 ### =============== ### =============== ###
 
 Rij = SharedArray{Float64}(N, N)
+
+k_nl = SharedArray{Int64}(N) # particles positions
 
 pos  = SharedArray{Float64}(3N) # particles positions
 vel  = SharedArray{Float64}(3N) # array of particles' velocities
@@ -61,28 +65,31 @@ for i in 1:length(pos)
     pos[i]  = 2*rand()*L - L
     vel[i]  = 2*rand() - 1
     spin[i] = 2*rand() - 1
+    v_t[i]  = 0.0
+    v_nl[i] = 0.0
 end
 
-for i in 1:3:length(vel)
-    norm = sqrt(vel[i]^2 + vel[i+1]^2 + vel[i+2]^2)
-    vel[i]   /= norm
-    vel[i+1] /= norm
-    vel[i+2] /= norm
+# for i in 1:3:length(vel)
+for i in 0:N-1
+    k_nl[i+1] = 0
+    # norm = sqrt(vel[i]^2 + vel[i+1]^2 + vel[i+2]^2)
+    # vel[i]   /= norm
+    # vel[i+1] /= norm
+    # vel[i+2] /= norm
+    p_vel = v0 * normalize([vel[3i+1],vel[3i+2],vel[3i+3]])
 
-    vel[i]   *= v0
-    vel[i+1] *= v0
-    vel[i+2] *= v0
+    vel[3i+1] = p_vel[1]
+    vel[3i+2] = p_vel[2]
+    vel[3i+3] = p_vel[3]
 
-    norm = sqrt(spin[i]^2 + spin[i+1]^2 + spin[i+2]^2)
-    spin[i]   /= norm
-    spin[i+1] /= norm
-    spin[i+2] /= norm
+    p_spin = normalize([spin[3i+1],spin[3i+2],spin[3i+3]])
 
-    temp_spin = normalize(cross([spin[i],spin[i+1],spin[i+2]],[vel[i],vel[i+1],vel[i+2]]))
+    temp_spin = normalize(cross(p_spin, p_vel))
+    # temp_spin = normalize(cross([spin[i],spin[i+1],spin[i+2]],[vel[i],vel[i+1],vel[i+2]]))
 
-    spin[i]   = temp_spin[1]
-    spin[i+1] = temp_spin[2]
-    spin[i+2] = temp_spin[3]
+    spin[3i+1] = temp_spin[1]
+    spin[3i+2] = temp_spin[2]
+    spin[3i+3] = temp_spin[3]
 end
 
 output_path = set_output_data_structure_lr("EXTENDED_INERTIAL_SPIN", N, η, T, n_nl)
@@ -107,7 +114,7 @@ for i in 1:(length(times) - 1)
 
     for t in (times[i]+1):times[i+1]
 
-        evolve_extended_system_sh(pos, vel, v_t, v_nl, spin, Rij, pars, σ)
+        evolve_extended_system_sh(pos, vel, v_t, v_nl, spin, k_nl, Rij, pars, σ)
 
         if t % times[i] == 0 || t % div(times[i], exp10(1)) == 0
             println("//////// ", t)
