@@ -89,7 +89,11 @@ end
 
 function compute_network_interactions_2D(ang::SharedArray, ang_n::SharedArray, Nij::SharedArray, poski::SharedArray)
 
-    for i in first(localindexes(ang)):last(localindexes(ang))
+    num_phi = 0.0
+    den_phi = 0.0
+
+    # for i in first(localindexes(ang)):last(localindexes(ang))
+    for i in localindexes(ang)
 
         ang_n[i] = 0.0
 
@@ -114,16 +118,21 @@ end
 
 function update_particles_2D(pos::SharedArray, ang::SharedArray, ang_n::SharedArray, dt::Float64, v0::Float64, γ::Float64, σ::Float64, ξ_dist)
 
-    for i in first(localindexes(ang)):last(localindexes(ang))
+    γ_dt  = γ*dt
+    v0_dt = v0*dt
+    new_angle = 0.0 
 
-        new_angle = ang[i] + γ * dt * sin(ang_n[i] - ang[i]) + σ * rand(ξ_dist)
+    # for i in first(localindexes(ang)):last(localindexes(ang))
+    for i in localindexes(ang)
 
-        n_y = pos[2i] + v0 * dt * sin(new_angle)
-        n_x = pos[2i-1] + v0 * dt * cos(new_angle)
+        new_angle = ang[i] + γ_dt * sin(ang_n[i] - ang[i]) + σ * rand(ξ_dist)
+
+        n_y = pos[2i] + v0_dt * sin(new_angle)
+        n_x = pos[2i-1] + v0_dt * cos(new_angle)
 
         ang[i] = new_angle
 
-        pos[2i] = n_y
+        pos[2i]   = n_y
         pos[2i-1] = n_x
     end
 end
