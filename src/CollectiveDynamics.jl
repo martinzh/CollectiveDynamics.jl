@@ -1,8 +1,8 @@
 ## =========================== ## ## =========================== ##
 ## 	   Package of collective motion models			 ##
-##	   Martin Zumaya Hernandez 						             ##
-##	   Release Version 0.1.0 						             ##
-##     29 / 05 / 2018									         ##
+##	   Martin Zumaya Hernandez                               ##
+##	   Release Version 0.1.0                                 ##
+##     29 / 05 / 2018                                            ##
 ## =========================== ## ## =========================== ##
 
 module CollectiveDynamics
@@ -30,14 +30,26 @@ end
 ## SHORT AND LONG RANGE INTERACTIONS MODEL
 module ShortLongRange
 using Distributions, Quaternions
-export set_output_data_structure, evolve_metric_system, evolve_metric_system_2D, evolve_topological_system, evolve_topological_system_2D
+export set_output_data_structure,
+    evolve_metric_system,
+    evolve_metric_system_2D,
+    evolve_topological_system,
+    evolve_topological_system_2D
 include("short_long_range_model.jl")
 end
 
 ## INTERIAL SPIN MODEL MODEL
 module InertialSpin
 using Quaternions
-export InertialFlock, InertialExtFlock, SharedInertialExtFlock, InertialParameters, set_output_data_structure, set_output_data_structure_lr, evolve_system, evolve_extended_system, evolve_extended_system_sh
+export InertialFlock,
+    InertialExtFlock,
+    SharedInertialExtFlock,
+    InertialParameters,
+    set_output_data_structure,
+    set_output_data_structure_lr,
+    evolve_system,
+    evolve_extended_system,
+    evolve_extended_system_sh
 include("inertial_spin_model.jl")
 end
 
